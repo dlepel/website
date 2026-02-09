@@ -303,10 +303,10 @@
             <div class="subtitle">Principal Microsoft Cloud Architect</div>
             <div class="status">Currently exploring strategic architecture opportunities</div>
             <div class="contact-links">
-                <a href="/cdn-cgi/l/email-protection#dbbfbab5b2beb79bb7beabbeb7f5aea8"><span class="__cf_email__" data-cfemail="6b0f0a05020e072b070e1b0e07451e18">[email&#160;protected]</span></a>
+                <a href="#" id="email-link"><span id="email-display"></span></a>
                 <a href="tel:+15186183700">(518) 618-3700</a>
-                <a href="#">Albany, NY</a>
-                <a href="#" style="font-weight: 500; color: var(--accent);">Remote Preferred</a>
+                <a>Albany, NY</a>
+                <a style="font-weight: 500; color: var(--accent);">Remote Preferred</a>
             </div>
         </header>
 
@@ -372,6 +372,32 @@
             <h2>Let's Connect</h2>
             <p>I'm immediately available for remote work and would welcome a conversation about strategic architecture opportunities.</p>
             <div class="button-group">
-                <a href="/cdn-cgi/l/email-protection#6307020d0a060f230f0613060f4d1610" class="btn btn-primary">Email Me</a>
+                <a href="#" id="email-button" class="btn btn-primary">Email Me</a>
                 <a href="Daniel_Lepel_Resume.pdf" class="btn btn-secondary" download>Download Resume</a>
                 <a href="https://www.linkedin.com/in/daniellepel" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">LinkedIn Profile</a>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Daniel R. Lepel. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // JavaScript email rendering to bypass GitHub/Cloudflare obfuscation
+        (function() {
+            var user = 'daniel';
+            var domain = 'lepel.us';
+            var email = user + '@' + domain;
+            var mailtoLink = 'mailto:' + email;
+            
+            // Set email in header
+            document.getElementById('email-link').href = mailtoLink;
+            document.getElementById('email-display').textContent = email;
+            
+            // Set email button
+            document.getElementById('email-button').href = mailtoLink;
+        })();
+    </script>
+</body>
+</html>
