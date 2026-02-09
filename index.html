@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel Lepel | Principal Microsoft Cloud Architect</title>
+    <meta name="description" content="Principal Microsoft Cloud Architect specializing in Microsoft 365, Azure, and enterprise identity architecture. Currently exploring strategic architecture opportunities.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1a5490;
+            --accent: #0078d4;
+            --text: #1a1a1a;
+            --text-light: #4a4a4a;
+            --border: #e0e0e0;
+            --bg: #ffffff;
+            --bg-subtle: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        header {
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        h1 {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #e8f4f8;
+            border: 1px solid #b3dae8;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        
+        .contact-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+        
+        .contact-links a:hover {
+            color: var(--accent);
+        }
+        
+        section {
+            margin-bottom: 60px;
+        }
+        
+        h2 {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 24px;
+            letter-spacing: -0.01em;
+        }
+        
+        .bio p {
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            color: var(--text);
+        }
+        
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .expertise-card {
+            background: var(--bg-subtle);
+            padding: 28px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .expertise-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        
+        .expertise-card h3 {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .expertise-card ul {
+            list-style: none;
+        }
+        
+        .expertise-card li {
+            padding: 6px 0;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .expertise-card li::before {
+            content: '→';
+            color: var(--accent);
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 48px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 16px;
+        }
+        
+        .cta-section p {
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 2.25rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .contact-links {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .expertise-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-section {
+                padding: 32px 24px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Daniel R. Lepel</h1>
+            <div class="subtitle">Principal Microsoft Cloud Architect</div>
+            <div class="status">Currently exploring strategic architecture opportunities</div>
+            <div class="contact-links">
+                <a href="/cdn-cgi/l/email-protection#dbbfbab5b2beb79bb7beabbeb7f5aea8"><span class="__cf_email__" data-cfemail="6b0f0a05020e072b070e1b0e07451e18">[email&#160;protected]</span></a>
+                <a href="tel:+15186183700">(518) 618-3700</a>
+                <a href="#">Albany, NY</a>
+                <a href="#" style="font-weight: 500; color: var(--accent);">Remote Preferred</a>
+            </div>
+        </header>
+
+        <section class="bio">
+            <h2>About</h2>
+            <p>I'm a Principal Microsoft Cloud Architect who believes the best architecture is invisible, quietly working in the background as teams move fast and users stay productive. Across my last two roles, I've designed Microsoft 365 and Azure environments that scale reliably without constant intervention.</p>
+            
+            <p>My work centers on the foundational pieces that make everything else possible: identity architecture with Entra ID, Zero Trust security frameworks, endpoint platforms that just work, and governance standards that reduce complexity rather than add to it. I've built multi-tenant environments, modernized legacy platforms, and established architectural patterns that help operational teams succeed.</p>
+            
+            <p>I'm looking for my next role, specifically positions where architecture and strategy take priority over day-to-day operations. I'm happy to engage with Tier 3 issues and operational challenges when needed, but I want to focus primarily on platform vision, security design, and technical standards, the work that prevents issues before they start. If your organization values strategic architecture work, I'd welcome a conversation.</p>
+        </section>
+
+        <section>
+            <h2>Core Expertise</h2>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <h3>Microsoft 365 & Azure</h3>
+                    <ul>
+                        <li>Multi-tenant architecture</li>
+                        <li>Azure landing zones</li>
+                        <li>Platform governance</li>
+                        <li>Cloud migrations</li>
+                        <li>M365 E5 adoption</li>
+                    </ul>
+                </div>
+                
+                <div class="expertise-card">
+                    <h3>Identity & Security</h3>
+                    <ul>
+                        <li>Entra ID architecture</li>
+                        <li>Conditional Access</li>
+                        <li>Zero Trust frameworks</li>
+                        <li>Privileged Identity Management</li>
+                        <li>Microsoft Defender XDR</li>
+                    </ul>
+                </div>
+                
+                <div class="expertise-card">
+                    <h3>Endpoint & Workplace</h3>
+                    <ul>
+                        <li>Microsoft Intune</li>
+                        <li>Windows Autopilot</li>
+                        <li>Windows Hello for Business</li>
+                        <li>Device lifecycle management</li>
+                        <li>Modern workplace standards</li>
+                    </ul>
+                </div>
+                
+                <div class="expertise-card">
+                    <h3>Automation & Operations</h3>
+                    <ul>
+                        <li>PowerShell 7</li>
+                        <li>Microsoft Graph API</li>
+                        <li>Azure Automation</li>
+                        <li>Platform health monitoring</li>
+                        <li>Infrastructure as Code</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Let's Connect</h2>
+            <p>I'm immediately available for remote work and would welcome a conversation about strategic architecture opportunities.</p>
+            <div class="button-group">
+                <a href="/cdn-cgi/l/email-protection#6307020d0a060f230f0613060f4d1610" class="btn btn-primary">Email Me</a>
+                <a href="Daniel_Lepel_Resume.pdf" class="btn btn-secondary" download>Download Resume</a>
+                <a href="https://www.linkedin.com/in/daniellepel" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">LinkedIn Profile</a>
