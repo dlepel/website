@@ -5,200 +5,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daniel Lepel | Principal Microsoft Cloud Architect</title>
     <meta name="description" content="Principal Microsoft Cloud Architect specializing in Microsoft 365, Azure, and enterprise identity architecture. Currently exploring strategic architecture opportunities.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #0078d4;
+            --dark: #1a1a1a;
+            --medium: #2d2d2d;
+            --light: #f5f5f5;
+            --border: #404040;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            line-height: 1.7;
-            color: #1a1a1a;
-            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--dark);
         }
-        
+
         .container {
-            max-width: 720px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 80px 24px;
+            padding: 3rem 2rem;
         }
-        
+
         header {
-            margin-bottom: 64px;
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
         }
-        
+
         h1 {
             font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-weight: 600;
         }
-        
-        .subtitle {
+
+        .tagline {
             font-size: 1.25rem;
-            color: #666;
-            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
         }
-        
-        .status {
-            display: inline-block;
-            background: #f0f7ff;
-            color: #0066cc;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-top: 24px;
-        }
-        
-        section {
-            margin-bottom: 64px;
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: #1a1a1a;
-        }
-        
-        p {
-            margin-bottom: 16px;
-            font-size: 1.05rem;
-            color: #333;
-        }
-        
-        .expertise-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
-        
-        .expertise-card {
-            background: #f8f9fa;
-            padding: 24px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .expertise-card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #1a1a1a;
-        }
-        
-        .expertise-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .expertise-card li {
-            padding: 4px 0;
-            color: #555;
-            font-size: 0.95rem;
-        }
-        
-        .expertise-card li:before {
-            content: "•";
-            color: #0066cc;
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-        }
-        
-        .cta {
-            background: #f8f9fa;
-            padding: 40px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            text-align: center;
-        }
-        
-        .cta h2 {
-            margin-bottom: 16px;
-        }
-        
-        .cta p {
-            color: #666;
-            margin-bottom: 32px;
-        }
-        
-        .contact-links {
+
+        .contact-info {
             display: flex;
-            gap: 16px;
+            gap: 2rem;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 1.5rem;
         }
-        
+
+        .contact-info a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-info a:hover {
+            color: var(--primary);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
         .btn {
             display: inline-block;
-            padding: 12px 32px;
-            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            border: 2px solid transparent;
         }
-        
+
         .btn-primary {
-            background: #0066cc;
+            background: var(--primary);
             color: white;
         }
-        
+
         .btn-primary:hover {
-            background: #0052a3;
-            transform: translateY(-1px);
+            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
         }
-        
+
         .btn-secondary {
-            background: white;
-            color: #0066cc;
-            border: 2px solid #0066cc;
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
         }
-        
+
         .btn-secondary:hover {
-            background: #f0f7ff;
-            transform: translateY(-1px);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
         }
-        
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .bio p {
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-size: 1.05rem;
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .expertise-card {
+            background: var(--medium);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .expertise-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .expertise-card ul {
+            list-style: none;
+        }
+
+        .expertise-card li {
+            padding: 0.4rem 0;
+            color: var(--text);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .expertise-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
         footer {
-            margin-top: 80px;
-            padding-top: 32px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
             text-align: center;
-            color: #999;
-            font-size: 0.9rem;
+            color: var(--text-dim);
         }
-        
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
             }
-            
-            .subtitle {
+
+            .tagline {
                 font-size: 1.1rem;
             }
-            
-            .container {
-                padding: 48px 20px;
+
+            .contact-info {
+                flex-direction: column;
+                gap: 0.5rem;
             }
-            
+
             .expertise-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .contact-links {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
             }
         }
     </style>
@@ -207,27 +208,28 @@
     <div class="container">
         <header>
             <h1>Daniel Lepel</h1>
-            <p class="subtitle">Principal Microsoft Cloud Architect</p>
-            <div style="margin-top: 16px; color: #555; font-size: 1rem;">
-                <p style="margin-bottom: 8px;">
-                    <a href="mailto:daniel@lepel.us" style="color: #0066cc; text-decoration: none;">daniel@lepel.us</a> • 
-                    <a href="tel:+15186183700" style="color: #0066cc; text-decoration: none;">(518) 618-3700</a>
-                </p>
-                <p style="margin-bottom: 0;">Albany, NY • Remote Preferred</p>
+            <p class="tagline">Principal Microsoft Cloud Architect</p>
+            <div class="contact-info">
+                <a href="mailto:daniel@lepel.us">daniel@lepel.us</a>
+                <a href="https://www.linkedin.com/in/daniellepel" target="_blank">LinkedIn</a>
+                <span>Albany, NY Capital District (Remote)</span>
             </div>
-            <span class="status">Currently exploring new opportunities</span>
+            <div class="cta-buttons">
+                <a href="Daniel-Lepel-Resume.pdf" class="btn btn-primary" download>Download Resume</a>
+                <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
+            </div>
         </header>
-        
-        <section>
+
+        <section class="bio">
             <h2>About</h2>
-            <p>I'm a Principal Microsoft Cloud Architect with over 20 years of experience designing and implementing enterprise Microsoft infrastructure. My focus is on strategic platform architecture, with deep expertise spanning the Microsoft ecosystem from traditional Active Directory and Windows Server through to modern Microsoft 365 and Azure environments.</p>
+            <p>I'm a Principal Microsoft Cloud Architect who believes the best architecture is invisible—working quietly in the background while teams move fast and users stay productive. Over the past decade, I've focused on designing Microsoft 365 and Azure environments that scale reliably without constant intervention.</p>
             
-            <p>My work centers on multi-tenant Microsoft 365 and Azure architecture, identity and access management with Entra ID, Zero Trust security frameworks, endpoint platforms, and governance standards. I approach architecture from a strategic perspective, designing solutions that balance security, scalability, and operational excellence while ensuring organizations can adapt as their needs evolve.</p>
+            <p>My work centers on the foundational pieces that make everything else possible: identity architecture with Entra ID, Zero Trust security frameworks, endpoint platforms that just work, and governance standards that reduce complexity instead of adding to it. I've built multi-tenant environments, modernized legacy platforms, and established architectural patterns that help operational teams succeed.</p>
             
-            <p>I'm currently seeking Principal Cloud Architect roles where I can focus primarily on platform design and security architecture. I'm open to remote, hybrid, or on-site arrangements and interested in positions where strategic thinking and architectural leadership are valued alongside the technical depth that comes with 20+ years in the Microsoft ecosystem.</p>
+            <p>Right now, I'm looking for my next role—specifically positions where architecture and strategy are distinct from day-to-day operations. I want to focus on platform vision, security design, and technical standards rather than firefighting and escalations. If your organization values strategic architecture work, I'd welcome a conversation.</p>
         </section>
-        
-        <section>
+
+        <section class="expertise">
             <h2>Core Expertise</h2>
             <div class="expertise-grid">
                 <div class="expertise-card">
@@ -238,6 +240,8 @@
                         <li>Conditional Access & MFA</li>
                         <li>Privileged Access Management</li>
                         <li>Identity Governance</li>
+                        <li>Microsoft Defender Suite</li>
+                        <li>Insider Risk Management</li>
                     </ul>
                 </div>
                 
@@ -249,33 +253,35 @@
                         <li>Multi-tenant Solutions</li>
                         <li>Hybrid Cloud Infrastructure</li>
                         <li>Migration Strategy</li>
+                        <li>E5 Capability Enablement</li>
                     </ul>
                 </div>
                 
                 <div class="expertise-card">
                     <h3>Governance & Compliance</h3>
                     <ul>
-                        <li>Security Frameworks</li>
-                        <li>Compliance Standards</li>
+                        <li>Microsoft Purview Data Governance</li>
+                        <li>Information Protection & DLP</li>
+                        <li>Sensitivity Labels & Encryption</li>
+                        <li>Records Management & eDiscovery</li>
+                        <li>Compliance Standards & Frameworks</li>
                         <li>Policy Architecture</li>
-                        <li>Risk Management</li>
-                        <li>Audit & Documentation</li>
+                        <li>Risk Management & Audit</li>
+                    </ul>
+                </div>
+                
+                <div class="expertise-card">
+                    <h3>Recent Experience</h3>
+                    <ul>
+                        <li>Architected M365 and Azure environments across multiple client tenants in MSP setting</li>
+                        <li>Implemented Microsoft security baselines and Zero Trust frameworks aligned with best practices</li>
+                        <li>Designed Entra ID identity solutions with Conditional Access and privileged access controls</li>
+                        <li>Established governance standards for Azure platform deployments and M365 workload enablement</li>
                     </ul>
                 </div>
             </div>
         </section>
-        
-        <section class="cta">
-            <h2>Let's Connect</h2>
-            <p>Interested in discussing architecture opportunities or need strategic guidance on Microsoft cloud platforms?</p>
-            <p style="font-size: 1.1rem; font-weight: 500; color: #0066cc; margin-bottom: 24px;">
-                <a href="mailto:daniel@lepel.us" style="color: #0066cc; text-decoration: none;">daniel@lepel.us</a>
-            </p>
-            <div class="contact-links">
-                <a href="https://www.linkedin.com/in/daniellepel/" class="btn btn-primary" target="_blank" rel="noopener">View LinkedIn Profile</a>
-            </div>
-        </section>
-        
+
         <footer>
             <p>&copy; 2026 Daniel Lepel. All rights reserved.</p>
         </footer>
