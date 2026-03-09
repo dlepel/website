@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Licensing Guide - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+    --tip-bg: #1e1c1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1280px;height:min(100vh,820px);margin:auto;box-shadow:0 0 80px rgba(0,0,0,.8);}
+
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab{padding:14px 18px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
+
+  .slides{flex:1;position:relative;overflow:hidden;}
+  .slide{display:none;height:100%;width:100%;}
+  .slide.active{display:flex;animation:sIn .25s ease-out;}
+  @keyframes sIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  .split{display:flex;height:100%;width:100%;}
+
+  .lp{width:42%;background:var(--dark);border-right:1px solid var(--rule);padding:40px 36px;display:flex;flex-direction:column;justify-content:center;flex-shrink:0;}
+  .rp{flex:1;background:var(--dark2);padding:36px 36px 60px;overflow-y:auto;}
+
+  .seyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .ssubtitle{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--og2);margin-bottom:16px;}
+  .srule{width:40px;height:1px;background:var(--orange);opacity:.7;margin-bottom:16px;}
+  .sbody{font-size:16px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+
+  .blist{list-style:none;}
+  .bitem{border-bottom:1px solid rgba(255,255,255,.05);}
+  .bitem:first-child{border-top:1px solid rgba(255,255,255,.05);}
+  .btrigger{display:flex;align-items:flex-start;gap:10px;padding:14px 4px 14px 0;cursor:pointer;transition:background .15s;}
+  .btrigger:hover{background:rgba(200,145,74,.05);}
+  .barrow{color:var(--orange);font-size:16px;line-height:1.5;flex-shrink:0;transition:transform .2s;}
+  .bitem.open .barrow{transform:rotate(90deg);}
+  .btext{font-size:17px;font-weight:400;line-height:1.5;color:var(--white);}
+  .bexpand{display:none;padding:2px 4px 12px 26px;}
+  .bitem.open .bexpand{display:block;}
+  .bexpand-inner{font-size:15px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
+
+  .rp-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:14px;}
+  .rp-body{font-size:16px;font-weight:300;line-height:1.8;color:#b8b0a4;margin-bottom:20px;}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  .compare-card{background:var(--dark3);border-top:2px solid var(--orange);padding:18px;}
+  .compare-card.dim{border-top-color:rgba(200,145,74,.3);}
+  .compare-card-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);margin-bottom:6px;}
+  .compare-card-sub{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--og2);margin-bottom:12px;}
+  .compare-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+  .compare-card ul li{font-size:14px;font-weight:300;color:#b8b0a4;padding-left:14px;position:relative;line-height:1.5;}
+  .compare-card ul li::before{content:'·';position:absolute;left:0;color:var(--orange);}
+  .compare-card ul li.pro{color:var(--og2);}
+  .compare-card ul li.pro::before{content:'✓';color:var(--og2);}
+
+  .add-on-box{background:var(--dark3);border-left:3px solid var(--orange);padding:16px 18px;margin-bottom:16px;}
+  .add-on-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px;}
+  .add-on-body{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;}
+
+  .slide-cover .lp{width:44%;justify-content:flex-end;padding-bottom:48px;}
+  .cover-eyebrow{font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;}
+  .cover-title{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:400;color:var(--white);line-height:1.0;margin-bottom:12px;}
+  .cover-sub{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:var(--og2);margin-bottom:20px;}
+  .cover-rule{width:48px;height:1px;background:var(--orange);opacity:.8;margin-bottom:20px;}
+  .cover-body{font-size:15px;font-weight:300;line-height:1.75;color:var(--dim);max-width:360px;}
+  .cover-letter{position:absolute;right:-20px;bottom:-40px;font-family:'Cormorant Garamond',serif;font-size:340px;font-weight:600;color:rgba(200,145,74,.08);line-height:1;pointer-events:none;user-select:none;}
+  .cover-rp{flex:1;background:var(--dark2);display:flex;flex-direction:column;justify-content:center;padding:48px 44px;position:relative;overflow:hidden;}
+  .cover-rp-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;}
+  .cover-rp-quote{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;font-style:italic;color:var(--white);line-height:1.45;margin-bottom:20px;max-width:500px;}
+  .cover-rp-attr{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);}
+
+  .closing-quote{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:400;font-style:italic;color:var(--white);line-height:1.45;margin-bottom:20px;}
+  .closing-attr{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);}
+
+  .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--panel);border-top:1px solid var(--rule);flex-shrink:0;position:relative;}
+  .nbtn{width:34px;height:34px;background:rgba(200,145,74,.1);border:1px solid rgba(200,145,74,.25);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none;}
+  .nbtn:hover{background:rgba(200,145,74,.22);}
+  .pdots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;}
+  .pdot{width:5px;height:5px;border-radius:50%;background:rgba(200,145,74,.25);cursor:pointer;transition:background .2s,transform .2s;}
+  .pdot.active{background:var(--orange);transform:scale(1.4);}
+
+  .gt{position:relative;display:inline;border-bottom:1px dashed rgba(200,145,74,.5);cursor:help;}
+  .gt-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:var(--tip-bg);border:1px solid var(--rule);padding:12px 14px;width:260px;z-index:100;pointer-events:none;}
+  .gt:hover .gt-tip{display:block;}
+  .gt-tip-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;}
+  .gt-tip-body{font-size:13px;font-weight:300;line-height:1.5;color:var(--dim);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-slide="0"><span class="tl">I</span>ntro</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="1"><span class="tl">T</span>he Decision</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="2"><span class="tl">E</span>3 vs E5</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="3"><span class="tl">B</span>usiness Premium</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="4"><span class="tl">A</span>dd-ons</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="5"><span class="tl">L</span>icense Waste</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="6"><span class="tl">S</span>torage</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="7"><span class="tl">C</span>lose</div>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- COVER -->
+    <div class="slide active slide-cover">
+      <div class="lp" style="position:relative;overflow:hidden;">
+        <div class="cover-eyebrow">Licensing Framework</div>
+        <div class="cover-title">Microsoft Licensing That Actually Makes Sense</div>
+        <div class="cover-sub">A practical guide to getting it right</div>
+        <div class="cover-rule"></div>
+        <div class="cover-body">Microsoft licensing decisions have long-term financial and operational consequences. Most organizations either overpay for capabilities they never use or underspend and leave critical security gaps. This guide explains how I think about it.</div>
+        <div class="cover-letter">$</div>
+      </div>
+      <div class="cover-rp">
+        <div class="cover-rp-label">The Core Tension</div>
+        <div class="cover-rp-quote">"The question isn't which license is cheapest. It's which license fits where the organization actually is."</div>
+        <div class="cover-rp-attr">Daniel Lepel &nbsp;·&nbsp; Principal Microsoft Cloud Architect</div>
+      </div>
+    </div>
+
+    <!-- THE DECISION -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Starting Point</div>
+          <div class="stitle">The Decision Framework</div>
+          <div class="ssubtitle">Two questions that determine everything</div>
+          <div class="srule"></div>
+          <div class="sbody">Before looking at any license tier, two questions need honest answers: how many seats does the organization need, and which advanced capabilities will they actually use? Everything follows from there.</div>
+          <div class="sbody">The 300-seat threshold is a real inflection point. Below it, Microsoft 365 Business Premium is almost always the right answer. Above it, the conversation shifts to E3 vs E5.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">How I Approach It</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Start with seat count</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>The 300-seat line isn't arbitrary. Business Premium tops out there. Organizations over 300 need the Enterprise tier, which opens up E3 and E5 as the main choices. Under 300, Business Premium covers the vast majority of use cases and includes security capabilities that used to require enterprise licensing.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Identify which advanced capabilities they genuinely need</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Advanced compliance, Cloud PBX (Teams Phone), and Privileged Access Management are the three E5-specific capabilities that most often drive the upgrade decision. If none of those apply, E3 with the right add-ons usually gets you where you need to be at a lower total cost.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Account for annual commitment economics</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Annual commitments save money per seat but create rigidity. Getting the initial tier decision right matters more than most organizations realize because you're locked in for a year. Overbuying on day one is expensive. So is underbuying and needing to add licenses mid-term at a higher rate.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Plan for add-ons before finalizing the base license</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Some capabilities are worth adding as standalone SKUs rather than upgrading the entire base license tier. Defender for Office 365 Plan 2 is the clearest example - strong email security at a fraction of the E5 upgrade cost when you don't need everything else E5 includes.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E3 vs E5 -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Enterprise Tier</div>
+          <div class="stitle">E3 vs E5</div>
+          <div class="ssubtitle">When the upgrade actually earns its cost</div>
+          <div class="srule"></div>
+          <div class="sbody">E3 is the right base license for most enterprise organizations. It covers the full productivity suite, basic compliance, and enough security for organizations without advanced regulatory requirements.</div>
+          <div class="sbody">E5 is worth it when the organization genuinely needs advanced compliance capabilities, Teams Phone (Cloud PBX), or Privileged Access Management - and will actually use them.</div>
+        </div>
+        <div class="rp">
+          <div class="compare-grid">
+            <div class="compare-card">
+              <div class="compare-card-title">Microsoft 365 E3</div>
+              <div class="compare-card-sub">Right for most enterprise orgs</div>
+              <ul>
+                <li class="pro">Full Office suite + Teams + Exchange</li>
+                <li class="pro">Basic compliance and retention</li>
+                <li class="pro">Entra ID P1 (Conditional Access)</li>
+                <li class="pro">Intune device management</li>
+                <li>No advanced compliance workloads</li>
+                <li>No Cloud PBX</li>
+                <li>No Privileged Access Management</li>
+              </ul>
+            </div>
+            <div class="compare-card">
+              <div class="compare-card-title">Microsoft 365 E5</div>
+              <div class="compare-card-sub">Worth it when you need these</div>
+              <ul>
+                <li class="pro">Everything in E3</li>
+                <li class="pro">Advanced compliance (Purview)</li>
+                <li class="pro">Cloud PBX / Teams Phone</li>
+                <li class="pro">Privileged Access Management</li>
+                <li class="pro">Microsoft Defender XDR included</li>
+                <li class="pro">Entra ID P2 (Identity Protection, PIM)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="rp-body">The E5 premium is significant. Before recommending it, I want to know that the organization will actually activate the advanced capabilities it's paying for. An E5 tenant running at E3 capability levels is just an expensive E3.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSINESS PREMIUM -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Under 300 Seats</div>
+          <div class="stitle">Business Premium</div>
+          <div class="ssubtitle">The most underestimated license in the catalog</div>
+          <div class="srule"></div>
+          <div class="sbody">Microsoft 365 Business Premium is consistently underestimated. It includes Intune, Conditional Access, Defender for Business, and Azure AD P1 - capabilities that used to require enterprise licensing - at a price point designed for smaller organizations.</div>
+          <div class="sbody">For organizations under 300 seats without advanced compliance requirements, it is almost always the right call.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">What Business Premium Gets You</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Full Office productivity suite plus Exchange, Teams, and SharePoint</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Same productivity suite as enterprise tiers. Users get the full M365 experience. No capability gaps at the application layer.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Microsoft Intune<span class="gt-tip"><div class="gt-tip-title">Microsoft Intune</div><div class="gt-tip-body">Cloud-based endpoint management platform that handles device enrollment, policy enforcement, application deployment, and compliance reporting.</div></span></span> for device management and policy enforcement</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Intune at Business Premium gives smaller organizations the same device management capabilities as enterprise. I use it to enroll machines, enforce compliance policies, deploy applications, and configure Windows Hello for Business across the environment.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Conditional Access<span class="gt-tip"><div class="gt-tip-title">Conditional Access</div><div class="gt-tip-body">Policy engine that evaluates user, device, location, and risk signals to decide whether to allow, block, or require additional verification for each sign-in.</div></span></span> for identity-based access control</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Conditional Access is one of the highest-ROI security tools in the Microsoft stack. Getting it included in Business Premium rather than requiring an enterprise upgrade is a significant value driver for smaller organizations.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Defender for Business for endpoint protection</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Defender for Business is the Business Premium-tier version of Defender for Endpoint. It covers threat protection, vulnerability management, and attack surface reduction for organizations that don't need the full enterprise Defender suite. For most sub-300-seat organizations, it's more than sufficient.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Azure AD P1 included for identity security</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Azure AD P1 (Entra ID P1) powers Conditional Access, group-based licensing, and self-service password reset. Having it bundled into Business Premium means smaller organizations have the identity security foundation that enterprise environments depend on.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD-ONS -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Filling the Gaps</div>
+          <div class="stitle">Add-ons Worth Knowing</div>
+          <div class="ssubtitle">Where targeted spending beats full tier upgrades</div>
+          <div class="srule"></div>
+          <div class="sbody">Not every capability gap requires upgrading the base license. Some workloads are available as standalone add-ons that cost significantly less than the next tier jump - and deliver the specific capability you actually need without paying for everything else.</div>
+          <div class="sbody">Defender for Office 365 Plan 2 is the one I recommend most consistently.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">Add-ons I Recommend</div>
+          <div class="add-on-box">
+            <div class="add-on-title">Defender for Office 365 Plan 2</div>
+            <div class="add-on-body">My default recommendation for any E3 tenant. Adds Safe Links, Safe Attachments, anti-phishing with impersonation detection, and automated investigation and response for email threats. The email protection gap in E3 is real, and this closes it without requiring a full E5 upgrade. I add this to practically every E3 environment I manage.</div>
+          </div>
+          <div class="add-on-box">
+            <div class="add-on-title">Entra ID P2 (standalone)</div>
+            <div class="add-on-body">Adds Identity Protection and Privileged Identity Management on top of Entra ID P1. Worth considering for E3 organizations with privileged access concerns who don't need the rest of E5. PIM alone - eliminating standing Global Admin accounts - is a significant security improvement at a targeted cost.</div>
+          </div>
+          <div class="add-on-box">
+            <div class="add-on-title">Microsoft Purview compliance add-ons</div>
+            <div class="add-on-body">For organizations with specific compliance requirements - eDiscovery, advanced audit, insider risk - individual Purview workloads can be licensed separately rather than upgrading to E5 compliance. Useful when one or two workloads are needed but the full compliance bundle isn't justified.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LICENSE WASTE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Operational Reality</div>
+          <div class="stitle">License Waste</div>
+          <div class="ssubtitle">The problem that annual commitments make worse</div>
+          <div class="srule"></div>
+          <div class="sbody">License waste is one of the most consistent findings in any Microsoft environment review. Unused seats, under-utilized capabilities, and duplicate tools paying for the same function twice.</div>
+          <div class="sbody">Annual commitments save money on a per-seat basis but make waste harder to address in-year. Getting the initial buy right is the best mitigation.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">Where Waste Typically Lives</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Unused or unassigned licenses accumulating mid-term</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Organizations add seats on annual commits and then experience turnover. The seats stay licensed until renewal even if nobody is using them. A license audit before renewal catches this and prevents automatic renewals on seats that should be dropped.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">E5 capabilities paid for but never activated</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Upgrading to E5 and then running at E3 capability is the most expensive form of license waste. If Purview advanced compliance isn't configured, if PIM isn't deployed, if Defender XDR isn't active - the organization is paying E5 prices for E3 utilization. I look at capability activation rates, not just seat counts.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Duplicate third-party tools doing what M365 already does</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Third-party email security tools running alongside Defender, backup products covering workloads Azure Backup handles, endpoint agents duplicating Defender for Endpoint. At Latham Pool Products, replacing Mimecast with native E5 email security eliminated the third-party cost entirely while improving coverage. The capability was already licensed.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Annual commitment timing misaligned with actual headcount</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Organizations that buy seats based on projected growth and then don't hit those numbers end up paying for licenses they don't use for the rest of the commitment period. I advise buying to current headcount plus a modest buffer, not to optimistic projections.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STORAGE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Storage Architecture</div>
+          <div class="stitle">SharePoint vs Azure Storage</div>
+          <div class="ssubtitle">The right tool depends on who - or what - needs the data</div>
+          <div class="srule"></div>
+          <div class="sbody">SharePoint is document storage built for people. Azure Storage is data storage built for systems, archival, and large volumes of infrequently accessed content. Both are part of the Microsoft ecosystem. They are not interchangeable, and getting the choice wrong has direct cost and usability consequences.</div>
+          <div class="sbody">The licensing implications matter too. SharePoint storage comes pooled with M365 licensing. Azure storage is consumption-based. For large, rarely accessed data, Azure is almost always cheaper over time.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">How to Choose</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">SharePoint for content people need to find, share, and collaborate on</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>SharePoint is the right answer when humans are the primary consumers - documents being actively worked on, files shared across teams, content that needs search, version history, and permissions tied to the M365 identity model. It integrates natively with Teams, OneDrive, and the rest of the M365 productivity surface. That integration has real value for day-to-day work.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Azure Blob or File Storage for large volumes of infrequently accessed data</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Archival records, compliance data retained for regulatory reasons, backup files, media assets, and log data that nobody is opening on a Tuesday afternoon - these belong in Azure Storage, not SharePoint. SharePoint is not designed to hold hundreds of gigabytes of rarely touched files, and using it that way drives up M365 storage costs unnecessarily.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Azure Data Lake for large-scale analytical and system-to-system workloads</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>At Latham Pool Products, I built Azure Data Lake Storage as part of the ERP integration project - storing structured data for downstream processing by Azure Data Factory and Databricks. That is not a SharePoint use case. When data pipelines, analytics platforms, or application integrations are the consumers, Azure Storage is the correct architecture and SharePoint would be the wrong one.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Understand the cost model before defaulting to SharePoint for everything</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>M365 tenants include pooled SharePoint storage based on license count - roughly 1TB plus 10GB per licensed user. It sounds like a lot until an organization starts storing engineering files, video archives, or application backups there. Azure Blob Storage with cool or archive tiers is a fraction of the cost for data that doesn't need to live in the M365 productivity layer.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Governance applies to both - just differently</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>SharePoint governance is about permissions, sharing policies, and site structure tied to the M365 identity model. Azure Storage governance is about access keys, SAS tokens, private endpoints, and RBAC at the resource level. Both need governance. The mistake is assuming that because both are Microsoft, the same approach applies to each.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOSE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp" style="justify-content:center;">
+          <div class="seyebrow">Closing Thought</div>
+          <div class="srule" style="margin-top:10px;"></div>
+          <div class="closing-quote">"The right license is the one the organization will actually use. Everything else is just overhead."</div>
+          <div class="closing-attr">Daniel Lepel &nbsp;·&nbsp; Principal Microsoft Cloud Architect</div>
+        </div>
+        <div class="cover-rp">
+          <div class="cover-rp-label">The Practical Summary</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">Under 300 seats: Business Premium, add Defender for Office 365 Plan 2.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">Over 300 seats: E3 as the default. E5 only when advanced compliance, Cloud PBX, or Privileged Access Management are genuinely required.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">In either case: audit what's actually being used before every renewal, eliminate duplicate tools, and don't buy to projections.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;margin-top:8px;color:var(--og2);font-style:italic;font-family:'Cormorant Garamond',serif;">The license decision is not a one-time event. It needs a review cycle just like everything else in the environment.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <div class="nbtn" id="prev">&#8592;</div>
+    <div class="pdots" id="dots"></div>
+    <div class="nbtn" id="next">&#8594;</div>
+  </div>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const tabs   = document.querySelectorAll('.tab');
+  const dotsEl = document.getElementById('dots');
+  const total  = slides.length;
+  let current  = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    tabs[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goTo(i));
+  });
+
+  document.querySelectorAll('.bitem').forEach(item => {
+    item.querySelector('.btrigger').addEventListener('click', () => {
+      item.classList.toggle('open');
+      const arrow = item.querySelector('.barrow');
+      if (arrow) arrow.style.transform = item.classList.contains('open') ? 'rotate(90deg)' : '';
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Tenant MSP Architecture - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+    --tip-bg: #1e1c1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1280px;height:min(100vh,820px);margin:auto;box-shadow:0 0 80px rgba(0,0,0,.8);}
+
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab{padding:14px 18px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
+
+  .slides{flex:1;position:relative;overflow:hidden;}
+  .slide{display:none;height:100%;width:100%;}
+  .slide.active{display:flex;animation:sIn .25s ease-out;}
+  @keyframes sIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  .split{display:flex;height:100%;width:100%;}
+
+  .lp{width:42%;background:var(--dark);border-right:1px solid var(--rule);padding:40px 36px;display:flex;flex-direction:column;justify-content:center;flex-shrink:0;}
+  .rp{flex:1;background:var(--dark2);padding:36px 36px 60px;overflow-y:auto;}
+
+  .seyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .ssubtitle{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--og2);margin-bottom:16px;}
+  .srule{width:40px;height:1px;background:var(--orange);opacity:.7;margin-bottom:16px;}
+  .sbody{font-size:16px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+
+  .blist{list-style:none;}
+  .bitem{border-bottom:1px solid rgba(255,255,255,.05);}
+  .bitem:first-child{border-top:1px solid rgba(255,255,255,.05);}
+  .btrigger{display:flex;align-items:flex-start;gap:10px;padding:14px 4px 14px 0;cursor:pointer;transition:background .15s;}
+  .btrigger:hover{background:rgba(200,145,74,.05);}
+  .barrow{color:var(--orange);font-size:16px;line-height:1.5;flex-shrink:0;transition:transform .2s;}
+  .bitem.open .barrow{transform:rotate(90deg);}
+  .btext{font-size:17px;font-weight:400;line-height:1.5;color:var(--white);}
+  .bexpand{display:none;padding:2px 4px 12px 26px;}
+  .bitem.open .bexpand{display:block;}
+  .bexpand-inner{font-size:15px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
+
+  .rp-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:14px;}
+  .rp-body{font-size:16px;font-weight:300;line-height:1.8;color:#b8b0a4;margin-bottom:20px;}
+
+  .slide-cover .lp{width:44%;justify-content:flex-end;padding-bottom:48px;}
+  .cover-eyebrow{font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;}
+  .cover-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:400;color:var(--white);line-height:1.0;margin-bottom:12px;}
+  .cover-sub{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:var(--og2);margin-bottom:20px;}
+  .cover-rule{width:48px;height:1px;background:var(--orange);opacity:.8;margin-bottom:20px;}
+  .cover-body{font-size:15px;font-weight:300;line-height:1.75;color:var(--dim);max-width:360px;}
+  .cover-letter{position:absolute;right:-20px;bottom:-40px;font-family:'Cormorant Garamond',serif;font-size:340px;font-weight:600;color:rgba(200,145,74,.08);line-height:1;pointer-events:none;user-select:none;}
+  .cover-rp{flex:1;background:var(--dark2);display:flex;flex-direction:column;justify-content:center;padding:48px 44px;position:relative;overflow:hidden;}
+  .cover-rp-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;}
+  .cover-rp-quote{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;font-style:italic;color:var(--white);line-height:1.45;margin-bottom:20px;max-width:500px;}
+  .cover-rp-attr{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);}
+
+  .closing-quote{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:400;font-style:italic;color:var(--white);line-height:1.45;margin-bottom:20px;}
+  .closing-attr{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);}
+
+  .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--panel);border-top:1px solid var(--rule);flex-shrink:0;position:relative;}
+  .nbtn{width:34px;height:34px;background:rgba(200,145,74,.1);border:1px solid rgba(200,145,74,.25);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none;}
+  .nbtn:hover{background:rgba(200,145,74,.22);}
+  .pdots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;}
+  .pdot{width:5px;height:5px;border-radius:50%;background:rgba(200,145,74,.25);cursor:pointer;transition:background .2s,transform .2s;}
+  .pdot.active{background:var(--orange);transform:scale(1.4);}
+
+  .gt{position:relative;display:inline;border-bottom:1px dashed rgba(200,145,74,.5);cursor:help;}
+  .gt-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:var(--tip-bg);border:1px solid var(--rule);padding:12px 14px;width:260px;z-index:100;pointer-events:none;}
+  .gt:hover .gt-tip{display:block;}
+  .gt-tip-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;}
+  .gt-tip-body{font-size:13px;font-weight:300;line-height:1.5;color:var(--dim);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-slide="0"><span class="tl">I</span>ntro</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="1"><span class="tl">T</span>he Scale Problem</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="2"><span class="tl">F</span>ailure Patterns</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="3"><span class="tl">T</span>he Standard</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="4"><span class="tl">G</span>overning Security</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="5"><span class="tl">T</span>he Human Factor</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="6"><span class="tl">C</span>lose</div>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- COVER -->
+    <div class="slide active slide-cover">
+      <div class="lp" style="position:relative;overflow:hidden;">
+        <div class="cover-eyebrow">MSP Architecture</div>
+        <div class="cover-title">Governing Microsoft at Scale Across Many Tenants</div>
+        <div class="cover-sub">What 25 tenants actually teaches you</div>
+        <div class="cover-rule"></div>
+        <div class="cover-body">Managing a single Microsoft tenant well is one skill. Managing 25 simultaneously, each with different owners, expectations, and starting conditions, is a different discipline entirely. This document covers what I learned doing it.</div>
+        <div class="cover-letter">25</div>
+      </div>
+      <div class="cover-rp">
+        <div class="cover-rp-label">The Core Challenge</div>
+        <div class="cover-rp-quote">"Every tenant is different. The job is building standards flexible enough to apply everywhere but specific enough to actually mean something."</div>
+        <div class="cover-rp-attr">Daniel Lepel &nbsp;·&nbsp; Principal Microsoft Cloud Architect</div>
+      </div>
+    </div>
+
+    <!-- THE SCALE PROBLEM -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">Reality Check</div>
+          <div class="stitle">The Scale Problem</div>
+          <div class="ssubtitle">Why multi-tenant is harder than it looks</div>
+          <div class="srule"></div>
+          <div class="sbody">Across 25 tenants, no two environments are the same. Different industries, different sizes, different levels of technical maturity, and wildly different expectations about what IT is supposed to do for them.</div>
+          <div class="sbody">The challenge isn't just technical. It's managing consistency across organizations that don't think about consistency the same way you do.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">What Makes It Hard</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Expectations vary as widely as the environments themselves</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>One client understands security architecture and wants detailed rationale for every policy decision. The next doesn't know what a global admin is but wants one anyway, on their daily driver account. Both are your responsibility. The approach has to flex without the standards flexing.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Each tenant inherited different decisions made by someone else</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>You almost never build from scratch. You inherit configurations that made sense to whoever set them up, or didn't make sense at all. Before touching anything, I map what's actually there. Assumptions about what should exist and what does exist are consistently different things.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Fixing one tenant's problems doesn't fix them in the others</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Every improvement has to be deliberately propagated. There's no global policy push across unrelated tenants. What you build in tenant one has to be deliberately replicated across the others, which is why having a documented standard matters - it's the reference for every subsequent deployment.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Staying current across all tenants simultaneously is its own workload</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Microsoft changes fast. A new Conditional Access template, a deprecation notice, a security default change - each one needs to be evaluated against all 25 environments. Building automation and using Microsoft 365 Lighthouse for visibility across the portfolio is how you manage that without drowning in it.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAILURE PATTERNS -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">What Goes Wrong</div>
+          <div class="stitle">Common Failure Patterns</div>
+          <div class="ssubtitle">The same problems appear in almost every tenant</div>
+          <div class="srule"></div>
+          <div class="sbody">After enough tenants, the failure patterns become predictable. They're not random. They cluster around a few areas where small organizations consistently make the same decisions for the same reasons.</div>
+          <div class="sbody">Knowing the patterns in advance means you can assess a new tenant quickly and know where to look first.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">The Usual Suspects</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Global Admin accounts on daily driver credentials</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>This is the most common and most serious finding. Small organizations often have one or two people who "own" the IT and want maximum access. What they don't understand is that a compromised daily driver account with Global Admin is a compromised tenant. Getting them off standing Global Admin and onto <span class="gt">PIM<span class="gt-tip"><div class="gt-tip-title">Privileged Identity Management</div><div class="gt-tip-body">Grants admin access only when needed, for a defined time window, with optional approval - then removes it automatically. Eliminates standing privileged access.</div></span></span> is usually the first conversation I have.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">No groups - permissions assigned directly to users</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>In almost every small tenant I've inherited, permissions are assigned directly to individual users rather than through groups. It makes onboarding slower, offboarding riskier, and auditing nearly impossible. Rebuilding the permissions model around groups is foundational work that pays dividends in every subsequent change.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">SharePoint sites configured incorrectly or not at all</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>SharePoint is consistently the most misconfigured workload in small tenants. Overly permissive sharing settings, no external sharing governance, site collections created ad-hoc without naming standards, and Teams-created sites nobody is managing. It's usually not malicious - it's just that nobody was ever shown how to set it up correctly.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">MFA not enforced or enforced inconsistently</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Security defaults enforce MFA but Conditional Access gives you control over how and when. Many small tenants have MFA "enabled" but not required - meaning users can skip it or it only triggers in some scenarios. A properly built Conditional Access policy set closes that gap and removes the ambiguity.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE STANDARD -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">The Baseline</div>
+          <div class="stitle">Building a Common Standard</div>
+          <div class="ssubtitle">What I apply to every Business Premium tenant</div>
+          <div class="srule"></div>
+          <div class="sbody">Consistency at scale requires a documented standard that can be applied to any new tenant and used as the benchmark for assessing existing ones. My Business Premium standard is the result of building and inheriting enough small tenants to know what a well-run one looks like.</div>
+          <div class="sbody">It isn't a rigid template. It's a baseline that gets adjusted for each organization's specific requirements while maintaining the security and operational fundamentals.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">What the Standard Covers</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">MFA enforced for all users via <span class="gt">Conditional Access<span class="gt-tip"><div class="gt-tip-title">Conditional Access</div><div class="gt-tip-body">Policy engine in Entra ID that evaluates user, device, location, and risk signals to decide whether to allow, block, or step up authentication for each sign-in.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Not security defaults - a proper Conditional Access policy set that enforces MFA where it matters, allows for compliant device exceptions, and gives the admin team visibility into what's triggering. Security defaults are a starting point, not an architecture.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">All machines enrolled in <span class="gt">Microsoft Intune<span class="gt-tip"><div class="gt-tip-title">Microsoft Intune</div><div class="gt-tip-body">Cloud-based endpoint management included in Business Premium. Handles device enrollment, compliance policy, application deployment, and configuration management.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Intune enrollment is the foundation for device compliance in Conditional Access. Without it, you can't enforce "managed device" as a condition. I enroll everything - Windows, Mac, mobile - and configure compliance policies that feed directly into access decisions.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Permissions model built on groups, not direct user assignments</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Every permission assignment goes through a group. New user onboarding means adding them to the right groups, not hunting down every individual permission. Offboarding means removing group memberships, not hoping you found everything.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">SharePoint external sharing governance and site standards</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Tenant-level sharing settings locked down to known domains or disabled externally where the business doesn't need it. Site naming conventions and ownership requirements set from the start. Teams-provisioned sites audited and brought under management.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Defender for Business active with baseline policies deployed</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Defender for Business is included in Business Premium and covers endpoint threat protection, vulnerability management, and attack surface reduction. Getting it actually active and configured - not just licensed - is step one. Most small tenants have it licensed and untouched.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOVERNING SECURITY -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">The Hard Part</div>
+          <div class="stitle">Governing Security at Scale</div>
+          <div class="ssubtitle">What nobody tells you until you break something</div>
+          <div class="srule"></div>
+          <div class="sbody">The biggest risk in MSP security work isn't leaving gaps. It's fixing gaps and breaking something in the process - something that was set up incorrectly by a previous administrator, held together with workarounds, and silently depended on by users who never mentioned it.</div>
+          <div class="sbody">This is the reality of inheriting environments. You're not building on a clean foundation. You're working around the archaeology of every decision that came before you.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">How I Handle It</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Map what exists before changing anything</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Before any configuration change in an inherited tenant, I run through a structured assessment: what Conditional Access policies exist and what do they actually cover, what accounts have elevated roles, what legacy authentication is still active, where are the SharePoint permissions actually set. Changes made without this context break things you didn't know were there.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Implement security changes in report-only mode before enforcing</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Conditional Access has a report-only mode that shows you who would have been blocked by a policy before you turn it on. I use it on every new policy in an inherited environment. It's how you find the service account that authenticates with legacy protocols before you lock it out of production.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Expect that implementing best practices will break non-best-practice dependencies</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>When you block legacy authentication, the application that was quietly using basic auth stops working. When you enforce MFA, the shared mailbox that was being accessed directly stops working. These aren't surprises - they're predictable consequences of fixing the environment. The mitigation is finding them before enforcement, not avoiding the fix.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Document every non-standard configuration and the reason it exists</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Every exception to the standard - every policy exclusion, every legacy authentication allowance, every overly permissive sharing setting left in place for a business reason - gets documented with context. If I get hit by a bus, the next person needs to know why the exception exists, not just that it does.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUMAN FACTOR -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="seyebrow">The Other Challenge</div>
+          <div class="stitle">The Human Factor</div>
+          <div class="ssubtitle">Security only works if people will use it</div>
+          <div class="srule"></div>
+          <div class="sbody">Technical governance is only half the problem. The other half is people. Small organizations in particular have users who are not technically sophisticated and who experience any change to how they work as a disruption, regardless of what it fixes.</div>
+          <div class="sbody">Latham Pool Products was the exception - a more mature organization where users accepted new security requirements because they understood the context. Most tenants aren't Latham.</div>
+        </div>
+        <div class="rp">
+          <div class="rp-label">Managing the People Side</div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Explain the why before the what</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Users who understand why MFA exists are significantly more accepting of the friction it adds. "We're requiring this because your account is the key to everything in the organization, and it needs to be protected" lands better than "IT is making you do this." Context converts resistors into participants.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Anticipate what will feel like a disruption and prepare for it</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Quarantined email, MFA prompts, new sign-in experiences - all of these generate support tickets the first week they're active. I prepare communications in advance, write simple one-page guides for the most common user questions, and make sure whoever handles first-line support knows what's changing before it changes.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Set expectations with the business owner before touching the environment</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>The conversation about what security governance will change needs to happen before any changes are made. If the business owner is surprised by what MFA does to their workflow, you've already lost the relationship. Agreement in advance on what will change and when turns implementation into execution, not a fire drill.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Recognize when a technically correct decision is the wrong call right now</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>There are tenants where the right security posture, implemented all at once, would break the organization's trust in IT entirely. In those cases, phasing the changes over time - securing the highest-risk exposures first and building confidence before the next change - produces better outcomes than technically correct all at once. Architecture serves the business. Not the other way around.</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOSE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp" style="justify-content:center;">
+          <div class="seyebrow">Closing Thought</div>
+          <div class="srule" style="margin-top:10px;"></div>
+          <div class="closing-quote">"Managing 25 tenants didn't teach me 25 times as much as managing one. It taught me things you can only learn from the variation."</div>
+          <div class="closing-attr">Daniel Lepel &nbsp;·&nbsp; Principal Microsoft Cloud Architect</div>
+        </div>
+        <div class="cover-rp">
+          <div class="cover-rp-label">What It Comes Down To</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">Standards matter because they're what you fall back on when every environment is different. Build them deliberately, document the exceptions, and apply them consistently.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">The technical problems in small tenants are predictable: Global Admin on daily drivers, no groups, SharePoint misconfigured, MFA inconsistently enforced. Knowing the patterns means you can address them quickly and in the right order.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;">The harder problems are organizational. Security that breaks the organization's confidence in IT isn't security - it's a setback. Getting users and business owners on board with the changes is as much a part of the work as making them.</div>
+          <div class="rp-body" style="font-size:17px;line-height:1.8;margin-top:8px;color:var(--og2);font-style:italic;font-family:'Cormorant Garamond',serif;">The goal is environments that run well without constant intervention. That takes longer to build than a quick fix. It's worth it.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <div class="nbtn" id="prev">&#8592;</div>
+    <div class="pdots" id="dots"></div>
+    <div class="nbtn" id="next">&#8594;</div>
+  </div>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const tabs   = document.querySelectorAll('.tab');
+  const dotsEl = document.getElementById('dots');
+  const total  = slides.length;
+  let current  = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    tabs[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goTo(i));
+  });
+
+  document.querySelectorAll('.bitem').forEach(item => {
+    item.querySelector('.btrigger').addEventListener('click', () => {
+      item.classList.toggle('open');
+      const arrow = item.querySelector('.barrow');
+      if (arrow) arrow.style.transform = item.classList.contains('open') ? 'rotate(90deg)' : '';
+    });
+  });
+</script>
+</body>
+</html>
