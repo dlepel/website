@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Migration Strategy - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-section{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:17px;font-weight:300;line-height:1.85;color:#c8c2ba;}
+  .section-body.first{font-size:18px;color:var(--white);}
+
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:13px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div>
+<div class="shell">
+<div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Migration Strategy</div>
+  <div class="hero-tagline">Moving organizations to new platforms without breaking what works</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Migration strategy covers the planning, sequencing, and execution of platform transitions, from email and productivity workloads to device management and business applications, with a focus on delivering the right solution for the organization's actual situation rather than the technically ideal one.</div>
+</div>
+<div class="tabbar">
+  <div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="related"><span class="tl">R</span>elated</div>
+</div>
+<div class="content">
+
+  <div class="tab-pane active" id="overview">
+    <div class="tab-section">
+      <div class="section-label">What It Is</div>
+      <div class="section-body">Migration strategy is the discipline of moving workloads, users, and data from one platform to another without disrupting the organization in the process. The technical work varies by migration type, but the strategic work is consistent: understand what is being replaced and why, identify the dependencies that will break if the migration is done wrong, define a sequencing plan that manages risk, and validate that the destination actually meets the need before decommissioning the source. Migrations fail most often not because of technical complexity but because the planning skipped one of those steps.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-label">Why It Matters</div>
+      <div class="section-body">The best migrations are the ones users do not notice. That requires thorough pre-migration discovery, a phased approach that limits the blast radius of any individual failure, and a clear rollback plan that is tested rather than assumed. It also requires honesty about what a migration is actually solving. Moving an organization from one platform to another does not fix governance problems, security gaps, or process issues that existed before the migration. Those need to be addressed as part of the project, not deferred to after go-live.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-label">Migration Types</div>
+      <ul class="cap-list">
+        <li><strong>Email platform migrations</strong> - Exchange on-premises to Exchange Online, Google Workspace to Microsoft 365, including mailbox data, calendar, contacts, and DNS cutover</li>
+        <li><strong>Third-party tool replacement</strong> - Replacing paid security and compliance tools with M365 E5 native capabilities, eliminating redundant licensing cost</li>
+        <li><strong>Device management modernization</strong> - Autopilot and Intune deployment replacing legacy imaging and Group Policy, with co-management as the transition state</li>
+        <li><strong>Business application migration</strong> - Right-sizing legacy on-premises tools to appropriate cloud or M365 alternatives based on actual organizational need</li>
+        <li><strong>Authentication modernization</strong> - ADFS to cloud-managed authentication, including PHS vs PTA evaluation and Seamless SSO configuration</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="experience">
+    <div class="tab-section">
+      <div class="section-body first">At NBT, migrations were a regular part of the work across a portfolio of around 25 Microsoft tenants. The most common types were Exchange on-premises to Exchange Online, and Google Workspace to Microsoft 365. Both require careful pre-migration planning and a phased cutover approach, but they are fundamentally different problems. Google to M365 migrations involve data format differences, user retraining, and a broader platform shift. Exchange on-premises migrations involve coexistence planning and a more surgical mailbox-by-mailbox execution.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">At Latham Pool Products, the most significant migration was replacing Mimecast with Microsoft 365 E5 native security and compliance capabilities. Mimecast was costing approximately $20,000 per year for around 100 users. The M365 E5 licensing the organization already held included Defender for Office 365, Purview Information Protection, and compliance tooling that covered everything Mimecast was doing. The migration required configuring the native capabilities correctly before decommissioning Mimecast, validating that mail flow, filtering, and archiving were all functioning at parity, and then cutting over. The result was the same protection with no additional cost on top of existing licensing.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">Not every migration needs to be a full platform transition. At NBT, one client was running a business-critical Access database from a local NAS and running into recurring permissions failures as Microsoft progressively tightened security defaults for Office file access. The technically correct answer was not a full cloud migration the organization could not afford. I migrated the data to SharePoint Lists, which gave them the same multi-user data entry capability, resolved the permissions issue permanently, and kept a 3-person non-profit from spending money they did not have on infrastructure they did not need.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">Device management modernization at NBT involved deploying Windows Autopilot and Intune across client environments that were previously using legacy imaging and Group Policy. The measurable outcome at one client was a 50% reduction in onboarding time. The less visible outcome was a device estate that was consistently managed and policy-compliant without requiring physical access to machines for provisioning.</div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="keywork">
+    <div class="tab-section">
+      <ul class="work-list">
+        <li><strong>Exchange on-premises to Exchange Online migrations (NBT)</strong>
+        Migrated multiple client organizations from Exchange on-premises to Exchange Online, including mailbox data migration, calendar and contact migration, hybrid coexistence planning, and DNS cutover coordination.</li>
+        <li><strong>Google Workspace to Microsoft 365 migrations (NBT)</strong>
+        Migrated organizations from Google Workspace to the full Microsoft 365 platform, covering email, calendar, contacts, document migration, and user transition planning. Addressed the platform shift aspects beyond pure data migration.</li>
+        <li><strong>Mimecast replacement with M365 E5 native capabilities (Latham Pool Products)</strong>
+        Replaced Mimecast email security and archiving with Microsoft 365 E5 native capabilities across approximately 100 users. Validated feature parity across mail filtering, archiving, and compliance functions before decommissioning Mimecast, eliminating approximately $20,000 in annual licensing cost from existing E5 entitlements.</li>
+        <li><strong>Access database to SharePoint Lists migration (NBT)</strong>
+        Migrated a 3-person non-profit's business-critical Access database from a local NAS to SharePoint Lists, resolving recurring permissions failures caused by Microsoft security tightening for Office file access. Delivered a right-sized solution that met the organization's needs without a full cloud migration they could not justify financially.</li>
+        <li><strong>Autopilot and Intune deployment (NBT)</strong>
+        Deployed Windows Autopilot and Intune across client environments replacing legacy imaging and Group Policy, reducing device onboarding time by 50% at one client and producing a consistently managed, policy-compliant device estate without physical provisioning requirements.</li>
+        <li><strong>ADFS to cloud authentication migrations (NBT)</strong>
+        Migrated client environments from ADFS to cloud-managed authentication using Password Hash Sync with Seamless SSO, eliminating ADFS infrastructure overhead while maintaining a seamless sign-in experience for end users.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="related">
+    <div class="tab-section">
+      <div class="section-label">Related Capabilities</div>
+      <div class="section-body">Migration work intersects with M365 architecture, hybrid infrastructure, and the ALIGN process framework that structures how platform transitions are planned and executed.</div>
+    </div>
+    <div class="related-links">
+      <a href="capability_m365.html" class="related-card" target="_blank">
+        <div class="related-card-label">Capability Profile</div>
+        <div class="related-card-title">Microsoft 365 Architecture</div>
+        <div class="related-card-desc">The destination platform for most migrations covered here, including Exchange Online, SharePoint, and the broader M365 governance layer.</div>
+        <span class="related-card-link">View capability →</span>
+      </a>
+      <a href="capability_hybrid.html" class="related-card" target="_blank">
+        <div class="related-card-label">Capability Profile</div>
+        <div class="related-card-title">Hybrid Cloud Infrastructure</div>
+        <div class="related-card-desc">Authentication modernization and device management transitions connect directly to the hybrid infrastructure layer.</div>
+        <span class="related-card-link">View capability →</span>
+      </a>
+      <a href="ALIGN_Process_DanielLepel.html" class="related-card" target="_blank">
+        <div class="related-card-label">Process Framework</div>
+        <div class="related-card-title">The A.L.I.G.N. Process</div>
+        <div class="related-card-desc">The Assess and Implement phases cover how migrations are scoped, sequenced, and validated before go-live.</div>
+        <span class="related-card-link">Read the framework →</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+</div>
+<div class="pagenav">
+  <a href="capability_hybrid.html" class="pagenav-btn">← Hybrid Cloud Infrastructure</a>
+  <a href="capability_e5.html" class="pagenav-btn">E5 Capability Enablement →</a>
+</div>
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

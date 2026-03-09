@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hybrid Cloud Infrastructure - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-section{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:17px;font-weight:300;line-height:1.85;color:#c8c2ba;}
+  .section-body.first{font-size:18px;color:var(--white);}
+
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:13px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div>
+<div class="shell">
+<div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Hybrid Cloud Infrastructure</div>
+  <div class="hero-tagline">Connecting on-premises and cloud without breaking either</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Hybrid cloud infrastructure is the architecture and operational layer that lets on-premises environments and Azure work together deliberately, covering identity synchronization, network connectivity, device management, and server governance across both sides of the boundary.</div>
+</div>
+<div class="tabbar">
+  <div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div>
+  <div class="tab-div"></div>
+  <div class="tab" data-tab="related"><span class="tl">R</span>elated</div>
+</div>
+<div class="content">
+
+  <div class="tab-pane active" id="overview">
+    <div class="tab-section">
+      <div class="section-label">What It Is</div>
+      <div class="section-body">Hybrid cloud infrastructure covers the work of making on-premises and cloud environments function as a coherent platform rather than two separate systems that happen to share an identity directory. The core components are hybrid identity, network connectivity, endpoint management, and server governance. Each area has its own decision points, and the decisions interact. An organization that gets hybrid identity wrong will have problems in endpoint management. An organization that handles device join policy incorrectly will have problems with conditional access. The architecture has to be thought through as a whole.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-label">Why It Matters</div>
+      <div class="section-body">Most organizations do not migrate everything to the cloud in a single project. They move workloads incrementally, and during that transition they operate in a hybrid state that may last years. The question is whether that hybrid state is architected deliberately or accumulated reactively. Organizations that plan the hybrid layer carefully end up with a clean migration path and a governed environment throughout the transition. Organizations that treat hybrid as a temporary problem to ignore end up with accumulated technical debt that makes every subsequent migration harder.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-label">Architecture Scope</div>
+      <ul class="cap-list">
+        <li><strong>Hybrid identity</strong> - Entra Connect Sync, Password Hash Sync vs Pass-Through Authentication decisions, ADFS to cloud auth migration, Seamless SSO</li>
+        <li><strong>Application access</strong> - Azure AD Application Proxy for publishing on-premises applications to cloud-authenticated users</li>
+        <li><strong>Device join strategy</strong> - Entra ID Join vs Hybrid Entra ID Join decisions based on job function and workload requirements</li>
+        <li><strong>Endpoint management transition</strong> - Group Policy to Intune migration, co-management configuration, policy parity analysis</li>
+        <li><strong>Network connectivity</strong> - Site-to-site VPN configuration, ExpressRoute provisioning, routing and DNS architecture across boundaries</li>
+        <li><strong>Server governance</strong> - Azure Arc onboarding for on-premises servers, policy enforcement, monitoring, and management from the Azure portal</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="experience">
+    <div class="tab-section">
+      <div class="section-body first">My background starts on-premises. Before cloud platforms existed in their current form, I spent 13 years managing Windows server infrastructure for 64,000 users at MetLife through Atos/Siemens. That foundation matters in hybrid work because understanding what on-premises infrastructure actually does, and what depends on it, is what separates a hybrid architecture that works from one that looks right on paper and breaks in production.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">At NBT, hybrid infrastructure was a consistent part of the work across the client portfolio. Most clients were not starting from scratch in the cloud. They had existing Active Directory environments, on-premises servers, and a mix of legacy and modern applications. My job was to architect the connection layer between what they had and where they were going, while keeping both sides functional throughout the transition.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">Device join strategy was one of the more nuanced decisions I worked through repeatedly. The default assumption that everything should be Hybrid Entra ID Joined is not always correct. I evaluated each client environment against job function criteria: users whose work was entirely cloud-based and who did not depend on on-premises resources were candidates for full Entra ID Join, which produces a cleaner Intune-managed state without the complexity of maintaining a hybrid join pipeline. For users with genuine dependencies on on-premises resources, Hybrid Entra ID Join was the right answer. Getting this distinction right reduces Intune policy conflicts and simplifies the eventual full migration.</div>
+    </div>
+    <div class="tab-section">
+      <div class="section-body">Azure Arc was a significant part of my NBT work. For clients with on-premises servers that were not yet candidates for migration, Arc provided Azure-native visibility and management without requiring those servers to move to the cloud. I onboarded servers at scale, applied Azure Policy to enforce configuration baselines, and used the Arc portal as the single management plane for both cloud and on-premises resources. This gave clients consistent governance and monitoring across their environment regardless of where the workload was running.</div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="keywork">
+    <div class="tab-section">
+      <ul class="work-list">
+        <li><strong>Entra ID Join vs Hybrid Join decisions</strong>
+        Evaluated client environments at NBT against job function criteria to determine which users and devices were candidates for full Entra ID Join versus Hybrid Entra ID Join. This reduced Intune policy complexity and produced cleaner managed device states for users without on-premises resource dependencies.</li>
+        <li><strong>Group Policy to Intune migration</strong>
+        Replaced Group Policy with Intune policy sets across NBT client environments, including policy parity analysis to ensure that configuration baselines were maintained during the transition. Co-management was used as the transition state where needed.</li>
+        <li><strong>Azure Arc server onboarding at scale</strong>
+        Onboarded on-premises servers to Azure Arc across multiple client environments at NBT, applying Azure Policy for configuration baseline enforcement and using the Arc portal as a unified management plane for both cloud and on-premises infrastructure.</li>
+        <li><strong>Site-to-site VPN and ExpressRoute configuration</strong>
+        Configured site-to-site VPN connections between on-premises environments and Azure, and provisioned ExpressRoute circuits where clients required dedicated private connectivity. Designed routing and DNS architecture to support hybrid workloads across both connections.</li>
+        <li><strong>ADFS to cloud authentication migration</strong>
+        Migrated client environments from ADFS to cloud-managed authentication using Password Hash Sync with Seamless SSO. Evaluated PHS vs Pass-Through Authentication for each environment based on security requirements and operational overhead.</li>
+        <li><strong>Azure AD Application Proxy deployment</strong>
+        Published on-premises applications to cloud-authenticated users using Azure AD Application Proxy, eliminating the need for VPN access for specific application scenarios and extending Conditional Access policy enforcement to on-premises application access.</li>
+        <li><strong>MetLife Windows server infrastructure (Atos/Siemens)</strong>
+        Managed Windows server infrastructure supporting 64,000 users globally across 13 years. This on-premises foundation informs every hybrid architecture decision, particularly around what workloads can safely move and what dependencies require careful transition planning.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="related">
+    <div class="tab-section">
+      <div class="section-label">Related Capabilities</div>
+      <div class="section-body">Hybrid infrastructure connects directly to identity architecture, endpoint management, and Azure platform design. The decisions made at the hybrid layer affect what is possible in each of those areas.</div>
+    </div>
+    <div class="related-links">
+      <a href="capability_entra_id.html" class="related-card" target="_blank">
+        <div class="related-card-label">Capability Profile</div>
+        <div class="related-card-title">Microsoft Entra ID</div>
+        <div class="related-card-desc">Entra Connect Sync, hybrid identity configuration, and the identity decisions that hybrid infrastructure depends on.</div>
+        <span class="related-card-link">View capability →</span>
+      </a>
+      <a href="capability_azure.html" class="related-card" target="_blank">
+        <div class="related-card-label">Capability Profile</div>
+        <div class="related-card-title">Azure Platform Design</div>
+        <div class="related-card-desc">The Azure-side governance layer that hybrid connectivity feeds into, including networking topology, policy, and RBAC.</div>
+        <span class="related-card-link">View capability →</span>
+      </a>
+      <a href="MSP_Architecture_DanielLepel.html" class="related-card" target="_blank">
+        <div class="related-card-label">Document Library</div>
+        <div class="related-card-title">MSP Architecture</div>
+        <div class="related-card-desc">How hybrid infrastructure decisions get applied consistently across a multi-tenant MSP environment at scale.</div>
+        <span class="related-card-link">Read the document →</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+</div>
+<div class="pagenav">
+  <a href="capability_azure.html" class="pagenav-btn">← Azure Platform Design</a>
+  <a href="capability_migration.html" class="pagenav-btn">Migration Strategy →</a>
+</div>
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
