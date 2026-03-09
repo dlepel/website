@@ -583,3 +583,20 @@
     tabs[current].classList.add('active');
     dotsEl.children[current].classList.add('active');
     tabs[current].scro
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1))
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1))
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goTo(i));
+  });
+
+  document.querySelectorAll('.bitem').forEach(item => {
+    item.querySelector('.btrigger').addEventListener('click', () => {
+      item.classList.toggle('open');
+      const arrow = item.querySelector('.barrow');
+      if (arrow) arrow.style.transform = item.classList.contains('open') ? 'rotate(90deg)' : '';
+    });
+  });
+</script>
+</body>
+</html>
