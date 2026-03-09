@@ -135,7 +135,7 @@
       <div class="section-body">Device join strategy was one of the more nuanced decisions I worked through repeatedly. The default assumption that everything should be Hybrid Entra ID Joined is not always correct. I evaluated each client environment against job function criteria: users whose work was entirely cloud-based and who did not depend on on-premises resources were candidates for full Entra ID Join, which produces a cleaner Intune-managed state without the complexity of maintaining a hybrid join pipeline. For users with genuine dependencies on on-premises resources, Hybrid Entra ID Join was the right answer. Getting this distinction right reduces Intune policy conflicts and simplifies the eventual full migration.</div>
     </div>
     <div class="tab-section">
-      <div class="section-body">Azure Arc was a significant part of my NBT work. For clients with on-premises servers that were not yet candidates for migration, Arc provided Azure-native visibility and management without requiring those servers to move to the cloud. I onboarded servers at scale, applied Azure Policy to enforce configuration baselines, and used the Arc portal as the single management plane for both cloud and on-premises resources. This gave clients consistent governance and monitoring across their environment regardless of where the workload was running.</div>
+      <div class="section-body">Azure Arc was a significant part of my work at Latham Pool Products through cb20. I fully managed 40 on-premises servers through the Arc portal, applied Azure Policy to enforce configuration baselines, and used Arc as the unified management plane across both cloud and on-premises resources. That gave Latham consistent governance and monitoring across their entire environment without requiring those servers to move to the cloud. I began extending Arc usage at NBT as well, so the experience spans both a deep single-client deployment and the early stages of applying it at MSP scale.</div>
     </div>
   </div>
 
@@ -146,8 +146,8 @@
         Evaluated client environments at NBT against job function criteria to determine which users and devices were candidates for full Entra ID Join versus Hybrid Entra ID Join. This reduced Intune policy complexity and produced cleaner managed device states for users without on-premises resource dependencies.</li>
         <li><strong>Group Policy to Intune migration</strong>
         Replaced Group Policy with Intune policy sets across NBT client environments, including policy parity analysis to ensure that configuration baselines were maintained during the transition. Co-management was used as the transition state where needed.</li>
-        <li><strong>Azure Arc server onboarding at scale</strong>
-        Onboarded on-premises servers to Azure Arc across multiple client environments at NBT, applying Azure Policy for configuration baseline enforcement and using the Arc portal as a unified management plane for both cloud and on-premises infrastructure.</li>
+        <li><strong>Azure Arc server management at Latham Pool Products</strong>
+        Fully managed 40 on-premises servers through Azure Arc at Latham Pool Products, applying Azure Policy for configuration baseline enforcement and using the Arc portal as a unified management plane across cloud and on-premises infrastructure. Began extending Arc usage at NBT across the MSP client portfolio.</li>
         <li><strong>Site-to-site VPN and ExpressRoute configuration</strong>
         Configured site-to-site VPN connections between on-premises environments and Azure, and provisioned ExpressRoute circuits where clients required dedicated private connectivity. Designed routing and DNS architecture to support hybrid workloads across both connections.</li>
         <li><strong>ADFS to cloud authentication migration</strong>
