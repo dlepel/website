@@ -20,10 +20,10 @@
     --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  html,body{background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
   body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
 
-  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);}
   .topnav-home{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
   .topnav-home:hover{color:var(--orange);}
   .topnav-right{display:flex;align-items:center;gap:20px;}
@@ -31,16 +31,16 @@
   .pdf-btn{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dark);background:var(--orange);padding:7px 16px;text-decoration:none;transition:background .2s;}
   .pdf-btn:hover{background:var(--og2);}
 
-  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;}
 
   .hero{padding:36px 32px 24px;border-bottom:1px solid rgba(200,145,74,.12);}
   .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
   .hero-title{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
   .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--og2);margin-bottom:12px;}
   .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
-  .hero-def{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;}
+  .hero-def{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;}
 
-  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;}
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);overflow-x:auto;}
   .tabbar::-webkit-scrollbar{height:2px;}
   .tabbar::-webkit-scrollbar-thumb{background:var(--rule);}
   .tab{padding:12px 18px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;flex-shrink:0;line-height:1.2;}
@@ -52,7 +52,7 @@
   .tab.active .tab-date{color:rgba(224,170,106,.6);}
   .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
 
-  .content{flex:1;overflow-y:auto;}
+  .content{}
   .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
   .tab-pane.active{display:block;}
   @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -70,7 +70,7 @@
 
   .cap-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:4px;}
   .cap-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
-  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li::before{content:'>';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
   .cap-list li strong{font-weight:600;color:var(--og2);}
   .cap-list a{color:var(--orange);text-decoration:none;border-bottom:1px solid rgba(200,145,74,.3);transition:color .2s;}
   .cap-list a:hover{color:var(--og2);}
@@ -79,21 +79,20 @@
   .chip{font-size:11px;font-weight:600;letter-spacing:.06em;padding:4px 11px;border:1px solid rgba(200,145,74,.35);color:var(--og2);text-transform:uppercase;}
 
   .competency-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
-  @media(max-width:600px){.competency-grid{grid-template-columns:1fr;}}
   .comp-card{background:var(--dark2);border-left:2px solid var(--orange);padding:16px 18px;}
   .comp-card-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--white);margin-bottom:6px;}
   .comp-card-body{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;}
 
-  .timeline{display:flex;flex-direction:column;gap:0;margin-top:8px;}
-  .tl-item{display:flex;gap:18px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(200,145,74,.1);}
-  .tl-item:last-child{border-bottom:none;}
-  .tl-dates{font-size:12px;font-weight:600;color:var(--dim);white-space:nowrap;min-width:130px;padding-top:3px;}
-  .tl-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);margin-top:5px;flex-shrink:0;}
-  .tl-role{font-size:16px;font-weight:600;color:var(--white);}
-  .tl-company{font-size:13px;font-weight:300;color:var(--orange);margin-top:2px;}
+  .timeline{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:8px;}
+  .tl-item{display:flex;gap:14px;align-items:flex-start;padding:18px 24px 18px 0;border-bottom:1px solid rgba(200,145,74,.1);}
+  .tl-item:nth-child(even){padding-left:24px;padding-right:0;border-left:1px solid rgba(200,145,74,.1);}
+  .tl-item:nth-last-child(-n+2){border-bottom:none;}
+  .tl-dates{font-size:13px;font-weight:600;color:var(--dim);white-space:nowrap;padding-top:3px;min-width:110px;}
+  .tl-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:6px;flex-shrink:0;}
+  .tl-role{font-size:17px;font-weight:600;color:var(--white);line-height:1.3;}
+  .tl-company{font-size:14px;font-weight:300;color:var(--orange);margin-top:3px;}
 
   .skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
-  @media(max-width:600px){.skills-grid{grid-template-columns:1fr;}}
   .skill-group-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
   .skill-group ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
   .skill-group ul li{font-size:15px;font-weight:300;color:#c8c2ba;padding-left:14px;position:relative;line-height:1.5;}
@@ -121,7 +120,7 @@
     <div class="hero-title">Daniel R. Lepel</div>
     <div class="hero-tagline">Principal Microsoft Cloud Architect</div>
     <div class="hero-rule"></div>
-    <div class="hero-def">Albany, NY &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365257585f535a765a5346535a184345">[email&#160;protected]</a> &nbsp;·&nbsp; (518) 618-3700</div>
+    <div class="hero-def">Albany, NY &nbsp;·&nbsp; <span id="em"></span> &nbsp;·&nbsp; (518) 618-3700</div>
   </div>
 
   <div class="tabbar">
@@ -142,9 +141,10 @@
 
   <div class="content">
 
+    <!-- SUMMARY -->
     <div class="tab-pane active" id="summary">
       <div class="tab-section">
-        <div class="section-body first">Principal Microsoft Cloud Architect with 25+ years of enterprise infrastructure experience, including the last several years focused entirely on Microsoft 365, Azure, and Entra ID platform architecture. Built and operated Microsoft cloud environments at MSP scale - up to 25 tenants simultaneously - with no technical oversight above me. Before cloud, I ran Windows server infrastructure for MetLife at 64,000-user global scale.</div>
+        <div class="section-body first">Principal Microsoft Cloud Architect with 25+ years of enterprise infrastructure experience, including the last several years focused entirely on Microsoft 365, Azure, and Entra ID platform architecture. Built and operated Microsoft cloud environments at MSP scale, up to 25 tenants simultaneously, with no technical oversight above me. Before cloud, I ran Windows server infrastructure for MetLife at 64,000-user global scale.</div>
       </div>
       <div class="tab-section">
         <div class="section-body">My work sits at the intersection of identity, security, endpoint, and cloud platform design. The full picture of how I approach that is in the <a href="ALIGN_Process_DanielLepel.html" class="inline-link" target="_blank">ALIGN Process document</a> and the <a href="Cloud_Architecture_Principles_DanielLepel.html" class="inline-link" target="_blank">Cloud Architecture Operating Principles</a>.</div>
@@ -174,42 +174,42 @@
         <div class="section-label">Career at a Glance</div>
         <div class="timeline">
           <div class="tl-item">
-            <div class="tl-dates">02/2025 – 02/2026</div>
             <div class="tl-dot"></div>
             <div class="tl-content">
+              <div class="tl-dates">02/2025 – 02/2026</div>
               <div class="tl-role">Principal Microsoft Cloud Architect</div>
               <div class="tl-company">National Business Technologies</div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-dates">03/2021 – 01/2025</div>
             <div class="tl-dot"></div>
             <div class="tl-content">
+              <div class="tl-dates">03/2021 – 01/2025</div>
               <div class="tl-role">Senior Infrastructure Engineer</div>
-              <div class="tl-company">cb20 Technology Solutions (assigned to Latham Pool Products)</div>
+              <div class="tl-company">cb20 (MSP) (assigned to Latham Pool Products)</div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-dates">05/2013 – 01/2021</div>
             <div class="tl-dot"></div>
             <div class="tl-content">
+              <div class="tl-dates">05/2013 – 01/2021</div>
               <div class="tl-role">Senior Systems Analyst</div>
               <div class="tl-company">Fidelity Information Systems</div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-dates">01/2013 – 03/2013</div>
             <div class="tl-dot"></div>
             <div class="tl-content">
+              <div class="tl-dates">01/2013 – 03/2013</div>
               <div class="tl-role">Infrastructure Analyst</div>
               <div class="tl-company">IBM/Collabera (NYS Data Center Consolidation)</div>
             </div>
           </div>
           <div class="tl-item">
-            <div class="tl-dates">11/1999 – 08/2012</div>
             <div class="tl-dot"></div>
             <div class="tl-content">
-              <div class="tl-role">Systems Administrator III / Site Manager</div>
+              <div class="tl-dates">11/1999 – 08/2012</div>
+              <div class="tl-role">Distributed Services Lead</div>
               <div class="tl-company">Atos/Siemens IT Services (assigned to MetLife)</div>
             </div>
           </div>
@@ -217,6 +217,7 @@
       </div>
     </div>
 
+    <!-- NBT -->
     <div class="tab-pane" id="nbt">
       <div class="role-header">
         <div class="role-title">Principal Microsoft Cloud Architect</div>
@@ -225,13 +226,13 @@
         <div class="role-context">Managed service provider - Albany, NY</div>
       </div>
       <div class="tab-section">
-        <div class="section-body first">Served as architectural owner for Microsoft 365, Azure, and Entra ID strategy across NBT's internal operations and approximately 25 MSP client tenants. No technical oversight above me - I was the senior decision-maker for all Microsoft platform architecture work across the MSP portfolio.</div>
+        <div class="section-body first">Served as architectural owner for Microsoft 365, Azure, and Entra ID strategy across NBT's internal operations and approximately 25 MSP client tenants. No technical oversight above me. I was the senior decision-maker for all Microsoft platform architecture work across the MSP portfolio.</div>
       </div>
       <div class="tab-section">
         <div class="section-label">What I Did</div>
         <ul class="cap-list">
           <li>Owned Microsoft 365 and Azure platform architecture across internal operations and managed customer environments, establishing standards for <a href="capability_entra_id.html" target="_blank">identity</a>, <a href="capability_zero_trust.html" target="_blank">security</a>, endpoint management, and cloud services</li>
-          <li>Designed and governed multi-tenant Microsoft architectures spanning CSP, Internal Use, and customer tenants - ensuring consistency, security, and operational clarity at scale across roughly 25 environments</li>
+          <li>Designed and governed multi-tenant Microsoft architectures spanning CSP, Internal Use, and customer tenants, maintaining consistency, security, and operational clarity at scale across roughly 25 environments</li>
           <li>Led modernization initiatives migrating legacy platforms to Microsoft 365, including Exchange Online, SharePoint, Teams, and Intune</li>
           <li>Defined and implemented identity and security architecture using <a href="capability_entra_id.html" target="_blank">Entra ID</a>, Conditional Access, Privileged Identity Management, and <a href="capability_zero_trust.html" target="_blank">Zero Trust</a> principles</li>
           <li>Architected and standardized endpoint platforms using <a href="capability_m365.html" target="_blank">Intune, Autopilot, and Windows Hello for Business</a>, reducing onboarding friction and improving device compliance</li>
@@ -256,10 +257,11 @@
       </div>
     </div>
 
+    <!-- cb20 -->
     <div class="tab-pane" id="cb20">
       <div class="role-header">
         <div class="role-title">Senior Infrastructure Engineer</div>
-        <div class="role-company">cb20 Technology Solutions</div>
+        <div class="role-company">cb20 (MSP)</div>
         <div class="role-dates">March 2021 – January 2025</div>
         <div class="role-context">Assigned to Latham Pool Products - Latham, NY</div>
       </div>
@@ -272,7 +274,7 @@
           <li>Replaced Mimecast with native <a href="capability_e5.html" target="_blank">Microsoft 365 E5</a> email security capabilities, eliminating the vendor cost entirely while improving protection coverage</li>
           <li>Designed tenant architecture for three M&A acquisitions, including identity boundary decisions, Entra Connect Sync configuration, and staged migration planning</li>
           <li>Conducted eDiscovery and legal holds work directly with the Legal Department using <a href="capability_purview.html" target="_blank">Microsoft Purview</a></li>
-          <li>Built Azure-based data infrastructure for an ERP integration project - Azure Data Lake Storage, Data Factory, and Databricks - in collaboration with a DevOps-driven engineering team</li>
+          <li>Built Azure-based data infrastructure for an ERP integration project: Azure Data Lake Storage, Data Factory, and Databricks, in collaboration with a DevOps-driven engineering team</li>
           <li>Rolled out <a href="capability_e5.html" target="_blank">Microsoft 365 E5</a> features across the organization, including Intune, Purview, and Defender</li>
           <li>Modernized workstation onboarding and offboarding, reducing deployment time by 50% through Autopilot and white-glove configurations</li>
           <li>Enhanced security posture through CrowdStrike, <a href="capability_defender.html" target="_blank">Defender</a>, and Azure Arc integration</li>
@@ -297,6 +299,7 @@
       </div>
     </div>
 
+    <!-- FIS -->
     <div class="tab-pane" id="fis">
       <div class="role-header">
         <div class="role-title">Senior Systems Analyst</div>
@@ -305,18 +308,18 @@
         <div class="role-context">Windows server and banking infrastructure - multiple U.S. data centers</div>
       </div>
       <div class="tab-section">
-        <div class="section-body first">Supported and maintained Windows Server and network infrastructure for banks nationwide running FIS banking and payment platforms. Operated across multiple U.S. data centers supporting the core banking systems that financial institutions depend on for daily operations.</div>
+        <div class="section-body first">Supported and maintained Windows Server and network infrastructure for banks nationwide running FIS banking and payment platforms. Operated across multiple U.S. data centers in a strictly regulated financial environment.</div>
       </div>
       <div class="tab-section">
         <div class="section-label">What I Did</div>
         <ul class="cap-list">
           <li>Supported and maintained Windows Server infrastructure underpinning FIS banking and payment platforms for financial institution clients nationwide</li>
-          <li>Administered Active Directory across multiple domains, including a functional domain upgrade - coordinating the transition while maintaining platform stability for banking operations</li>
+          <li>Administered Active Directory across multiple domains, including a functional domain upgrade, coordinating the transition while maintaining platform stability for banking operations</li>
           <li>Led Windows Server migrations across banking application environments, maintaining application continuity throughout</li>
           <li>Supported banking applications and AS/400 connectivity across multiple U.S. data centers</li>
-          <li>Redesigned the daily report generation process for bank clients - replaced a fragmented series of scheduled tasks running across multiple servers with two concurrent jobs that ran toward each other from opposite ends of the client list, completing full coverage faster and more reliably</li>
-          <li>Built error handling and automatic restart logic into the job framework - previously there was none, meaning failed runs went undetected; the new jobs ran until all files were confirmed complete</li>
-          <li>Built an Operations dashboard showing each bank's report status in real time - pending, running, or completed - giving the team visibility they previously had to chase manually</li>
+          <li>Redesigned the daily report generation process for bank clients. Replaced a fragmented series of scheduled tasks spread across multiple servers with two concurrent jobs that ran toward each other from opposite ends of the client list, completing full coverage faster and more reliably</li>
+          <li>Built error handling and automatic restart logic into the job framework. There was none before, meaning failed runs went undetected. The new jobs ran until all files were confirmed complete</li>
+          <li>Built an Operations dashboard showing each bank's report status in real time: pending, running, or completed. Gave the team visibility they previously had to chase manually</li>
           <li>Delivered all automation using CMD batch scripting within the constraints of the environment</li>
         </ul>
       </div>
@@ -334,6 +337,7 @@
       </div>
     </div>
 
+    <!-- IBM -->
     <div class="tab-pane" id="ibm">
       <div class="role-header">
         <div class="role-title">Infrastructure Analyst</div>
@@ -342,7 +346,7 @@
         <div class="role-context">New York State Data Center Consolidation project</div>
       </div>
       <div class="tab-section">
-        <div class="section-body first">Short-term consulting engagement as a designated Wintel SME for the New York State Data Center Consolidation project. Work was analytical and advisory - architecture documentation, vendor comparison, and migration planning at the CTO decision-making level.</div>
+        <div class="section-body first">Short-term consulting engagement as a designated Wintel SME for the New York State Data Center Consolidation project. Work was analytical and advisory: architecture documentation, vendor comparison, and migration planning at the CTO decision-making level.</div>
       </div>
       <div class="tab-section">
         <div class="section-label">What I Did</div>
@@ -363,25 +367,26 @@
       </div>
     </div>
 
+    <!-- ATOS -->
     <div class="tab-pane" id="atos">
       <div class="role-header">
-        <div class="role-title">Systems Administrator III / Site Manager</div>
+        <div class="role-title">Distributed Services Lead</div>
         <div class="role-company">Atos/Siemens IT Services</div>
         <div class="role-dates">November 1999 – August 2012</div>
         <div class="role-context">Assigned to MetLife - 64,000+ users globally</div>
       </div>
       <div class="tab-section">
-        <div class="section-body first">13-year tenure as part of the managed services team supporting MetLife's global Windows infrastructure. Promoted multiple times into senior and lead roles, ultimately carrying people management responsibility for teams of up to 15 engineers simultaneously, along with Tier 3 technical authority for messaging and security platforms.</div>
+        <div class="section-body first">13-year tenure supporting MetLife's global Windows infrastructure as part of the Atos/Siemens managed services team. Promoted through senior and lead roles over the tenure, carrying Tier 3 technical authority for messaging and security platforms and people management responsibility for a team of 15.</div>
       </div>
       <div class="tab-section">
         <div class="section-label">What I Did</div>
         <ul class="cap-list">
-          <li>Supported and led enterprise messaging and infrastructure operations for a global financial services organization serving 64,000+ users across multiple regions</li>
-          <li>Promoted into senior and lead roles over tenure - serving as Tier 3 messaging and security support lead with responsibility for complex incidents and platform stability</li>
+          <li>Supported and led enterprise messaging and infrastructure operations for a global services organization serving 64,000+ users across multiple regions</li>
+          <li>Promoted into senior and lead roles over tenure, serving as Tier 3 messaging and security support lead with responsibility for complex incidents and platform stability</li>
           <li>Managed large-scale Active Directory and Windows server environments, including 1,800+ Wintel servers and 100+ Citrix servers in highly regulated enterprise domains</li>
-          <li>Delivered 24x7 operational support with sustained 98-100% SLA performance across a global environment</li>
-          <li>Carried full people management responsibility - hiring, performance assessments, and terminations - for teams of 10, then 15 and 3 simultaneously</li>
-          <li>Mentored junior engineers and coordinated cross-team response during major incidents</li>
+          <li>Delivered 24x7 operational support with sustained 98-100% SLA performance, mentoring junior engineers and coordinating cross-team response efforts</li>
+          <li>Managed and provided process improvements for the Security &amp; ID Administration team of 15</li>
+          <li>Led and supported the Tier 3 escalation team for all Messaging and Notes database issues</li>
         </ul>
       </div>
       <div class="tab-section">
@@ -397,6 +402,7 @@
       </div>
     </div>
 
+    <!-- EDUCATION -->
     <div class="tab-pane" id="edu">
       <div class="tab-section">
         <div class="section-label">Education</div>
@@ -463,8 +469,18 @@
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      docu
+<script>
+  var e="daniel"+"@"+"lepel.us";
+  var s=document.getElementById("em");
+  if(s){var a=document.createElement("a");a.href="mailto:"+e;a.style.color="inherit";a.textContent=e;s.appendChild(a);}
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+      document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
