@@ -138,49 +138,7 @@
             font-size: 1.05rem;
         }
 
-        .expertise-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
 
-        .expertise-card {
-            background: var(--medium);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            transition: transform 0.3s, border-color 0.3s;
-        }
-
-        .expertise-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary);
-        }
-
-        .expertise-card h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-        }
-
-        .expertise-card ul {
-            list-style: none;
-        }
-
-        .expertise-card li {
-            padding: 0.4rem 0;
-            color: var(--text);
-            position: relative;
-            padding-left: 1.5rem;
-        }
-
-        .expertise-card li::before {
-            content: "▸";
-            position: absolute;
-            left: 0;
-            color: var(--primary);
-        }
 
         footer {
             margin-top: 4rem;
@@ -207,6 +165,8 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            position: relative;
         }
 
         .doc-card:hover {
@@ -237,7 +197,55 @@
             color: var(--text-dim);
             line-height: 1.6;
             flex: 1;
-            margin-bottom: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Pull quote */
+        .doc-card-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: rgba(200, 145, 74, 0.7);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid rgba(200, 145, 74, 0.3);
+        }
+
+        /* Animated peek */
+        .doc-card-peek {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.3s ease;
+            opacity: 0;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .doc-card:hover .doc-card-peek {
+            max-height: 80px;
+            opacity: 1;
+            margin-bottom: 0.85rem;
+        }
+
+        .doc-card-peek ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .doc-card-peek li {
+            padding-left: 1rem;
+            position: relative;
+            margin-bottom: 2px;
+        }
+
+        .doc-card-peek li::before {
+            content: "›";
+            position: absolute;
+            left: 0;
+            color: #c8914a;
         }
 
         .doc-card-link {
@@ -245,33 +253,177 @@
             font-weight: 600;
             color: #c8914a;
             letter-spacing: 0.05em;
+            transition: letter-spacing 0.2s;
         }
 
         .doc-card:hover .doc-card-link {
-            text-decoration: underline;
+            letter-spacing: 0.1em;
+        }
+
+
+        /* ── EXPERTISE CARD ANIMATIONS ── */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .expertise-card {
+            background: var(--medium);
+            padding: 1.5rem;
+            border-radius: 0;
+            border: 1px solid var(--border);
+            border-top: 3px solid transparent;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, border-top-color 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardIn 0.5s ease forwards;
+        }
+
+        .expertise-card:nth-child(1) { animation-delay: 0.05s; }
+        .expertise-card:nth-child(2) { animation-delay: 0.15s; }
+        .expertise-card:nth-child(3) { animation-delay: 0.25s; }
+        .expertise-card:nth-child(4) { animation-delay: 0.35s; }
+
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-4px);
+            border-top-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(200, 145, 74, 0.12);
+        }
+
+        .expertise-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+        }
+
+        .expertise-card ul {
+            list-style: none;
+        }
+
+        .expertise-card li {
+            padding: 0.35rem 0;
+            color: var(--text);
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .expertise-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .expertise-card li a {
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(200,145,74,0.25);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .expertise-card li a:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* ── RECENT EXPERIENCE EXPANDABLE ── */
+        .exp-item {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0;
+        }
+
+        .exp-item:first-child {
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .exp-trigger {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 0;
+            cursor: pointer;
+            list-style: none;
+            transition: color 0.2s;
+        }
+
+        .exp-trigger:hover {
+            color: var(--primary);
+        }
+
+        .exp-trigger:hover::before {
+            color: var(--primary);
+        }
+
+        .exp-arrow {
+            color: var(--primary);
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: transform 0.25s;
+            margin-top: 3px;
+            line-height: 1;
+        }
+
+        .exp-item.open .exp-arrow {
+            transform: rotate(90deg);
+        }
+
+        .exp-label {
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .exp-detail {
+            display: none;
+            padding: 4px 0 14px 24px;
+        }
+
+        .exp-item.open .exp-detail {
+            display: block;
+        }
+
+        .exp-detail p {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 8px;
+            border-left: 2px solid rgba(200,145,74,0.3);
+            padding-left: 12px;
+            font-style: italic;
+        }
+
+        .exp-detail-link {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.06em;
+            text-decoration: none;
+            margin-top: 2px;
+            transition: letter-spacing 0.2s;
+        }
+
+        .exp-detail-link:hover {
+            letter-spacing: 0.1em;
         }
 
         @media (max-width: 768px) {
-            .doc-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-            h1 {
-                font-size: 2rem;
-            }
-
-            .tagline {
-                font-size: 1.1rem;
-            }
-
-            .contact-info {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .expertise-grid {
-                grid-template-columns: 1fr;
-            }
+            h1 { font-size: 2rem; }
+            .tagline { font-size: 1.1rem; }
+            .contact-info { flex-direction: column; gap: 0.5rem; }
+            .expertise-grid { grid-template-columns: 1fr; }
+            .doc-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -303,81 +455,148 @@
         <section class="expertise">
             <h2>Core Expertise</h2>
             <div class="expertise-grid">
+
                 <div class="expertise-card">
-                    <h3>Identity & Security</h3>
+                    <h3>Identity &amp; Security</h3>
                     <ul>
-                        <li>Microsoft Entra ID</li>
-                        <li>Zero Trust Architecture</li>
-                        <li>Conditional Access & MFA</li>
-                        <li>Privileged Access Management</li>
+                        <li><a href="capability_entra_id.html">Microsoft Entra ID</a></li>
+                        <li><a href="capability_zero_trust.html">Zero Trust Architecture</a></li>
+                        <li>Conditional Access &amp; MFA</li>
+                        <li><a href="capability_pam.html">Privileged Access Management</a></li>
                         <li>Identity Governance</li>
-                        <li>Microsoft Defender Suite</li>
+                        <li><a href="capability_defender.html">Microsoft Defender Suite</a></li>
                         <li>Insider Risk Management</li>
                     </ul>
                 </div>
-                
+
                 <div class="expertise-card">
                     <h3>Cloud Platform</h3>
                     <ul>
-                        <li>Microsoft 365 Architecture</li>
-                        <li>Azure Platform Design</li>
+                        <li><a href="capability_m365.html">Microsoft 365 Architecture</a></li>
+                        <li><a href="capability_azure.html">Azure Platform Design</a></li>
                         <li>Multi-tenant Solutions</li>
                         <li>Hybrid Cloud Infrastructure</li>
                         <li>Migration Strategy</li>
-                        <li>E5 Capability Enablement</li>
+                        <li><a href="capability_e5.html">E5 Capability Enablement</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="expertise-card">
-                    <h3>Governance & Compliance</h3>
+                    <h3>Governance &amp; Compliance</h3>
                     <ul>
-                        <li>Microsoft Purview Data Governance</li>
-                        <li>Information Protection & DLP</li>
-                        <li>Sensitivity Labels & Encryption</li>
-                        <li>Records Management & eDiscovery</li>
-                        <li>Compliance Standards & Frameworks</li>
+                        <li><a href="capability_purview.html">Microsoft Purview Data Governance</a></li>
+                        <li>Information Protection &amp; DLP</li>
+                        <li>Sensitivity Labels &amp; Encryption</li>
+                        <li>Records Management &amp; eDiscovery</li>
+                        <li>Compliance Standards &amp; Frameworks</li>
                         <li>Policy Architecture</li>
-                        <li>Risk Management & Audit</li>
+                        <li>Risk Management &amp; Audit</li>
                     </ul>
                 </div>
-                
+
                 <div class="expertise-card">
                     <h3>Recent Experience</h3>
-                    <ul>
-                        <li>Architected M365 and Azure environments across multiple client tenants in MSP setting</li>
-                        <li>Implemented Microsoft security baselines and Zero Trust frameworks aligned with best practices</li>
-                        <li>Designed Entra ID identity solutions with Conditional Access and privileged access controls</li>
-                        <li>Established governance standards for Azure platform deployments and M365 workload enablement</li>
+                    <ul style="list-style:none;padding:0;">
+
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">›</span>
+                                <span class="exp-label">Multi-tenant Microsoft cloud architecture across 25+ client environments</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>As Principal Microsoft Cloud Architect at National Business Technologies, I owned the Microsoft platform architecture across approximately 25 MSP client tenants with no technical oversight above me. Covered M365, Azure, Entra ID, Intune, Defender, and Purview across environments ranging from small business to mid-market. Every architectural decision — identity design, security baseline, governance structure, licensing optimization — originated at my desk.</p>
+                                <a href="ALIGN_Process_DanielLepel.html" class="exp-detail-link" target="_blank">See how I structure this work →</a>
+                            </div>
+                        </li>
+
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">›</span>
+                                <span class="exp-label">Replaced third-party security tooling with native M365 E5 capabilities</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>At Latham Pool Products (via cb20 Technology Solutions), I replaced Mimecast entirely with native Microsoft 365 E5 capabilities — Defender for Office 365, Exchange Online Protection, and Purview information protection. The result was equivalent or better protection with the third-party licensing cost eliminated. This is the core of what E5 enablement work looks like in practice: activating capabilities organizations are already paying for.</p>
+                                <a href="Practical_AI_Opportunities_DanielLepel.html" class="exp-detail-link" target="_blank">See the full E5 capability map →</a>
+                            </div>
+                        </li>
+
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">›</span>
+                                <span class="exp-label">Entra ID identity architecture with Conditional Access and privileged access controls</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>Designed and implemented Entra ID identity architectures across multiple organizations — including hybrid identity with Entra Connect Sync, Conditional Access policy frameworks aligned to Zero Trust, and Privileged Identity Management to eliminate standing Global Administrator accounts. Identity architecture is the foundation every other security and governance capability depends on.</p>
+                                <a href="Cloud_Architecture_Principles_DanielLepel.html" class="exp-detail-link" target="_blank">Read the identity principle →</a>
+                            </div>
+                        </li>
+
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">›</span>
+                                <span class="exp-label">eDiscovery and legal hold workflows built directly with Legal teams</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>At Latham Pool Products, I worked directly with the Legal Department to design and implement eDiscovery and legal hold workflows through Microsoft Purview. This included configuring custodian management, content search scoping, hold policies, and export workflows that met legal requirements without relying on third-party tools. The result was a defensible, auditable process the Legal team could operate themselves.</p>
+                                <a href="Practical_AI_Opportunities_DanielLepel.html" class="exp-detail-link" target="_blank">See the Compliance &amp; Data section →</a>
+                            </div>
+                        </li>
+
                     </ul>
                 </div>
+
             </div>
         </section>
 
 
         <section class="documents">
             <h2>Document Library</h2>
-            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1.25rem;">A set of reference documents that outline how I approach Microsoft cloud architecture - the process, the principles, and where AI fits in.</p>
+            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1.25rem;">A set of reference documents covering the process, the principles, and the role of AI in modern Microsoft cloud architecture.</p>
             <div class="doc-grid">
 
                 <a href="ALIGN_Process_DanielLepel.html" class="doc-card" target="_blank">
                     <div class="doc-card-label">Process Framework</div>
                     <h3>The A.L.I.G.N. Process</h3>
-                    <p>A structured approach to delivering Microsoft 365, Azure, and cloud platform solutions - covering assessment through long-term governance.</p>
-                    <span class="doc-card-link">View document →</span>
+                    <p>A structured five-phase approach to delivering Microsoft 365, Azure, and cloud platform solutions, spanning first assessment through long-term governance.</p>
+                    <div class="doc-card-quote">"What is actually here, and what actually matters?"</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>How I structure every engagement from day one</li>
+                            <li>The five phases: Assess, Leverage, Implement, Govern, Navigate</li>
+                            <li>Real examples from enterprise and MSP deployments</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">Read the framework →</span>
                 </a>
 
                 <a href="Cloud_Architecture_Principles_DanielLepel.html" class="doc-card" target="_blank">
                     <div class="doc-card-label">Architecture Philosophy</div>
                     <h3>Cloud Architecture Operating Principles</h3>
-                    <p>Seven principles that guide how I design, assess, and operate modern Microsoft cloud environments - from identity as the security boundary to automation with human judgment.</p>
-                    <span class="doc-card-link">View document →</span>
+                    <p>Seven principles that guide how I design, assess, and operate modern Microsoft cloud environments.</p>
+                    <div class="doc-card-quote">"Identity is the new perimeter. Everything else depends on getting this right first."</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>Zero Trust, least privilege, and governance before growth</li>
+                            <li>Why observability and documentation aren't optional</li>
+                            <li>Where automation helps and where humans stay in the loop</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">Explore the principles →</span>
                 </a>
 
                 <a href="Practical_AI_Opportunities_DanielLepel.html" class="doc-card" target="_blank">
                     <div class="doc-card-label">AI Capabilities</div>
                     <h3>Practical AI Opportunities in Microsoft Cloud Operations</h3>
-                    <p>A capability-by-capability map of AI tools most organizations are already licensed for but haven't fully activated - with a focus on responsible enablement and real operational value.</p>
-                    <span class="doc-card-link">View document →</span>
+                    <p>A capability-by-capability map of AI tools most organizations are already licensed for but haven't fully activated.</p>
+                    <div class="doc-card-quote">"Copilot doesn't create data governance problems. It makes existing ones impossible to ignore."</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>Security Copilot, Defender XDR, Purview, and Sentinel</li>
+                            <li>How to enable Copilot for M365 without the governance risk</li>
+                            <li>Data sovereignty and auditability in regulated environments</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">See what's possible →</span>
                 </a>
 
             </div>
@@ -387,5 +606,15 @@
             <p>&copy; 2026 Daniel Lepel. All rights reserved.</p>
         </footer>
     </div>
+<script>
+  document.querySelectorAll('.exp-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.exp-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.exp-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
 </body>
 </html>

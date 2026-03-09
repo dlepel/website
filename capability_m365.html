@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft 365 Architecture - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  /* TOP NAV */
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
+  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  /* HERO */
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  /* CONTENT */
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
+  .section-body.first{font-size:16px;color:var(--white);}
+
+  /* LISTS */
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  /* RELATED CARDS */
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  /* PAGE NAV */
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body><div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div><div class="shell"><div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Microsoft 365 Architecture</div>
+  <div class="hero-tagline">Platform design that scales without constant intervention</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Microsoft 365 architecture covers the structural design of an organization's M365 tenant - how Exchange, Teams, SharePoint, OneDrive, and the security and compliance workloads are configured, governed, and integrated to work as a coherent platform.</div>
+</div><div class="tabbar"><div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div><div class="tab-div"></div><div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div><div class="tab-div"></div><div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div><div class="tab-div"></div><div class="tab" data-tab="related"><span class="tl">R</span>elated</div></div><div class="content"><div class="tab-pane active" id="overview">
+                <div class="tab-section">
+                  <div class="section-label">What It Is</div>
+                  <div class="section-body">M365 architecture is the set of structural decisions that determine how an organization's Microsoft 365 environment is organized, governed, and operated. This includes tenant design, Exchange Online mail flow and configuration, Teams governance and information architecture, SharePoint site structure and permissions design, OneDrive governance, licensing strategy, and the integration of security and compliance workloads across all of it. Architecture decisions made at tenant setup have long-tail consequences that are expensive to reverse - getting them right early saves significant remediation cost later.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Why It Matters</div>
+                  <div class="section-body">Most M365 environments accumulate technical debt quietly. Teams proliferate without governance. SharePoint permissions sprawl. Guest access grows unchecked. Licensing is assigned broadly rather than by role. None of these problems announce themselves - they compound slowly until an audit finding, a security incident, or a Copilot deployment surfaces them all at once. Good M365 architecture addresses these structurally rather than reactively, with governance built into the platform configuration rather than enforced through manual processes that degrade over time.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Architecture Scope</div>
+                  <ul class="cap-list">
+                    <li><strong>Tenant design</strong> - Single vs. multi-tenant decisions, tenant configuration standards, domain structure</li>
+                    <li><strong>Exchange Online</strong> - Mail flow, transport rules, retention policies, shared mailbox governance</li>
+                    <li><strong>Microsoft Teams</strong> - Provisioning governance, naming conventions, lifecycle management, external access controls</li>
+                    <li><strong>SharePoint and OneDrive</strong> - Site architecture, permissions design, sharing policies, external collaboration controls</li>
+                    <li><strong>Licensing architecture</strong> - Role-based license assignment, utilization review, cost optimization</li>
+                    <li><strong>M&A integration</strong> - Tenant consolidation, cross-tenant migration, identity boundary decisions</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="experience">
+                <div class="tab-section">
+                  <div class="section-body first">M365 architecture has been the core of my work for the past several years. At NBT, I was the principal architect for M365 environments across approximately 25 client tenants - responsible for the platform design, configuration standards, governance frameworks, and security baselines across all of them. The scale of that work meant developing architectural patterns that could be applied consistently while still being adapted to each organization's specific requirements.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">The M&A work at Latham Pool Products was the most architecturally complex M365 engagement I have worked on. Three acquisitions in a relatively short period, each requiring decisions about how to handle tenant boundaries, email domain consolidation, Teams and SharePoint migration, and identity integration. Those decisions interact - the identity architecture choice constrains the Teams governance options, which affects the SharePoint migration approach. Getting the sequencing right requires understanding how the workloads depend on each other.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">At cb20 Technology Solutions, Latham Pool Products was my primary engagement but the MSP context meant understanding M365 architecture across a wider range of organization types and sizes. What works at 1,000 users does not automatically scale to 10,000, and what is appropriate for a manufacturing company does not translate directly to a financial services firm. Architectural pattern recognition across environments is one of the things MSP work develops that single-organization roles do not.</div>
+                </div></div><div class="tab-pane" id="keywork">
+                <div class="tab-section">
+                  <ul class="work-list">
+                    <li><strong>25-tenant M365 platform architecture</strong> - Principal architect for M365 environments across approximately 25 NBT client tenants. Owned platform design, configuration standards, governance frameworks, security baselines, and licensing strategy across the full client portfolio.</li>
+                    <li><strong>M&A tenant architecture for three acquisitions</strong> - Designed the M365 integration approach for three acquisitions at Latham Pool Products, including tenant boundary decisions, email domain consolidation, Teams and SharePoint migration sequencing, and identity integration architecture in each case.</li>
+                    <li><strong>E5 capability activation program</strong> - Led the systematic activation of M365 E5 capabilities across client environments at NBT and specifically at Latham Pool Products, identifying capabilities included in existing licenses that had not been deployed and building the business case and implementation plan for each.</li>
+                    <li><strong>Teams governance framework design</strong> - Designed Teams provisioning governance frameworks including naming conventions, lifecycle management policies, external access controls, and meeting policy standards - reducing Teams proliferation and the guest access sprawl that tends to follow unmanaged deployments.</li>
+                    <li><strong>Exchange Online architecture and migration</strong> - Designed and executed Exchange Online configurations including mail flow rules, transport configuration, retention policy frameworks, and shared mailbox governance across multiple client environments.</li>
+                    <li><strong>License utilization optimization</strong> - Conducted systematic license utilization reviews identifying E5 capabilities paid for but not activated, redundant third-party tools that native M365 capabilities could replace, and mis-assigned license tiers - recovering material licensing cost in multiple engagements.</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="related">
+                <div class="tab-section">
+                  <div class="section-label">In the Document Library</div>
+                  <div class="section-body">M365 architecture is the primary context for all three library documents - the ALIGN process, the operating principles, and the AI capabilities map all apply most directly to M365 environments.</div>
+                </div>
+                <div class="related-links">
+                  <a href="ALIGN_Process_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">Process Framework</div>
+                    <div class="related-card-title">The A.L.I.G.N. Process</div>
+                    <div class="related-card-desc">The ALIGN framework was developed specifically for M365 and Azure engagements - every phase maps directly to M365 platform architecture work.</div>
+                    <span class="related-card-link">Read the framework →</span>
+                  </a>
+                  <a href="capability_e5.html" class="related-card">
+                    <div class="related-card-label">Capability Profile</div>
+                    <div class="related-card-title">E5 Capability Enablement</div>
+                    <div class="related-card-desc">E5 enablement is the activation layer of M365 architecture - making the platform deliver what the license already pays for.</div>
+                    <span class="related-card-link">Read the profile →</span>
+                  </a>
+                </div></div></div></div><div class="pagenav">
+  <a href="capability_defender.html" class="pagenav-btn">← Microsoft Defender Suite</a>
+  <a href="capability_azure.html" class="pagenav-btn">Azure Platform Design →</a>
+</div><script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {{
+    tab.addEventListener('click', () => {{
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    }});
+  }});
+</script>
+</body>
+</html>

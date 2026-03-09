@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Purview Data Governance - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  /* TOP NAV */
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
+  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  /* HERO */
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  /* CONTENT */
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
+  .section-body.first{font-size:16px;color:var(--white);}
+
+  /* LISTS */
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  /* RELATED CARDS */
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  /* PAGE NAV */
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body><div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div><div class="shell"><div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Microsoft Purview Data Governance</div>
+  <div class="hero-tagline">Classification, compliance, and data protection at scale</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Microsoft Purview is Microsoft's unified data governance and compliance platform, covering data classification, sensitivity labeling, retention policies, eDiscovery, audit logging, insider risk management, and communication compliance across M365 and Azure.</div>
+</div><div class="tabbar"><div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div><div class="tab-div"></div><div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div><div class="tab-div"></div><div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div><div class="tab-div"></div><div class="tab" data-tab="related"><span class="tl">R</span>elated</div></div><div class="content"><div class="tab-pane active" id="overview">
+                <div class="tab-section">
+                  <div class="section-label">What It Is</div>
+                  <div class="section-body">Microsoft Purview consolidates what were previously separate Microsoft compliance tools - the former Microsoft 365 Compliance Center capabilities - into a unified platform. It covers the full data governance lifecycle: knowing where sensitive data lives, classifying and labeling it, applying retention and protection policies, monitoring for policy violations, and producing the audit record that demonstrates compliance. For organizations subject to regulatory requirements - HIPAA, FINRA, CMMC, state privacy laws - Purview is how those requirements are implemented technically on the Microsoft platform.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Why It Matters</div>
+                  <div class="section-body">Data classification and compliance is an area where the gap between what organizations have and what they are using is consistently large. E5 licensing includes the full Purview suite - trainable classifiers, eDiscovery Premium, Insider Risk Management, Communication Compliance - and most organizations have activated almost none of it. The result is that compliance work is done manually, legal holds are managed through email threads, and sensitive data travels without labels through systems that could enforce protection policies if the data were classified. Purview is not a new capability that needs to be licensed; it is a capability that needs to be turned on and configured.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Core Capabilities</div>
+                  <ul class="cap-list">
+                    <li><strong>Data classification</strong> - Sensitive information types, trainable classifiers, exact data match for structured data</li>
+                    <li><strong>Sensitivity labels</strong> - Classification and protection policies that travel with the content</li>
+                    <li><strong>Retention policies</strong> - Automated retention and deletion across M365 workloads</li>
+                    <li><strong>eDiscovery Premium</strong> - Legal hold management, content search, review set creation, export workflows</li>
+                    <li><strong>Insider Risk Management</strong> - Behavioral signal detection for data exfiltration and policy violations</li>
+                    <li><strong>Audit</strong> - Unified audit log covering user and admin activity across M365 and Azure</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="experience">
+                <div class="tab-section">
+                  <div class="section-body first">The most concrete Purview experience I have is the eDiscovery and legal hold work at Latham Pool Products, which I did working directly with their Legal Department. That engagement was not theoretical - the Legal team had active requirements for legal hold procedures and needed a technical implementation that they could operate themselves and that would produce a defensible, auditable result. We built custodian management workflows, hold policies, content search scoping, and export procedures through Purview eDiscovery Premium. The outcome was a process the Legal team owned rather than one that required an IT ticket every time a matter needed attention.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">Sensitivity labeling and information protection were part of the E5 capability activation work at Latham Pool Products and across the NBT client portfolio. The Mimecast replacement in particular required configuring Purview information protection capabilities that were replacing third-party email security functions - ensuring that the protection labels and policies provided equivalent or better coverage for sensitive data in email than what the third-party tool had been doing.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">Retention policy design is a standard component of the M365 architecture work I do. Getting retention right - ensuring that records are kept for the required period, that transitory content is not retained indefinitely, and that legal holds override retention deletion correctly - is the kind of foundational governance work that prevents expensive problems later when an organization receives a litigation hold notice or faces a regulatory audit.</div>
+                </div></div><div class="tab-pane" id="keywork">
+                <div class="tab-section">
+                  <ul class="work-list">
+                    <li><strong>eDiscovery and legal hold workflows with Legal Department</strong> - Designed and implemented Purview eDiscovery Premium workflows at Latham Pool Products working directly with the Legal team. Built custodian management, hold policies, content search scoping, and export procedures that the Legal team could operate independently. Produced a defensible, auditable process without reliance on third-party eDiscovery tools.</li>
+                    <li><strong>Sensitivity labeling and information protection</strong> - Designed sensitivity label taxonomies and information protection policies across M365 environments, including label inheritance, encryption policies, and cross-service label consistency between Exchange, SharePoint, Teams, and OneDrive.</li>
+                    <li><strong>Retention policy architecture</strong> - Built retention policy frameworks covering M365 workloads - Exchange, SharePoint, OneDrive, Teams - with appropriate retention periods, deletion behaviors, and legal hold override configurations aligned to organizational record-keeping requirements.</li>
+                    <li><strong>Purview deployment as part of E5 activation</strong> - Included Purview capability activation as a component of E5 enablement work across NBT client engagements, identifying the specific Purview capabilities each organization had available in their licensing and prioritizing activation by compliance risk and operational value.</li>
+                    <li><strong>Audit log configuration and review</strong> - Configured Purview unified audit log retention, search procedures, and alert policies across client environments - establishing the operational baseline for compliance monitoring and incident investigation.</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="related">
+                <div class="tab-section">
+                  <div class="section-label">In the Document Library</div>
+                  <div class="section-body">Purview is the primary subject of the Compliance and Data section of the AI capabilities document and is referenced in the Govern phase of the ALIGN process.</div>
+                </div>
+                <div class="related-links">
+                  <a href="Practical_AI_Opportunities_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">AI Capabilities</div>
+                    <div class="related-card-title">Practical AI Opportunities</div>
+                    <div class="related-card-desc">The Compliance and Data section covers Purview AI-assisted classification, eDiscovery acceleration, and insider risk signal detection in detail.</div>
+                    <span class="related-card-link">See the capability →</span>
+                  </a>
+                  <a href="ALIGN_Process_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">Process Framework</div>
+                    <div class="related-card-title">The A.L.I.G.N. Process</div>
+                    <div class="related-card-desc">The Govern phase references Purview and the Legal Department eDiscovery work at Latham Pool Products as a concrete example of governance in practice.</div>
+                    <span class="related-card-link">Read the framework →</span>
+                  </a>
+                </div></div></div></div><div class="pagenav">
+  <a href="capability_azure.html" class="pagenav-btn">← Azure Platform Design</a>
+  <a href="capability_e5.html" class="pagenav-btn">E5 Capability Enablement →</a>
+</div><script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {{
+    tab.addEventListener('click', () => {{
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    }});
+  }});
+</script>
+</body>
+</html>

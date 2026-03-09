@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Defender Suite - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  /* TOP NAV */
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
+  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  /* HERO */
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  /* CONTENT */
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
+  .section-body.first{font-size:16px;color:var(--white);}
+
+  /* LISTS */
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  /* RELATED CARDS */
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  /* PAGE NAV */
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body><div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div><div class="shell"><div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Microsoft Defender Suite</div>
+  <div class="hero-tagline">Integrated threat protection across identity, endpoints, email, and cloud</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Microsoft Defender is an extended detection and response platform covering endpoints, identity, email, cloud apps, and infrastructure. The components work as an integrated system, correlating signals across all layers into a single investigation experience.</div>
+</div><div class="tabbar"><div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div><div class="tab-div"></div><div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div><div class="tab-div"></div><div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div><div class="tab-div"></div><div class="tab" data-tab="related"><span class="tl">R</span>elated</div></div><div class="content"><div class="tab-pane active" id="overview">
+                <div class="tab-section">
+                  <div class="section-label">What It Is</div>
+                  <div class="section-body">Microsoft Defender XDR is a suite of integrated security products covering every layer of the Microsoft cloud environment. Defender for Office 365 protects email and collaboration. Defender for Endpoint covers devices. Defender for Identity monitors Active Directory and Entra ID for identity-based attacks. Defender for Cloud Apps provides visibility and control over SaaS applications. These products share a common signal layer - incidents detected in one product surface automatically in the others, enabling cross-domain investigation without manually correlating logs across separate consoles.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Why It Matters</div>
+                  <div class="section-body">The value of Defender is in the integration, not the individual components. A phishing email that leads to a credential compromise that leads to lateral movement in Azure - that attack chain is visible as a single incident in Defender XDR. The same chain investigated across separate tools requires an analyst to manually connect events across email logs, identity logs, and endpoint telemetry. That takes hours in practice. Defender surfaces it in minutes and in context. Organizations with M365 E5 licensing already have this capability - most have not activated it fully.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Suite Components</div>
+                  <ul class="cap-list">
+                    <li><strong>Defender for Office 365</strong> - Anti-phishing, safe links, safe attachments, attack simulation training</li>
+                    <li><strong>Defender for Endpoint</strong> - EDR, device health, vulnerability management, automated investigation</li>
+                    <li><strong>Defender for Identity</strong> - Active Directory and Entra ID attack detection, lateral movement visibility</li>
+                    <li><strong>Defender for Cloud Apps</strong> - SaaS visibility, shadow IT discovery, app governance</li>
+                    <li><strong>Defender for Cloud</strong> - Azure workload protection, security posture management</li>
+                    <li><strong>Microsoft Sentinel</strong> - SIEM/SOAR layer for centralized investigation and automated response</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="experience">
+                <div class="tab-section">
+                  <div class="section-body first">My most concrete Defender experience is the Mimecast replacement at Latham Pool Products. The project replaced a third-party secure email gateway with Defender for Office 365 Plan 2 - covering anti-phishing, safe links, safe attachments, and email threat investigation. The outcome was equivalent protection with the Mimecast licensing cost eliminated entirely. The capability was already included in the E5 license the organization held; the work was activating and configuring it correctly so the switch could be made cleanly.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">At NBT, Defender deployment was part of the security baseline work I led across the client portfolio. The scope varied by client - some needed Defender for Endpoint deployed to a managed device fleet; others needed Defender for Office 365 configured and tuned; a few were ready for the full XDR integration with Sentinel. The consistent principle was activating what the license already included before recommending any additional tooling.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">I have also worked with Defender for Identity in hybrid environments where Active Directory was still in use alongside Entra ID. Defender for Identity is particularly valuable in those environments because it provides visibility into on-premises identity attack patterns - Kerberoasting, pass-the-hash, DCSync - that Entra ID Protection alone does not cover.</div>
+                </div></div><div class="tab-pane" id="keywork">
+                <div class="tab-section">
+                  <ul class="work-list">
+                    <li><strong>Mimecast replacement with Defender for Office 365</strong> - Replaced a third-party secure email gateway at Latham Pool Products entirely with native Defender for Office 365 Plan 2 capabilities. Configured anti-phishing policies, safe links, safe attachments, and email threat investigation workflows. Eliminated the third-party licensing cost while maintaining protection quality.</li>
+                    <li><strong>Security baseline deployment across MSP client portfolio</strong> - Implemented Microsoft Defender security baselines across approximately 25 NBT client tenants, including Defender for Office 365 configuration, endpoint protection policy deployment, and alert configuration tailored to each organization's operational team capabilities.</li>
+                    <li><strong>Defender for Identity in hybrid environments</strong> - Deployed Defender for Identity sensors in Active Directory environments, providing visibility into on-premises identity attack patterns and lateral movement that cloud-only monitoring does not capture.</li>
+                    <li><strong>XDR incident investigation workflows</strong> - Configured Defender XDR incident correlation and automated investigation settings, establishing the investigation workflow that operations teams use when alerts fire - including triage criteria, escalation paths, and response runbooks.</li>
+                    <li><strong>Attack simulation training programs</strong> - Used Defender for Office 365 Attack Simulation Training to run phishing simulation campaigns for client organizations, establishing baseline click rates and measuring improvement over successive campaigns.</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="related">
+                <div class="tab-section">
+                  <div class="section-label">In the Document Library</div>
+                  <div class="section-body">The Defender suite is the primary example in the Security Operations section of the AI document and appears throughout the ALIGN Govern phase.</div>
+                </div>
+                <div class="related-links">
+                  <a href="Practical_AI_Opportunities_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">AI Capabilities</div>
+                    <div class="related-card-title">Practical AI Opportunities</div>
+                    <div class="related-card-desc">The Security Operations section covers Security Copilot, automated attack disruption, and AI-assisted threat hunting - all built on the Defender XDR platform.</div>
+                    <span class="related-card-link">See the capability →</span>
+                  </a>
+                  <a href="capability_e5.html" class="related-card">
+                    <div class="related-card-label">Capability Profile</div>
+                    <div class="related-card-title">E5 Capability Enablement</div>
+                    <div class="related-card-desc">Defender for Office 365 was the primary capability activated in the Mimecast replacement project - a concrete example of E5 value already paid for but not yet used.</div>
+                    <span class="related-card-link">Read the profile →</span>
+                  </a>
+                </div></div></div></div><div class="pagenav">
+  <a href="capability_pam.html" class="pagenav-btn">← Privileged Access Management</a>
+  <a href="capability_m365.html" class="pagenav-btn">Microsoft 365 Architecture →</a>
+</div><script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {{
+    tab.addEventListener('click', () => {{
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    }});
+  }});
+</script>
+</body>
+</html>

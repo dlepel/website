@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Entra ID - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  /* TOP NAV */
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
+  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  /* HERO */
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  /* CONTENT */
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
+  .section-body.first{font-size:16px;color:var(--white);}
+
+  /* LISTS */
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  /* RELATED CARDS */
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  /* PAGE NAV */
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body><div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div><div class="shell"><div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Microsoft Entra ID</div>
+  <div class="hero-tagline">The identity foundation everything else depends on</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Microsoft Entra ID is Microsoft's cloud identity platform - the system that controls who can sign in, what they can access, and under what conditions. Every M365 and Azure workload depends on it.</div>
+</div><div class="tabbar"><div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div><div class="tab-div"></div><div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div><div class="tab-div"></div><div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div><div class="tab-div"></div><div class="tab" data-tab="related"><span class="tl">R</span>elated</div></div><div class="content"><div class="tab-pane active" id="overview">
+                <div class="tab-section">
+                  <div class="section-label">What It Is</div>
+                  <div class="section-body">Microsoft Entra ID (formerly Azure Active Directory) is the identity and access management backbone of the Microsoft cloud. It handles authentication, authorization, and access policy enforcement across Microsoft 365, Azure, and any connected application. For organizations running on the Microsoft platform, Entra ID is not one workload among many - it is the control plane that everything else runs through.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Why It Matters</div>
+                  <div class="section-body">The shift from network-perimeter security to identity-based security means Entra ID has become the primary security boundary for most organizations. A misconfigured Entra ID tenant - overprivileged accounts, weak authentication policies, unmanaged guest access, no Conditional Access - is the most common root cause of cloud security incidents. Getting Entra ID right is not a prerequisite to cloud security work. It is the cloud security work.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Core Capabilities</div>
+                  <ul class="cap-list">
+                    <li>Authentication and single sign-on across M365, Azure, and third-party applications</li>
+                    <li>Conditional Access policy enforcement based on user, device, location, and risk signals</li>
+                    <li>Privileged Identity Management for just-in-time admin elevation</li>
+                    <li>Identity Protection with risk-based signal detection from Microsoft's global threat intelligence network</li>
+                    <li>Hybrid identity synchronization with on-premises Active Directory via Entra Connect Sync</li>
+                    <li>Identity Governance including access reviews, entitlement management, and lifecycle workflows</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="experience">
+                <div class="tab-section">
+                  <div class="section-body first">Entra ID is the capability I have worked with most consistently across the widest range of environments. At National Business Technologies, I was the sole Microsoft platform architect across approximately 25 MSP client tenants. Every one of those environments had an Entra ID footprint that I owned - from the authentication configuration and Conditional Access framework through to hybrid identity, guest access governance, and privileged access controls. No two environments were identical, which meant developing architectural patterns that could be adapted rather than applied verbatim.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">Earlier in my career, at Atos/Siemens assigned to MetLife, I managed Windows server infrastructure for 64,000 users globally - which at that scale meant working extensively with Active Directory as the on-premises identity foundation. That background gives me an anchor most cloud-only architects lack: I understand hybrid identity from both directions, which matters significantly when organizations are mid-migration and running Entra Connect Sync in a mixed-mode environment.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">At Latham Pool Products, the Entra ID work was shaped by three M&A acquisitions - each requiring tenant architecture decisions about whether to merge, federate, or maintain separate identity boundaries. Those decisions have long-tail consequences that are difficult to reverse, and getting them right requires understanding both the technical constraints and the business timeline.</div>
+                </div></div><div class="tab-pane" id="keywork">
+                <div class="tab-section">
+                  <ul class="work-list">
+                    <li><strong>25-tenant MSP architecture</strong> - Owned Entra ID configuration across approximately 25 client tenants at NBT, including Conditional Access frameworks, hybrid identity, guest access governance, and privileged access controls across environments of varying size and compliance posture.</li>
+                    <li><strong>Enterprise scale identity at MetLife</strong> - Managed Active Directory infrastructure supporting 64,000 users globally at Atos/Siemens. Responsible for the Windows identity foundation underpinning a major financial institution's operations across multiple continents.</li>
+                    <li><strong>M&A tenant architecture at Latham Pool Products</strong> - Designed identity architecture for three acquisitions, making and executing decisions about identity boundary consolidation, federation, and Entra Connect Sync configuration in each case.</li>
+                    <li><strong>Conditional Access framework design</strong> - Built Conditional Access policy sets aligned to Zero Trust principles across multiple organizations, including device compliance requirements, risk-based step-up authentication, and location-based access controls.</li>
+                    <li><strong>Hybrid identity migration patterns</strong> - Designed and implemented Entra Connect Sync configurations for organizations in various stages of on-premises to cloud migration, including handling attribute synchronization, filtering rules, and staged rollout.</li>
+                    <li><strong>Privileged access elimination</strong> - Deployed Privileged Identity Management to eliminate standing Global Administrator accounts across multiple tenants, replacing them with just-in-time elevation workflows with approval and audit trails.</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="related">
+                <div class="tab-section">
+                  <div class="section-label">In the Document Library</div>
+                  <div class="section-body">Entra ID shows up throughout all three library documents - it is the platform that most of the process, principles, and AI capabilities run through.</div>
+                </div>
+                <div class="related-links">
+                  <a href="Cloud_Architecture_Principles_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">Architecture Philosophy</div>
+                    <div class="related-card-title">Cloud Architecture Operating Principles</div>
+                    <div class="related-card-desc">Principle One: Identity Is the Security Boundary covers the architectural philosophy behind Entra ID design decisions.</div>
+                    <span class="related-card-link">Read the principle →</span>
+                  </a>
+                  <a href="ALIGN_Process_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">Process Framework</div>
+                    <div class="related-card-title">The A.L.I.G.N. Process</div>
+                    <div class="related-card-desc">The Assess and Govern phases both center on identity - discovery of the current state and enforcement of the target state.</div>
+                    <span class="related-card-link">Read the framework →</span>
+                  </a>
+                  <a href="Practical_AI_Opportunities_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">AI Capabilities</div>
+                    <div class="related-card-title">Practical AI Opportunities</div>
+                    <div class="related-card-desc">The Identity Protection section covers Entra ID Protection, risk-based Conditional Access, and Continuous Access Evaluation.</div>
+                    <span class="related-card-link">See the capability →</span>
+                  </a>
+                </div></div></div></div><div class="pagenav">
+  <span class="pagenav-btn disabled">← Previous</span>
+  <a href="capability_zero_trust.html" class="pagenav-btn">Zero Trust Architecture →</a>
+</div><script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {{
+    tab.addEventListener('click', () => {{
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    }});
+  }});
+</script>
+</body>
+</html>

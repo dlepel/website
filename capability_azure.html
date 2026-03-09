@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Platform Design - Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #181818; --dark2: #202020; --dark3: #262626;
+    --panel: #111111; --orange: #c8914a; --og2: #e0aa6a;
+    --white: #f0ece4; --dim: #9a9288; --rule: rgba(200,145,74,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
+
+  /* TOP NAV */
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home:hover{color:var(--orange);}
+  .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
+  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+
+  /* SHELL */
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+
+  /* HERO */
+  .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
+  .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
+  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;}
+
+  /* CONTENT */
+  .content{flex:1;overflow-y:auto;}
+  .tab-pane{display:none;padding:36px 32px;max-width:800px;animation:sIn .2s ease-out;}
+  .tab-pane.active{display:block;}
+  @keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTIONS */
+  .tab-section{margin-bottom:28px;}
+  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
+  .section-body.first{font-size:16px;color:var(--white);}
+
+  /* LISTS */
+  .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
+  .cap-list li strong{font-weight:600;color:var(--og2);}
+
+  .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
+  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
+
+  /* RELATED CARDS */
+  .related-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px;}
+  .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
+  .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
+  .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+
+  /* PAGE NAV */
+  .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
+  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn:hover{color:var(--orange);}
+  .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+</style>
+</head>
+<body><div class="topnav">
+  <a href="index.html" class="topnav-home">← daniellepel.com</a>
+  <div class="topnav-section">Capability Profile</div>
+</div><div class="shell"><div class="hero">
+  <div class="hero-eyebrow">Capability Profile</div>
+  <div class="hero-title">Azure Platform Design</div>
+  <div class="hero-tagline">Infrastructure that is built to be governed from the start</div>
+  <div class="hero-rule"></div>
+  <div class="hero-def">Azure platform design covers the structural architecture of an organization's Azure environment - how subscriptions, management groups, networking, identity integration, and governance are organized to support workload deployment at scale.</div>
+</div><div class="tabbar"><div class="tab active" data-tab="overview"><span class="tl">O</span>verview</div><div class="tab-div"></div><div class="tab" data-tab="experience"><span class="tl">M</span>y Experience</div><div class="tab-div"></div><div class="tab" data-tab="keywork"><span class="tl">K</span>ey Work</div><div class="tab-div"></div><div class="tab" data-tab="related"><span class="tl">R</span>elated</div></div><div class="content"><div class="tab-pane active" id="overview">
+                <div class="tab-section">
+                  <div class="section-label">What It Is</div>
+                  <div class="section-body">Azure platform design is the foundational architecture work that happens before workloads are deployed. This includes subscription and management group structure, Azure Policy configuration, networking topology, identity integration with Entra ID, and the governance baseline that controls how resources are deployed and maintained. Organizations that skip this work and deploy workloads directly into an unstructured Azure environment accumulate architectural debt that compounds - inconsistent configurations, ungoverned resource sprawl, and security gaps that are expensive to remediate retroactively.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Why It Matters</div>
+                  <div class="section-body">The Azure landing zone concept - a pre-configured environment with governance built in before workloads arrive - exists because Microsoft has seen what happens without it at scale. Workload teams make independent infrastructure decisions, each reasonable in isolation, that collectively produce an environment no one can govern consistently. Azure Policy, management group hierarchy, and a defined networking topology are not overhead - they are what makes it possible to operate Azure at scale without a dedicated team managing exceptions and remediating drift continuously.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-label">Architecture Scope</div>
+                  <ul class="cap-list">
+                    <li><strong>Landing zone design</strong> - Management group hierarchy, subscription structure, policy assignment inheritance</li>
+                    <li><strong>Azure Policy</strong> - Configuration baselines, compliance enforcement, automated remediation</li>
+                    <li><strong>Networking</strong> - Hub-spoke topology, virtual network design, private endpoints, DNS architecture</li>
+                    <li><strong>Identity integration</strong> - Entra ID RBAC, PIM for Azure roles, managed identity design</li>
+                    <li><strong>Cost management</strong> - Tagging standards, budget alerts, Advisor recommendations, right-sizing</li>
+                    <li><strong>Data platform</strong> - Azure Data Lake Storage, Data Factory, Databricks for analytics workloads</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="experience">
+                <div class="tab-section">
+                  <div class="section-body first">My Azure platform work spans both the infrastructure governance side and the data platform side. At Latham Pool Products, I built the Azure infrastructure for a DevOps-driven ERP integration project - Azure Data Lake Storage, Data Factory, and Databricks working together as a data pipeline. That project was delivery-focused rather than just architectural: a working data platform that the development team could use to move ERP data between systems as part of a broader modernization effort.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">At NBT, Azure work was part of the broader Microsoft platform architecture I owned across the client portfolio. The scope varied by client - some had existing Azure environments that needed governance retrofitted; others were greenfield deployments where landing zone design was the starting point. The consistent challenge with Azure in an MSP context is that clients often have Azure subscriptions that accumulated organically rather than being architected deliberately, and the remediation work of imposing structure on an unstructured environment is harder than getting the foundation right initially.</div>
+                </div>
+                <div class="tab-section">
+                  <div class="section-body">At IBM/Collabera on a NYS data center consolidation project, my role was Wintel SME - analyzing Windows infrastructure and contributing to vendor comparison work. That context gave me exposure to large-scale infrastructure rationalization at the state government level, which informs how I think about Azure platform design for complex, regulated environments.</div>
+                </div></div><div class="tab-pane" id="keywork">
+                <div class="tab-section">
+                  <ul class="work-list">
+                    <li><strong>Azure data platform for ERP integration</strong> - Built Azure Data Lake Storage, Data Factory, and Databricks infrastructure at Latham Pool Products to support a DevOps-driven ERP integration project. Designed the data pipeline architecture that moved ERP data between systems as part of a broader business modernization effort.</li>
+                    <li><strong>Azure governance framework design</strong> - Designed Azure governance frameworks for MSP clients including management group hierarchy, Azure Policy assignments for configuration baseline enforcement, and tagging standards for cost allocation and resource management.</li>
+                    <li><strong>Azure RBAC and PIM extension</strong> - Extended Entra ID RBAC and PIM controls to Azure subscription and resource group roles, ensuring that Azure contributor and owner assignments were governed by the same just-in-time access controls as directory roles.</li>
+                    <li><strong>Cost optimization analysis</strong> - Used Azure Advisor and cost management tooling to identify right-sizing opportunities, unused resources, and reserved instance candidates across client Azure environments, surfacing specific recommendations with quantified impact.</li>
+                    <li><strong>NYS data center consolidation (IBM/Collabera)</strong> - Windows infrastructure analysis and vendor comparison work for a New York State data center consolidation project, contributing Wintel SME perspective to infrastructure rationalization decisions at state government scale.</li>
+                  </ul>
+                </div></div><div class="tab-pane" id="related">
+                <div class="tab-section">
+                  <div class="section-label">In the Document Library</div>
+                  <div class="section-body">Azure platform design is covered in the Implement and Govern phases of the ALIGN process and in the Infrastructure Ops section of the AI capabilities document.</div>
+                </div>
+                <div class="related-links">
+                  <a href="ALIGN_Process_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">Process Framework</div>
+                    <div class="related-card-title">The A.L.I.G.N. Process</div>
+                    <div class="related-card-desc">The Implement phase covers how Azure infrastructure is deployed with precision and validated at every step. The Govern phase covers Azure Policy and drift monitoring.</div>
+                    <span class="related-card-link">Read the framework →</span>
+                  </a>
+                  <a href="Practical_AI_Opportunities_DanielLepel.html" class="related-card" target="_blank">
+                    <div class="related-card-label">AI Capabilities</div>
+                    <div class="related-card-title">Practical AI Opportunities</div>
+                    <div class="related-card-desc">The Infrastructure Ops section covers Azure Advisor, Azure Monitor dynamic baselines, and license utilization analysis - all applied to the Azure platform.</div>
+                    <span class="related-card-link">See the capability →</span>
+                  </a>
+                </div></div></div></div><div class="pagenav">
+  <a href="capability_m365.html" class="pagenav-btn">← Microsoft 365 Architecture</a>
+  <a href="capability_purview.html" class="pagenav-btn">Microsoft Purview Data Governance →</a>
+</div><script>
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach((tab, i) => {{
+    tab.addEventListener('click', () => {{
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panes[i].classList.add('active');
+    }});
+  }});
+</script>
+</body>
+</html>
