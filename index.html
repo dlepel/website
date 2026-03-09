@@ -669,5 +669,202 @@
     });
   });
 </script>
+
+<!-- CHAT WIDGET -->
+<style>
+  .chat-bubble {
+    position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #c8914a; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(200,145,74,0.4);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(200,145,74,0.55); }
+  .chat-bubble svg { width: 24px; height: 24px; fill: #181818; }
+
+  .chat-window {
+    position: fixed; bottom: 92px; right: 28px; z-index: 1000;
+    width: 380px; max-height: 560px;
+    background: #181818; border: 1px solid rgba(200,145,74,0.3);
+    display: flex; flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    display: none;
+  }
+  .chat-window.open { display: flex; }
+
+  .chat-header {
+    background: #111111; border-bottom: 1px solid rgba(200,145,74,0.3);
+    padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .chat-header-left { display: flex; flex-direction: column; gap: 2px; }
+  .chat-header-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: #f0ece4; }
+  .chat-header-sub { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #c8914a; }
+  .chat-close { color: #9a9288; cursor: pointer; font-size: 20px; line-height: 1; transition: color .2s; background: none; border: none; padding: 0; }
+  .chat-close:hover { color: #f0ece4; }
+
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+    min-height: 200px; max-height: 380px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(200,145,74,0.3); }
+
+  .msg { display: flex; flex-direction: column; gap: 4px; max-width: 88%; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.assistant { align-self: flex-start; align-items: flex-start; }
+  .msg-bubble {
+    padding: 10px 14px; font-size: 14px; font-weight: 300; line-height: 1.6;
+  }
+  .msg.user .msg-bubble { background: rgba(200,145,74,0.15); color: #f0ece4; border: 1px solid rgba(200,145,74,0.25); }
+  .msg.assistant .msg-bubble { background: #202020; color: #c8c2ba; border: 1px solid rgba(255,255,255,0.06); }
+
+  .chat-input-row {
+    border-top: 1px solid rgba(200,145,74,0.2); padding: 12px 14px;
+    display: flex; gap: 8px; align-items: flex-end; background: #111111;
+  }
+  .chat-input {
+    flex: 1; background: #202020; border: 1px solid rgba(200,145,74,0.2);
+    color: #f0ece4; font-family: 'Source Sans 3', sans-serif; font-size: 14px;
+    padding: 9px 12px; resize: none; outline: none; line-height: 1.5;
+    max-height: 100px; overflow-y: auto;
+  }
+  .chat-input::placeholder { color: #9a9288; }
+  .chat-input:focus { border-color: rgba(200,145,74,0.5); }
+  .chat-send {
+    background: #c8914a; border: none; cursor: pointer;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .2s;
+  }
+  .chat-send:hover { background: #e0aa6a; }
+  .chat-send:disabled { background: rgba(200,145,74,0.3); cursor: not-allowed; }
+  .chat-send svg { width: 16px; height: 16px; fill: #181818; }
+
+  .chat-label {
+    padding: 6px 18px 10px; font-size: 10px; color: #9a9288;
+    letter-spacing: .04em; text-align: center;
+  }
+
+  .typing-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: #c8914a; margin: 0 2px; animation: typingBounce 1.2s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: .2s; }
+  .typing-dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+</style>
+
+<div class="chat-bubble" id="chatBubble" title="Ask me anything">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+  </svg>
+</div>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-header-title">Ask Daniel's Assistant</div>
+      <div class="chat-header-sub">AI-powered &nbsp;·&nbsp; Knows Daniel's background</div>
+    </div>
+    <button class="chat-close" id="chatClose">&times;</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg assistant">
+      <div class="msg-bubble">Hi - I'm an AI assistant that knows Daniel's background in detail. Ask me anything about his experience, skills, or approach to work.</div>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chatInput" placeholder="Ask a question..." rows="1"></textarea>
+    <button class="chat-send" id="chatSend">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <div class="chat-label">Powered by AI &nbsp;·&nbsp; Answers based on Daniel's verified experience</div>
+</div>
+
+<script>
+(function() {
+  const WORKER_URL = 'https://bitter-meadow-7f05.dlepel.workers.dev';
+  const bubble = document.getElementById('chatBubble');
+  const window_ = document.getElementById('chatWindow');
+  const closeBtn = document.getElementById('chatClose');
+  const input = document.getElementById('chatInput');
+  const send = document.getElementById('chatSend');
+  const messages = document.getElementById('chatMessages');
+  const history = [];
+
+  bubble.addEventListener('click', () => {
+    window_.classList.toggle('open');
+    if (window_.classList.contains('open')) input.focus();
+  });
+  closeBtn.addEventListener('click', () => window_.classList.remove('open'));
+
+  function addMsg(role, text) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.innerHTML = '<div class="msg-bubble">' + text.replace(/</g,'&lt;') + '</div>';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg assistant';
+    div.id = 'typingIndicator';
+    div.innerHTML = '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+    send.disabled = true;
+
+    addMsg('user', text);
+    history.push({ role: 'user', content: text });
+    showTyping();
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await res.json();
+      removeTyping();
+      const reply = data.content && data.content[0] && data.content[0].text
+        ? data.content[0].text
+        : 'Sorry, something went wrong. Please try again.';
+      addMsg('assistant', reply);
+      history.push({ role: 'assistant', content: reply });
+    } catch (e) {
+      removeTyping();
+      addMsg('assistant', 'Sorry, I could not connect. Please try again in a moment.');
+    }
+
+    send.disabled = false;
+    input.focus();
+  }
+
+  send.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  });
+})();
+</script>
+
 </body>
 </html>
