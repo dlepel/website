@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Architecture Operating Principles – Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:   #181818;
+    --dark2:  #202020;
+    --dark3:  #262626;
+    --panel:  #111111;
+    --orange: #c8914a;
+    --og2:    #e0aa6a;
+    --white:  #f0ece4;
+    --dim:    #9a9288;
+    --rule:   rgba(200,145,74,0.3);
+    --tip-bg: #1e1c1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1280px;height:min(100vh,820px);margin:auto;box-shadow:0 0 80px rgba(0,0,0,.8);}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab{padding:13px 18px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);font-size:14px;}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
+
+  /* SLIDES */
+  .slides{flex:1;position:relative;overflow:hidden;}
+  .slide{display:none;height:100%;width:100%;}
+  .slide.active{display:flex;animation:sIn .25s ease-out;}
+  @keyframes sIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  .split{display:flex;height:100%;width:100%;}
+
+  /* PANELS */
+  .lp{width:42%;background:var(--dark);padding:24px 38px 20px;display:flex;flex-direction:column;position:relative;flex-shrink:0;overflow-y:auto;}
+  .lp::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--rule) 30%,var(--rule) 70%,transparent);}
+  .rp{flex:1;position:relative;overflow:hidden;background:var(--dark2);}
+
+  /* TEXT */
+  .pnum{font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:.18em;color:var(--dim);margin-bottom:5px;}
+  .pnum .on{color:var(--orange);font-weight:700;}
+  .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .ssub{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
+  .rule{width:44px;height:1px;background:var(--orange);margin-bottom:12px;opacity:.7;}
+  .sbody{font-size:14px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+
+  /* HEADER BLOCK */
+  .lp-header{flex-shrink:0;}
+
+  /* EXPANDABLE BULLETS */
+  .blist{list-style:none;display:flex;flex-direction:column;margin-bottom:0;}
+  .bitem{border-bottom:1px solid rgba(255,255,255,.05);}
+  .bitem:first-child{border-top:1px solid rgba(255,255,255,.05);}
+  .btrigger{display:flex;align-items:flex-start;gap:10px;padding:13px 4px 13px 0;cursor:pointer;transition:background .15s;}
+  .btrigger:hover{background:rgba(200,145,74,.05);}
+  .barrow{color:var(--orange);font-size:16px;line-height:1.45;flex-shrink:0;transition:transform .25s;margin-top:2px;}
+  .bitem.open .barrow{transform:rotate(90deg);}
+  .btext{font-size:15px;font-weight:400;line-height:1.5;color:var(--white);}
+  .bexpand{display:none;padding:2px 4px 12px 26px;}
+  .bitem.open .bexpand{display:block;}
+  .bexpand-inner{font-size:13px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
+
+  /* GLOSSARY TOOLTIPS */
+  .gt{border-bottom:1px dashed rgba(200,145,74,.55);cursor:help;position:relative;display:inline;}
+  .gt-tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--tip-bg);border:1px solid var(--rule);padding:10px 14px;width:260px;z-index:200;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.7);}
+  .gt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--rule);}
+  .gt-tip-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .gt-tip-body{font-size:12px;font-weight:300;line-height:1.6;color:var(--white);}
+  .gt:hover .gt-tip{visibility:visible;opacity:1;}
+
+  /* BYLINE */
+  .byline{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,145,74,.15);display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
+  .bl-name{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:2px;}
+  .bl-title{font-size:11px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
+  .bl-contact{font-size:11px;color:var(--dim);text-align:right;line-height:1.7;}
+
+  /* VIZ - INTRO COVER */
+  .viz{width:100%;height:100%;position:relative;overflow:hidden;}
+  .viz-intro{background:linear-gradient(135deg,#1a1a1a 0%,#0d0d0d 100%);}
+  .vi-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.1) 1px,transparent 1px);background-size:48px 48px;}
+  .vi-orb1{position:absolute;width:340px;height:340px;top:0%;right:5%;background:radial-gradient(circle,rgba(200,145,74,.2) 0%,transparent 70%);border-radius:50%;}
+  .vi-orb2{position:absolute;width:200px;height:200px;bottom:10%;right:35%;background:radial-gradient(circle,rgba(200,145,74,.12) 0%,transparent 70%);border-radius:50%;}
+  .vi-numbers{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:40px;}
+  .vi-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:rgba(200,145,74,.3);line-height:1;cursor:pointer;transition:color .25s,transform .2s;animation:flt 7s ease-in-out infinite;}
+  .vi-num:nth-child(2){animation-delay:.5s;}
+  .vi-num:nth-child(3){animation-delay:1s;}
+  .vi-num:nth-child(4){animation-delay:1.5s;}
+  .vi-num:nth-child(5){animation-delay:2s;}
+  .vi-num:nth-child(6){animation-delay:2.5s;}
+  .vi-num:nth-child(7){animation-delay:3s;}
+  .vi-num:hover{color:var(--orange);transform:scale(1.2);}
+  .vi-num-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .vi-num-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,145,74,.5);text-align:center;max-width:80px;line-height:1.3;}
+  @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  /* VIZ - PRINCIPLE */
+  .viz-p{background:var(--dark2);position:relative;overflow:hidden;}
+  .vp-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.04) 1px,transparent 1px);background-size:60px 60px;}
+  .vp-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--orange) 40%,var(--orange) 60%,transparent);}
+  .vp-bgl{position:absolute;bottom:-80px;right:-40px;font-family:'Cormorant Garamond',serif;font-size:420px;font-weight:300;color:rgba(200,145,74,.13);line-height:1;pointer-events:none;user-select:none;}
+  .vp-ca{position:relative;z-index:2;padding:44px 48px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:28px;}
+  .vp-quote{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:rgba(240,236,228,.52);line-height:1.3;font-style:italic;}
+  .vp-points{display:flex;flex-direction:column;gap:20px;}
+  .vp-pt{display:flex;gap:14px;align-items:flex-start;}
+  .vp-icon{width:28px;height:28px;border:1px solid rgba(200,145,74,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .vp-icon span{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--orange);}
+  .vp-text{font-size:15px;font-weight:300;color:var(--white);line-height:1.6;}
+  .vp-text strong{font-weight:600;color:var(--og2);}
+
+  /* VIZ - CLOSE */
+  .viz-close{background:var(--dark2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .ring{position:absolute;border-radius:50%;border:1px solid rgba(200,145,74,.1);animation:pulse 4s ease-in-out infinite;}
+  .ring:nth-child(1){width:200px;height:200px;animation-delay:0s;}
+  .ring:nth-child(2){width:320px;height:320px;animation-delay:.6s;}
+  .ring:nth-child(3){width:440px;height:440px;animation-delay:1.2s;}
+  .ring:nth-child(4){width:560px;height:560px;animation-delay:1.8s;}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
+  .close-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;}
+  .qmark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--orange);opacity:.55;line-height:.7;display:block;margin-bottom:10px;}
+  .qbody{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:400px;opacity:.9;}
+  .qmark-close{font-family:'Cormorant Garamond',serif;font-size:72px;color:var(--orange);opacity:.35;line-height:.5;display:block;margin-top:6px;text-align:right;width:400px;}
+
+  /* COVER LEFT */
+  .slide-cover .lp{width:44%;justify-content:flex-end;padding-bottom:48px;}
+  .cover-eyebrow{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .cover-title{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:12px;}
+  .cover-rule{width:60px;height:2px;background:var(--orange);margin-bottom:14px;}
+  .cover-sub{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
+  .cover-hint{font-size:12px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
+  .cover-name{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+  .cover-ctitle{font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dim);}
+
+  /* PLAIN LIST */
+  .clist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .clist li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:16px;position:relative;line-height:1.55;}
+  .clist li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.3;}
+  .clist li strong{font-weight:600;color:var(--og2);}
+
+  /* PRINCIPLE NUMBER TRACKER */
+  .ptrack{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;}
+  .ptdot{width:18px;height:3px;background:rgba(200,145,74,.2);transition:background .2s;}
+  .ptdot.on{background:var(--orange);}
+
+  /* NAV */
+  .nav-arrows{position:absolute;bottom:14px;right:16px;display:flex;gap:8px;z-index:10;}
+  .nbtn{width:34px;height:34px;background:rgba(200,145,74,.1);border:1px solid rgba(200,145,74,.25);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none;}
+  .nbtn:hover{background:rgba(200,145,74,.22);}
+  .pdots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;}
+  .pdot{width:5px;height:5px;border-radius:50%;background:rgba(200,145,74,.25);cursor:pointer;transition:background .2s,transform .2s;}
+  .pdot.active{background:var(--orange);transform:scale(1.4);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TABBAR -->
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-slide="0"><span class="tl">I</span>ntro</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="1"><span class="tl">1</span> Identity</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="2"><span class="tl">2</span> Privilege</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="3"><span class="tl">3</span> Consistency</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="4"><span class="tl">4</span> Security Ops</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="5"><span class="tl">5</span> Observability</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="6"><span class="tl">6</span> Documentation</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="7"><span class="tl">7</span> Automation</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="8"><span class="tl">C</span>lose</div>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- ═══ SLIDE 0: INTRO ═══ -->
+    <div class="slide active slide-cover">
+      <div class="split">
+        <div class="lp">
+          <div class="cover-eyebrow">Architecture Philosophy</div>
+          <div class="cover-title">Cloud Architecture Operating Principles</div>
+          <div class="cover-rule"></div>
+          <div class="cover-sub">These principles guide how I design, assess, and operate modern Microsoft cloud environments. They reflect 20+ years of lessons from enterprise infrastructure, hybrid identity, and multi-tenant deployments.</div>
+          <div class="cover-hint">Click any number to jump directly to that principle →</div>
+          <div class="cover-name">Daniel Lepel</div>
+          <div class="cover-ctitle">Principal Microsoft Cloud Architect</div>
+          <div class="byline" style="margin-top:22px;">
+            <div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-intro">
+            <div class="vi-grid"></div>
+            <div class="vi-orb1"></div>
+            <div class="vi-orb2"></div>
+            <div class="vi-numbers">
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="1">1</div><div class="vi-num-label">Identity</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="2">2</div><div class="vi-num-label">Least Privilege</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="3">3</div><div class="vi-num-label">Consistency</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="4">4</div><div class="vi-num-label">Security Ops</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="5">5</div><div class="vi-num-label">Observability</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="6">6</div><div class="vi-num-label">Documentation</div></div>
+              <div class="vi-num-wrap"><div class="vi-num" data-goto="7">7</div><div class="vi-num-label">Automation</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 1: IDENTITY ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot on"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle One</div>
+            <div class="stitle">Identity Is the Security Boundary</div>
+            <div class="ssub">Zero Trust Foundation</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Centralized identity through <span class="gt">Microsoft Entra ID<span class="gt-tip"><div class="gt-tip-title">Microsoft Entra ID</div><div class="gt-tip-body">Microsoft's cloud identity platform (formerly Azure Active Directory) - manages who can sign in, what they can access, and under what conditions.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>When identity is fragmented across systems, there is no single place to enforce policy or detect compromise. Centralizing in Entra ID gives you one control plane for every access decision across M365, Azure, and connected applications.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Privileged access with just-in-time elevation</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Persistent admin accounts are a primary attack target. Just-in-time elevation through <span class="gt">PIM<span class="gt-tip"><div class="gt-tip-title">Privileged Identity Management</div><div class="gt-tip-body">Grants admin access only when needed, for a defined time window, with optional approval - then removes it automatically.</div></span></span> means there is nothing standing to compromise outside of an active session.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Strong authentication - FIDO2 or certificate-based</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>SMS and app-based MFA are better than passwords alone but are still vulnerable to phishing and SIM-swap attacks. Hardware-backed authentication eliminates those vectors entirely.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Continuous evaluation of identity risk signals</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>A valid login at 9am doesn't mean the session is safe at 2pm. <span class="gt">Conditional Access<span class="gt-tip"><div class="gt-tip-title">Conditional Access</div><div class="gt-tip-body">A policy engine that evaluates sign-in risk, device health, and user context continuously - not just at login - to decide whether to allow, block, or challenge each request.</div></span></span> with continuous access evaluation re-checks risk throughout a session, not just at authentication time.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">1</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Identity is the new perimeter. Everything else depends on getting this right first."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Network perimeters are gone</strong> - every request must be authenticated and authorized regardless of where it originates</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Zero standing access</strong> - admin privilege is granted only when needed and removed automatically when tasks are done</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Risk is continuous</strong> - authentication is a point-in-time check; trust must be re-evaluated throughout every session</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 2: LEAST PRIVILEGE ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot on"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle Two</div>
+            <div class="stitle">Least Privilege Is an Operational Discipline</div>
+            <div class="ssub">Minimize Blast Radius</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Role-based access design across all workloads</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>When everyone has broad access "just in case," a single compromised account can cause catastrophic damage. Role-based design limits what any one account can touch to only what it legitimately needs.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Privileged Identity Management<span class="gt-tip"><div class="gt-tip-title">PIM - Privileged Identity Management</div><div class="gt-tip-body">Entra ID feature that enables just-in-time privileged access - users request elevation, it is approved, they get access for a defined window, then it is removed automatically.</div></span></span> for elevation workflows</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Standing Global Admin accounts are one of the most common audit findings and one of the most targeted attack vectors. PIM eliminates them without eliminating the ability to perform privileged tasks when legitimately needed.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Regular review cycles for administrative assignments</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Access tends to accumulate. People change roles, projects end, contractors leave - but their access often stays. Scheduled access reviews catch this before it becomes a security or compliance issue.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Elimination of standing Global Administrator access</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>A Global Admin account that exists all the time is a high-value target at all times. With PIM, that target only exists during an active, time-limited, logged session - dramatically reducing the attack surface.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">2</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Privilege should exist only long enough to do the job - then disappear."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Scope access tightly</strong> - minimum required permissions for the specific task, nothing broader</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Time-limit everything elevated</strong> - no access should persist past the window it was needed for</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Review and recertify regularly</strong> - access accumulates silently; scheduled reviews catch it before it becomes a liability</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 3: CONSISTENCY ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot"></div><div class="ptdot on"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle Three</div>
+            <div class="stitle">Platform Consistency Reduces Risk</div>
+            <div class="ssub">Govern Before You Grow</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Azure landing zone<span class="gt-tip"><div class="gt-tip-title">Azure Landing Zone</div><div class="gt-tip-body">A pre-configured Azure environment with defined management groups, policies, networking, and governance built in before workloads are deployed - the foundation for consistent, scalable cloud operations.</div></span></span> structure and management groups</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Starting without a landing zone means every workload team makes its own infrastructure decisions. The result is a patchwork of inconsistent configurations that is expensive to secure and nearly impossible to audit.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Policy-driven configuration baselines across environments</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div><span class="gt">Azure Policy<span class="gt-tip"><div class="gt-tip-title">Azure Policy</div><div class="gt-tip-body">Enforces organizational rules on Azure resources - can prevent non-compliant configurations from being created, audit existing ones, or automatically remediate deviations.</div></span></span> enforces the baseline continuously - not just at deployment time. Resources that drift from the standard are flagged or automatically remediated before they cause problems.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Standardized network and identity patterns</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>When every workload uses the same network topology and identity integration pattern, troubleshooting is faster, security reviews are simpler, and new team members can get up to speed without decoding a different architecture every time.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Consistent monitoring and logging across all workloads</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>You can't correlate a security event across environments that log differently. Consistent log format, retention, and destination is what makes investigation possible - and what makes compliance audits manageable.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">3</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Configuration drift is slow, quiet, and one of the most common root causes of cloud security incidents."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Build governance in early</strong> - a landing zone established before workloads arrive costs a fraction of retrofitting it later</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Enforce continuously</strong> - policy that runs at deployment time only misses everything that changes afterward</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Consistency enables speed</strong> - teams move faster when they don't have to re-solve infrastructure decisions that have already been made</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 4: SECURITY OPS ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot on"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle Four</div>
+            <div class="stitle">Security Must Be Integrated into Operations</div>
+            <div class="ssub">Security as Daily Practice</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Unified security telemetry through <span class="gt">Microsoft Defender XDR<span class="gt-tip"><div class="gt-tip-title">Microsoft Defender XDR</div><div class="gt-tip-body">Extended Detection and Response platform that correlates signals across endpoints, identity, email, and cloud apps into a single investigation and response experience.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Security tools that don't talk to each other force analysts to manually correlate signals across consoles. Defender XDR surfaces the full attack chain in one place - from the initial phishing email through lateral movement to the target resource.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Centralized logging and investigation workflows</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>When logs live in different systems with different formats and different retention windows, incident response slows to a crawl. Centralized logging through <span class="gt">Microsoft Sentinel<span class="gt-tip"><div class="gt-tip-title">Microsoft Sentinel</div><div class="gt-tip-body">Microsoft's cloud-native SIEM and SOAR platform - ingests signals from across the environment and enables automated detection, investigation, and response workflows.</div></span></span> turns hours of manual log hunting into minutes.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Automated alert correlation where appropriate</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Security teams are drowning in alerts. Correlation rules that group related low-fidelity signals into high-fidelity incidents dramatically reduce alert fatigue and surface what actually matters - without requiring human review of every individual event.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Clear incident response procedures, tested regularly</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>An incident response plan that has never been tested is a document, not a capability. Tabletop exercises and regular reviews of actual incident timelines are what build the muscle memory that matters when something real happens.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">4</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Security that lives in a separate lane from operations will always be too slow to matter."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Visibility across the full stack</strong> - identity, endpoints, email, cloud apps, and infrastructure in one correlated view</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Reduce signal noise</strong> - automated correlation surfaces real incidents from thousands of individual alerts</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Response must be practiced</strong> - plans that have never been tested are not plans, they are intentions</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 5: OBSERVABILITY ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot on"></div><div class="ptdot"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle Five</div>
+            <div class="stitle">Infrastructure Must Be Observable</div>
+            <div class="ssub">You Cannot Fix What You Cannot See</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Centralized logging and diagnostics across all layers</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Problems in cloud environments rarely announce themselves cleanly. Centralized diagnostics across identity, network, compute, and application layers let you see what actually happened - not just what the affected service reported.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Monitoring of configuration drift from defined baselines</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Environments change - sometimes deliberately, sometimes not. Drift monitoring alerts when a setting deviates from the approved baseline before it becomes a vulnerability, a compliance finding, or an outage root cause.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Operational dashboards for key platform services</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Dashboards aren't just for executives. An operations team with a clear daily view of platform health - identity, endpoint compliance, security posture, resource utilization - catches problems proactively rather than reactively.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Log retention sufficient for investigation and compliance</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Incidents are rarely discovered in real time. When investigation begins weeks or months later, retention policies determine whether the data you need still exists. Compliance frameworks specify minimums; security best practice often requires more.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">5</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Observability isn't about collecting everything. It's about knowing where to look when something goes wrong."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Visibility across all layers</strong> - identity, endpoints, applications, and cloud resources, not just uptime dashboards</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Proactive drift detection</strong> - catch configuration changes before they become incidents or audit findings</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Retain for investigation</strong> - you cannot investigate an incident with logs that have already been purged</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 6: DOCUMENTATION ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot on"></div><div class="ptdot"></div>
+            </div>
+            <div class="lbl">Principle Six</div>
+            <div class="stitle">Documentation Enables Continuity</div>
+            <div class="ssub">Architecture Decisions Have a Memory</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Architecture diagrams and current-state design standards</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Architecture documentation that reflects aspirational state rather than actual state is actively harmful - it leads teams to make decisions based on a picture of the environment that doesn't exist. Current-state documentation is the only kind that has operational value.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Security and governance policies in accessible form</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Policies that exist only as PDFs in a SharePoint library are not operational. Security and governance policies need to be findable, readable, and maintained - otherwise teams make judgment calls that contradict them without realizing it.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Operational runbooks for routine and emergency procedures</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>I write runbooks the team can actually follow under pressure - not architecture documents that require deep context to interpret. If the on-call engineer has never seen the system before, the runbook should still get them through it.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Incident review summaries that inform future decisions</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Incidents that are resolved without a written review get repeated. A concise post-incident summary - what happened, why, what changed - turns a painful event into an institutional learning that prevents the next one.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">6</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Documentation that reflects what was planned, not what was built, is worse than no documentation at all."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Current state only</strong> - aspirational architecture diagrams mislead; accurate ones enable</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Runbooks over reference docs</strong> - operational documentation must work under pressure, not just on a good day</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Incidents are a curriculum</strong> - every unreviewed outage is a lesson the organization paid for but never learned</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 7: AUTOMATION ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="ptrack">
+              <div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot"></div><div class="ptdot on"></div>
+            </div>
+            <div class="lbl">Principle Seven</div>
+            <div class="stitle">Automation Should Assist Human Operators</div>
+            <div class="ssub">Speed With Judgment</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Infrastructure deployment through templates and policy</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Manual infrastructure deployments introduce variability. Every environment deployed from a validated template or policy baseline starts in a known-good state - reducing the surface area for configuration errors from the first moment.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Automated configuration validation and drift detection</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Checking 25 tenants manually for configuration drift is not operationally viable. PowerShell-driven validation against a defined baseline runs in minutes and surfaces deviations before they compound into larger problems.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">AI-assisted investigation and incident summarization</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Tools like <span class="gt">Security Copilot<span class="gt-tip"><div class="gt-tip-title">Microsoft Security Copilot</div><div class="gt-tip-body">AI-powered security analysis tool that synthesizes signals from Defender, Sentinel, and Entra ID to accelerate investigation - summarizing incidents, explaining findings, and suggesting remediation steps.</div></span></span> can synthesize a complex incident timeline in seconds. That doesn't replace analyst judgment - it eliminates the data-gathering work so analysts can focus on decision-making.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Human review preserved for decisions with material impact</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">Why it matters</div>Automation is a force multiplier, not a replacement for judgment. Routine, well-understood tasks are candidates for automation. Decisions with significant security, compliance, or operational consequences require a human in the loop - full stop.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p">
+            <div class="vp-grid"></div><div class="vp-bar"></div><div class="vp-bgl">7</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Automation should make good operators faster, not replace the judgment that makes them good."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Deploy from baselines</strong> - every environment starts in a known-good state, not wherever manual steps happened to land</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>AI as analyst support</strong> - Security Copilot and Defender AI accelerate investigation; they don't replace the analyst making the call</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Humans own material decisions</strong> - full transparency and traceability in every automated action, with human review where consequences are significant</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 8: CLOSE ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lbl">In Practice</div>
+          <div class="stitle">How These Principles Work Together</div>
+          <div class="rule"></div>
+          <div class="sbody">These principles are not a checklist - they are a lens for evaluating tradeoffs. When an organization is under pressure to move fast, they are what prevent speed from becoming debt. When an environment is mature, they are what keep it that way.</div>
+          <ul class="clist">
+            <li><strong>Identity</strong> - the security boundary everything else depends on</li>
+            <li><strong>Least Privilege</strong> - limits the damage any single compromise can cause</li>
+            <li><strong>Consistency</strong> - prevents the drift that erodes both security and manageability</li>
+            <li><strong>Security Ops</strong> - ensures threats are visible and actionable in daily operations</li>
+            <li><strong>Observability</strong> - makes the environment knowable and investigations possible</li>
+            <li><strong>Documentation</strong> - preserves institutional knowledge across people and time</li>
+            <li><strong>Automation</strong> - amplifies human capability without replacing human judgment</li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us · (518) 618-3700<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-close">
+            <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+            <div class="close-center">
+              <span class="qmark">&#8220;</span>
+              <div class="qbody">Good architecture isn't about the technology - it's about whether the people relying on it can do their jobs without thinking about it.</div>
+              <span class="qmark-close">&#8221;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <div class="pdots" id="dots"></div>
+  <div class="nav-arrows">
+    <div class="nbtn" id="prev">&#8592;</div>
+    <div class="nbtn" id="next">&#8594;</div>
+  </div>
+
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const tabs   = document.querySelectorAll('.tab');
+  const dotsEl = document.getElementById('dots');
+  const total  = slides.length;
+  let current  = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    tabs[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  tabs.forEach((t, i) => t.addEventListener('click', () => goTo(i)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  // Clickable numbers on intro
+  document.querySelectorAll('.vi-num[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+  });
+
+  // Expandable bullets - one open at a time
+  document.querySelectorAll('.btrigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.bitem');
+      trigger.closest('.blist').querySelectorAll('.bitem.open').forEach(other => {
+        if (other !== item) other.classList.remove('open');
+      });
+      item.classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

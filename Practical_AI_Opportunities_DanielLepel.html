@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practical AI Opportunities – Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:   #181818;
+    --dark2:  #202020;
+    --dark3:  #262626;
+    --panel:  #111111;
+    --orange: #c8914a;
+    --og2:    #e0aa6a;
+    --white:  #f0ece4;
+    --dim:    #9a9288;
+    --rule:   rgba(200,145,74,0.3);
+    --tip-bg: #1e1c1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1280px;height:min(100vh,820px);margin:auto;box-shadow:0 0 80px rgba(0,0,0,.8);}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab{padding:13px 16px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);font-size:13px;}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
+
+  /* SLIDES */
+  .slides{flex:1;position:relative;overflow:hidden;}
+  .slide{display:none;height:100%;width:100%;}
+  .slide.active{display:flex;animation:sIn .25s ease-out;}
+  @keyframes sIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  .split{display:flex;height:100%;width:100%;}
+
+  /* PANELS */
+  .lp{width:42%;background:var(--dark);padding:24px 38px 20px;display:flex;flex-direction:column;position:relative;flex-shrink:0;overflow-y:auto;}
+  .lp::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--rule) 30%,var(--rule) 70%,transparent);}
+  .rp{flex:1;position:relative;overflow:hidden;background:var(--dark2);}
+
+  /* TEXT */
+  .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .ssub{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
+  .rule{width:44px;height:1px;background:var(--orange);margin-bottom:12px;opacity:.7;}
+  .sbody{font-size:14px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+  .lp-header{flex-shrink:0;}
+
+  /* EXPANDABLE BULLETS */
+  .blist{list-style:none;display:flex;flex-direction:column;margin-bottom:0;}
+  .bitem{border-bottom:1px solid rgba(255,255,255,.05);}
+  .bitem:first-child{border-top:1px solid rgba(255,255,255,.05);}
+  .btrigger{display:flex;align-items:flex-start;gap:10px;padding:13px 4px 13px 0;cursor:pointer;transition:background .15s;}
+  .btrigger:hover{background:rgba(200,145,74,.05);}
+  .barrow{color:var(--orange);font-size:16px;line-height:1.45;flex-shrink:0;transition:transform .25s;margin-top:2px;}
+  .bitem.open .barrow{transform:rotate(90deg);}
+  .btext{font-size:15px;font-weight:400;line-height:1.5;color:var(--white);}
+  .bexpand{display:none;padding:2px 4px 12px 26px;}
+  .bitem.open .bexpand{display:block;}
+  .bexpand-inner{font-size:13px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
+
+  /* GLOSSARY TOOLTIPS */
+  .gt{border-bottom:1px dashed rgba(200,145,74,.55);cursor:help;position:relative;display:inline;}
+  .gt-tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--tip-bg);border:1px solid var(--rule);padding:10px 14px;width:260px;z-index:200;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.7);}
+  .gt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--rule);}
+  .gt-tip-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .gt-tip-body{font-size:12px;font-weight:300;line-height:1.6;color:var(--white);}
+  .gt:hover .gt-tip{visibility:visible;opacity:1;}
+
+  /* BYLINE */
+  .byline{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,145,74,.15);display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
+  .bl-name{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:2px;}
+  .bl-title{font-size:11px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
+  .bl-contact{font-size:11px;color:var(--dim);text-align:right;line-height:1.7;}
+
+  /* VIZ - SHARED */
+  .viz{width:100%;height:100%;position:relative;overflow:hidden;}
+  .vp-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.04) 1px,transparent 1px);background-size:60px 60px;}
+  .vp-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--orange) 40%,var(--orange) 60%,transparent);}
+  .vp-bgl{position:absolute;bottom:-60px;right:-30px;font-family:'Cormorant Garamond',serif;font-size:380px;font-weight:300;color:rgba(200,145,74,.13);line-height:1;pointer-events:none;user-select:none;}
+  .vp-ca{position:relative;z-index:2;padding:44px 48px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:28px;}
+  .vp-quote{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:rgba(240,236,228,.52);line-height:1.35;font-style:italic;}
+  .vp-points{display:flex;flex-direction:column;gap:20px;}
+  .vp-pt{display:flex;gap:14px;align-items:flex-start;}
+  .vp-icon{width:28px;height:28px;border:1px solid rgba(200,145,74,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .vp-icon span{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--orange);}
+  .vp-text{font-size:15px;font-weight:300;color:var(--white);line-height:1.6;}
+  .vp-text strong{font-weight:600;color:var(--og2);}
+
+  /* COVER */
+  .slide-cover .lp{width:44%;justify-content:flex-end;padding-bottom:48px;}
+  .cover-eyebrow{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .cover-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:400;color:var(--white);line-height:1.1;margin-bottom:12px;}
+  .cover-rule{width:60px;height:2px;background:var(--orange);margin-bottom:14px;}
+  .cover-sub{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
+  .cover-hint{font-size:12px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
+  .cover-name{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+  .cover-ctitle{font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dim);}
+
+  /* COVER VIZ */
+  .vi-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.1) 1px,transparent 1px);background-size:48px 48px;}
+  .vi-orb1{position:absolute;border-radius:50%;}
+  .vi-orb2{position:absolute;border-radius:50%;}
+  .vi-caps{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px;}
+  .vi-cap-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  .vi-cap{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,145,74,.45);border:1px solid rgba(200,145,74,.2);padding:8px 16px;cursor:pointer;transition:color .2s,border-color .2s,background .2s;}
+  .vi-cap:hover{color:var(--og2);border-color:rgba(200,145,74,.6);background:rgba(200,145,74,.07);}
+
+  /* PLAIN LIST */
+  .clist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .clist li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:16px;position:relative;line-height:1.55;}
+  .clist li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.3;}
+  .clist li strong{font-weight:600;color:var(--og2);}
+
+  /* CLOSE VIZ */
+  .viz-close{background:var(--dark2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .ring{position:absolute;border-radius:50%;border:1px solid rgba(200,145,74,.1);animation:pulse 4s ease-in-out infinite;}
+  .ring:nth-child(1){width:200px;height:200px;animation-delay:0s;}
+  .ring:nth-child(2){width:320px;height:320px;animation-delay:.6s;}
+  .ring:nth-child(3){width:440px;height:440px;animation-delay:1.2s;}
+  .ring:nth-child(4){width:560px;height:560px;animation-delay:1.8s;}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
+  @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .close-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;}
+  .qmark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--orange);opacity:.55;line-height:.7;display:block;margin-bottom:10px;}
+  .qbody{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:420px;opacity:.9;}
+  .qmark-close{font-family:'Cormorant Garamond',serif;font-size:72px;color:var(--orange);opacity:.35;line-height:.5;display:block;margin-top:6px;text-align:right;width:420px;}
+
+  /* NAV */
+  .nav-arrows{position:absolute;bottom:14px;right:16px;display:flex;gap:8px;z-index:10;}
+  .nbtn{width:34px;height:34px;background:rgba(200,145,74,.1);border:1px solid rgba(200,145,74,.25);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none;}
+  .nbtn:hover{background:rgba(200,145,74,.22);}
+  .pdots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;}
+  .pdot{width:5px;height:5px;border-radius:50%;background:rgba(200,145,74,.25);cursor:pointer;transition:background .2s,transform .2s;}
+  .pdot.active{background:var(--orange);transform:scale(1.4);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-slide="0"><span class="tl">I</span>ntro</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="1"><span class="tl">1</span> Security Ops</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="2"><span class="tl">2</span> Identity</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="3"><span class="tl">3</span> Compliance</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="4"><span class="tl">4</span> Productivity</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="5"><span class="tl">5</span> Infra Ops</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="6"><span class="tl">6</span> Responsible AI</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="7"><span class="tl">C</span>lose</div>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- ═══ SLIDE 0: INTRO ═══ -->
+    <div class="slide active slide-cover">
+      <div class="split">
+        <div class="lp">
+          <div class="cover-eyebrow">Microsoft AI Capabilities</div>
+          <div class="cover-title">Practical AI Opportunities in Microsoft Cloud Operations</div>
+          <div class="cover-rule"></div>
+          <div class="cover-sub">Most organizations licensed for M365 E3 or E5 are already paying for AI capabilities they haven't activated. This isn't a pitch for new technology - it's a map of what you likely already own.</div>
+          <div class="cover-hint">Click any capability area to explore →</div>
+          <div class="cover-name">Daniel Lepel</div>
+          <div class="cover-ctitle">Principal Microsoft Cloud Architect</div>
+          <div class="byline" style="margin-top:22px;">
+            <div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz" style="background:linear-gradient(135deg,#1a1a1a 0%,#0d0d0d 100%);">
+            <div class="vi-grid"></div>
+            <div class="vi-orb1" style="width:300px;height:300px;top:0%;right:5%;background:radial-gradient(circle,rgba(200,145,74,.22) 0%,transparent 70%);"></div>
+            <div class="vi-orb2" style="width:180px;height:180px;bottom:12%;right:38%;background:radial-gradient(circle,rgba(200,145,74,.14) 0%,transparent 70%);"></div>
+            <div class="vi-caps">
+              <div class="vi-cap-row">
+                <div class="vi-cap" data-goto="1">Security Operations</div>
+                <div class="vi-cap" data-goto="2">Identity Protection</div>
+              </div>
+              <div class="vi-cap-row">
+                <div class="vi-cap" data-goto="3">Compliance &amp; Data</div>
+                <div class="vi-cap" data-goto="4">Productivity</div>
+              </div>
+              <div class="vi-cap-row">
+                <div class="vi-cap" data-goto="5">Infrastructure Ops</div>
+                <div class="vi-cap" data-goto="6">Responsible AI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 1: SECURITY OPS ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area One</div>
+            <div class="stitle">Security Operations</div>
+            <div class="ssub">Faster Investigation, Less Manual Work</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Security Copilot<span class="gt-tip"><div class="gt-tip-title">Microsoft Security Copilot</div><div class="gt-tip-body">AI-powered security analysis tool integrated with Defender, Sentinel, and Entra ID. Synthesizes signals into plain-language incident summaries, explains threat actor behavior, and suggests remediation steps.</div></span></span> for incident investigation and summarization</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>An analyst investigating a suspicious sign-in chain that spans Entra ID, Defender, and Sentinel can get a plain-language incident summary in seconds rather than spending 30 minutes manually correlating log entries across three consoles. The analyst still makes the call - they just make it faster and with better context.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Automated attack disruption in <span class="gt">Defender XDR<span class="gt-tip"><div class="gt-tip-title">Microsoft Defender XDR</div><div class="gt-tip-body">Extended Detection and Response platform that correlates signals across endpoints, identity, email, and cloud apps. Automatic attack disruption can contain compromised accounts and isolate devices without waiting for analyst action.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>When Defender detects ransomware behavior in progress, automatic attack disruption can isolate the affected device and suspend the compromised account within seconds - before a human analyst has even opened the alert. Containment at machine speed, not human speed.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">AI-assisted threat hunting and anomaly detection in <span class="gt">Microsoft Sentinel<span class="gt-tip"><div class="gt-tip-title">Microsoft Sentinel</div><div class="gt-tip-body">Cloud-native SIEM/SOAR platform that ingests data from across the environment. AI-assisted analytics identify unusual patterns that rules alone would miss, and automation handles routine response actions.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Sentinel's UEBA (User and Entity Behavior Analytics) builds behavioral baselines for every user and device in the environment, then flags deviations that don't match any known attack signature - the kind of low-and-slow threats that rules-based detection misses entirely.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Natural language queries against security data</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Security Copilot can translate plain English questions - "show me all privileged role assignments in the last 30 days where the user has never held that role before" - into KQL queries and run them against the environment. Removes the KQL expertise barrier for ad hoc investigation.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:320px;bottom:-40px;right:-20px;opacity:.13;">&#9670;</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"The bottleneck in security operations isn't data - it's the time it takes to make sense of it."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Incident synthesis</strong> - Security Copilot condenses multi-source investigations from 30 minutes to seconds, with full source traceability</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Containment at machine speed</strong> - automated attack disruption acts in the seconds between detection and analyst response</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Behavioral detection</strong> - UEBA catches anomalies that have no known signature, including insider threat patterns</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 2: IDENTITY ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area Two</div>
+            <div class="stitle">Identity Protection</div>
+            <div class="ssub">Risk Signals That Act Automatically</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Entra ID Protection<span class="gt-tip"><div class="gt-tip-title">Microsoft Entra ID Protection</div><div class="gt-tip-body">Analyzes signals from Microsoft's global threat intelligence network to detect compromised credentials, impossible travel, anonymous IP usage, and other identity risk indicators in real time.</div></span></span> risk-based Conditional Access policies</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>When a user signs in from an IP address associated with a known threat actor, Entra ID Protection assigns a high risk score and Conditional Access automatically requires re-authentication or blocks access - without any human having to review the sign-in log first.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Leaked credential detection against the global threat intelligence network</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Microsoft continuously monitors dark web credential dumps and compares them against Entra ID tenants. When a match is found, the affected account is automatically flagged for password reset before an attacker has a chance to use the credential.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Continuous Access Evaluation - session risk re-checked in real time</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Traditional token-based access is checked at login and trusted for hours. CAE pushes policy changes and risk signals to active sessions within seconds. If an account is compromised at 2pm, the session from 9am is revoked immediately - not when the token expires at midnight.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">AI-driven access recommendations in <span class="gt">Entra ID Governance<span class="gt-tip"><div class="gt-tip-title">Entra ID Governance</div><div class="gt-tip-body">Identity governance capabilities including access reviews, entitlement management, and lifecycle workflows. AI surfaces access assignments that appear anomalous or unused, making review cycles faster and more accurate.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>During access reviews, Entra ID Governance uses ML to surface accounts where assigned roles are inconsistent with usage patterns - accounts that have Global Admin but haven't used it in 90 days, for example - making reviewers faster and more accurate than working from a flat list.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:380px;bottom:-60px;right:-30px;">&#9651;</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Risk-based identity protection doesn't wait for a human to review the sign-in log."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Trillions of signals</strong> - Microsoft's global threat intelligence feeds risk scores that no on-premises system could replicate</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Policy enforces automatically</strong> - risk detection triggers Conditional Access responses without waiting for analyst review</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Sessions don't stay trusted</strong> - Continuous Access Evaluation revokes access in seconds when risk changes mid-session</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 3: COMPLIANCE ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area Three</div>
+            <div class="stitle">Compliance &amp; Data Governance</div>
+            <div class="ssub">Classification and Discovery at Scale</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Microsoft Purview<span class="gt-tip"><div class="gt-tip-title">Microsoft Purview</div><div class="gt-tip-body">Unified data governance and compliance platform covering data classification, sensitivity labeling, retention policies, eDiscovery, audit, and insider risk management across M365, Azure, and connected sources.</div></span></span> AI-assisted data classification and sensitivity labeling</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Trainable classifiers in Purview learn what sensitive data looks like in your specific environment - contracts, PII patterns, regulated data - and apply sensitivity labels automatically as content is created or modified. At scale, manual classification is not operationally viable. At Latham Pool Products, I worked directly with the Legal Department to configure eDiscovery and legal hold workflows through Purview, eliminating the need for third-party tools.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">eDiscovery and legal hold acceleration</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Legal teams typically spend weeks working with IT to gather responsive documents for litigation holds. Purview eDiscovery Premium with AI-powered relevance scoring dramatically narrows the review set - surfacing the 2,000 documents that matter from a corpus of 200,000, rather than handing attorneys the whole corpus.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Insider risk signal detection and policy enforcement</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Purview Insider Risk Management correlates signals like mass file downloads, unusual SharePoint access patterns, and data exfiltration attempts - then surfaces them as risk alerts with full context. Privacy controls are built in: investigators see the relevant activity without seeing unrelated personal behavior.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Communication compliance monitoring for regulated environments</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>For organizations subject to FINRA, HIPAA, or similar frameworks, Purview Communication Compliance uses ML to scan Teams messages and email for policy violations - flagging potential issues for reviewer attention rather than requiring human review of every message.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:340px;bottom:-50px;right:-20px;">P</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"You cannot manually classify millions of documents. But you can teach a classifier what sensitive data looks like in your environment."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Classification at document creation</strong> - sensitivity labels applied automatically as content is produced, not retroactively</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>eDiscovery without the avalanche</strong> - AI relevance scoring cuts the review set from hundreds of thousands to the documents that actually matter</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Insider risk with privacy controls</strong> - behavioral signals surfaced to investigators without exposing unrelated personal activity</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 4: PRODUCTIVITY ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area Four</div>
+            <div class="stitle">Productivity</div>
+            <div class="ssub">Responsible Enablement of Copilot for M365</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Data readiness before <span class="gt">Copilot for M365<span class="gt-tip"><div class="gt-tip-title">Microsoft 365 Copilot</div><div class="gt-tip-body">AI assistant integrated across Teams, Outlook, Word, Excel, and PowerPoint. Accesses organizational data via Microsoft Graph - which means over-permissioned data is immediately surfaced to users who ask for it.</div></span></span> deployment</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Copilot for M365 accesses data through Microsoft Graph - which means it can surface anything the signed-in user has permission to see. Before enabling Copilot, the most important step is a data oversharing assessment: finding SharePoint sites, OneDrive content, and Teams channels where permissions are broader than intended. Copilot doesn't create oversharing problems - it makes existing ones visible and consequential.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Sensitivity label integration to prevent AI-assisted data leakage</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>When Purview sensitivity labels are applied correctly, Copilot respects them - it won't summarize a confidential document into a response visible to someone without access to the original. The label becomes the enforcement point across both human access and AI-assisted workflows.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Meeting summarization and knowledge capture in Teams</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Teams meeting summaries, action item extraction, and transcript search are among the highest-adoption Copilot features - they address a real daily pain point (catching up on missed meetings) without requiring users to change established work patterns. Strong first use case for pilots.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Phased rollout with usage monitoring and feedback loops</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Successful Copilot deployments start with a defined pilot group, use the Copilot Dashboard in Viva Insights to track adoption and feature usage, and collect structured feedback before expanding. Broad rollout without usage data is how organizations spend E5 licenses and see no return.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:360px;bottom:-55px;right:-25px;">C</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Copilot for M365 doesn't create data governance problems. It makes existing ones impossible to ignore."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Fix permissions first</strong> - a data readiness assessment before deployment prevents Copilot from surfacing content users were never meant to see</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Labels are the enforcement layer</strong> - Purview sensitivity labels apply across both human access and AI-assisted workflows</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Pilot before you scale</strong> - usage data from a defined pilot group is what makes a broad rollout worth the investment</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 5: INFRA OPS ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area Five</div>
+            <div class="stitle">Infrastructure Operations</div>
+            <div class="ssub">Cost, Performance, and Reliability Intelligence</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext"><span class="gt">Azure Advisor<span class="gt-tip"><div class="gt-tip-title">Azure Advisor</div><div class="gt-tip-body">AI-driven recommendation engine built into Azure. Continuously analyzes resource configuration and usage telemetry to surface actionable recommendations across cost, security, reliability, performance, and operational excellence.</div></span></span> recommendations for cost, reliability, and security</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Azure Advisor analyzes actual usage telemetry and surfaces specific, actionable recommendations - right-size this VM, enable soft delete on this storage account, convert this reserved instance. It is not a general report; it identifies specific resources with specific recommended actions and estimated savings.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">AI-powered anomaly detection in <span class="gt">Azure Monitor<span class="gt-tip"><div class="gt-tip-title">Azure Monitor</div><div class="gt-tip-body">Full-stack monitoring platform for Azure resources. Dynamic baselines and AI-powered smart detection identify anomalies in metrics and logs without requiring teams to manually set thresholds for every resource.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Static alert thresholds require someone to decide what "normal" looks like for every resource - and revisit that decision every time workloads change. Azure Monitor's dynamic thresholds learn normal patterns automatically and alert when something genuinely anomalous occurs, without the noise of threshold alerts that fire during every legitimate traffic spike.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">License utilization analysis and cost optimization</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>E5 license waste is one of the most common findings in Microsoft environments. Users assigned E5 licenses with no Defender or Purview usage, unused Power Platform capacity, duplicate tools that native M365 capabilities have made redundant - regular utilization analysis routinely uncovers six-figure annual savings. The Mimecast replacement I led at Latham Pool Products is a direct example: native E5 capabilities replaced a third-party tool entirely, eliminating that licensing cost.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Intelligent resource scaling and rightsizing</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Azure's autoscale with predictive scaling uses ML to analyze historical traffic patterns and provision capacity before demand spikes occur - not in response to them. For workloads with predictable patterns, this eliminates both over-provisioning cost and the performance degradation that occurs while reactive scaling catches up.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:380px;bottom:-60px;right:-30px;">A</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"Azure already has the usage telemetry. AI turns that data into specific actions with estimated impact."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Advisor is not a report</strong> - it identifies specific resources, specific issues, and specific recommended actions with quantified impact</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Dynamic baselines over static thresholds</strong> - alerting that learns normal patterns eliminates the noise that trains teams to ignore alerts</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>License waste is recoverable</strong> - regular utilization analysis on E3/E5 environments routinely uncovers significant annual savings</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 6: RESPONSIBLE AI ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+            <div class="lbl">Capability Area Six</div>
+            <div class="stitle">Responsible AI</div>
+            <div class="ssub">Oversight, Auditability, and Data Sovereignty</div>
+            <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Human oversight preserved for decisions with material impact</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>AI recommendations and automated responses are appropriate for well-defined, high-volume, lower-stakes decisions - alert triage, access risk scoring, content classification. Decisions with significant security, legal, or operational consequences require a human in the loop. The design choice between these two categories is architectural, not incidental.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Data sovereignty - your data does not train Microsoft's models</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>A common concern with AI adoption in enterprise and government environments. Microsoft's commercial AI services - Copilot for M365, Security Copilot, Azure OpenAI - do not use customer data to train foundation models. Prompts, responses, and organizational data stay within the tenant boundary under the existing data processing terms. For GCC and GCC-High environments, additional data residency and sovereignty controls apply.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Full auditability of AI-assisted actions through Purview audit logs</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Every Security Copilot investigation, every Copilot for M365 prompt and response, and every automated Defender action is logged in the Purview unified audit log. Organizations subject to compliance or regulatory requirements can demonstrate exactly what AI tools accessed, what they produced, and what actions resulted - the same auditability standard applied to human operators.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">AI capability governance aligned to organizational risk tolerance</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In practice</div>Not every AI capability should be enabled for every user from day one. A governance framework that maps each capability to its risk profile, data access requirements, and user readiness prerequisites allows organizations to expand AI use thoughtfully - capturing value without outpacing the controls and training needed to use it responsibly.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-p" style="background:var(--dark2);">
+            <div class="vp-grid"></div><div class="vp-bar"></div>
+            <div class="vp-bgl" style="font-size:360px;bottom:-55px;right:-25px;">R</div>
+            <div class="vp-ca">
+              <div class="vp-quote">"The question isn't whether to use AI. It's which decisions it should make and which ones it should inform."</div>
+              <div class="vp-points">
+                <div class="vp-pt"><div class="vp-icon"><span>1</span></div><div class="vp-text"><strong>Data stays in the tenant</strong> - Microsoft commercial AI services do not use customer data to train foundation models</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>2</span></div><div class="vp-text"><strong>Full audit trail</strong> - AI-assisted actions are logged to the same Purview audit log as human operator actions</div></div>
+                <div class="vp-pt"><div class="vp-icon"><span>3</span></div><div class="vp-text"><strong>Expand at the pace of your controls</strong> - governance framework maps each AI capability to its risk profile before enabling it broadly</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 7: CLOSE ═══ -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lbl">The Readiness Question</div>
+          <div class="stitle">You Don't Need a New AI Strategy</div>
+          <div class="rule"></div>
+          <div class="sbody">Most organizations licensed for M365 E3 or E5 are already paying for the AI capabilities covered in this document. The question isn't whether to adopt AI - it's whether the foundation is in place to use it safely and get real value from it.</div>
+          <div class="sbody">That foundation is the same one that makes any Microsoft environment work well: clean identity, consistent governance, observable infrastructure, and documented operations. AI amplifies what's already there - which means it amplifies problems just as readily as it amplifies strengths.</div>
+          <ul class="clist">
+            <li><strong>Security Operations</strong> - investigation speed and automated containment</li>
+            <li><strong>Identity Protection</strong> - risk-based enforcement and behavioral signals</li>
+            <li><strong>Compliance &amp; Data</strong> - classification and eDiscovery at scale</li>
+            <li><strong>Productivity</strong> - Copilot for M365 done with the right governance first</li>
+            <li><strong>Infrastructure Ops</strong> - cost intelligence and dynamic monitoring</li>
+            <li><strong>Responsible AI</strong> - oversight, auditability, and sovereignty built in</li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us · (518) 618-3700<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-close">
+            <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+            <div class="close-center">
+              <span class="qmark">&#8220;</span>
+              <div class="qbody">AI applied to a broken foundation doesn't fix the foundation. It just breaks things faster.</div>
+              <span class="qmark-close">&#8221;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <div class="pdots" id="dots"></div>
+  <div class="nav-arrows">
+    <div class="nbtn" id="prev">&#8592;</div>
+    <div class="nbtn" id="next">&#8594;</div>
+  </div>
+
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const tabs   = document.querySelectorAll('.tab');
+  const dotsEl = document.getElementById('dots');
+  const total  = slides.length;
+  let current  = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    tabs[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  tabs.forEach((t, i) => t.addEventListener('click', () => goTo(i)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  document.querySelectorAll('.vi-cap[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+  });
+
+  document.querySelectorAll('.btrigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.bitem');
+      trigger.closest('.blist').querySelectorAll('.bitem.open').forEach(other => {
+        if (other !== item) other.classList.remove('open');
+      });
+      item.classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A.L.I.G.N. Process – Daniel Lepel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:   #181818;
+    --dark2:  #202020;
+    --dark3:  #262626;
+    --panel:  #111111;
+    --orange: #c8914a;
+    --og2:    #e0aa6a;
+    --white:  #f0ece4;
+    --dim:    #9a9288;
+    --rule:   rgba(200,145,74,0.3);
+    --tip-bg: #1e1c1a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;}
+
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1280px;height:min(100vh,820px);margin:auto;box-shadow:0 0 80px rgba(0,0,0,.8);}
+
+  /* TABBAR */
+  .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab{padding:13px 20px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab:hover{color:var(--white);}
+  .tab.active{color:var(--white);border-bottom-color:var(--orange);}
+  .tab .tl{color:var(--orange);font-size:15px;}
+  .tab.active .tl{color:var(--og2);}
+  .tab-div{width:1px;background:rgba(255,255,255,.06);margin:9px 0;flex-shrink:0;}
+
+  /* SLIDES */
+  .slides{flex:1;position:relative;overflow:hidden;}
+  .slide{display:none;height:100%;width:100%;}
+  .slide.active{display:flex;animation:sIn .25s ease-out;}
+  @keyframes sIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+  .split{display:flex;height:100%;width:100%;}
+
+  /* PANELS */
+  .lp{width:42%;background:var(--dark);padding:24px 38px 20px;display:flex;flex-direction:column;position:relative;flex-shrink:0;overflow-y:auto;}
+  .lp::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--rule) 30%,var(--rule) 70%,transparent);}
+  .rp{flex:1;position:relative;overflow:hidden;background:var(--dark2);}
+
+  /* TEXT ELEMENTS */
+  .ai{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.18em;color:var(--dim);margin-bottom:5px;}
+  .ai .on{color:var(--orange);font-weight:700;}
+  .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:500;color:var(--white);line-height:1.05;margin-bottom:4px;}
+  .ssub{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
+  .rule{width:44px;height:1px;background:var(--orange);margin-bottom:12px;opacity:.7;}
+  .sbody{font-size:14px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+
+  /* HEADER BLOCK */
+  .lp-header{flex-shrink:0;}
+
+  /* EXPANDABLE BULLETS */
+  .blist{list-style:none;display:flex;flex-direction:column;margin-bottom:0;}
+  .bitem{border-bottom:1px solid rgba(255,255,255,.05);}
+  .bitem:first-child{border-top:1px solid rgba(255,255,255,.05);}
+  .btrigger{display:flex;align-items:flex-start;gap:10px;padding:14px 4px 14px 0;cursor:pointer;transition:background .15s;}
+  .btrigger:hover{background:rgba(200,145,74,.05);}
+  .barrow{color:var(--orange);font-size:16px;line-height:1.45;flex-shrink:0;transition:transform .25s;margin-top:2px;}
+  .bitem.open .barrow{transform:rotate(90deg);}
+  .btext{font-size:16px;font-weight:400;line-height:1.5;color:var(--white);}
+  .bexpand{display:none;padding:2px 4px 12px 26px;}
+  .bitem.open .bexpand{display:block;}
+  .bexpand-inner{font-size:13px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
+
+  /* GLOSSARY TOOLTIPS */
+  .gt{border-bottom:1px dashed rgba(200,145,74,.55);cursor:help;position:relative;display:inline;}
+  .gt-tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--tip-bg);border:1px solid var(--rule);padding:10px 14px;width:260px;z-index:200;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.7);}
+  .gt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--rule);}
+  .gt-tip-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
+  .gt-tip-body{font-size:12px;font-weight:300;line-height:1.6;color:var(--white);}
+  .gt:hover .gt-tip{visibility:visible;opacity:1;}
+
+  /* BYLINE */
+  .byline{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,145,74,.15);display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
+  .bl-name{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+  .bl-title{font-size:11px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
+  .bl-contact{font-size:11px;color:var(--dim);text-align:right;line-height:1.7;}
+
+  /* VIZ COVER */
+  .viz{width:100%;height:100%;position:relative;overflow:hidden;}
+  .viz-cover{background:linear-gradient(135deg,#1a1a1a 0%,#0d0d0d 100%);}
+  .vc-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.1) 1px,transparent 1px);background-size:48px 48px;}
+  .vc-orb{position:absolute;border-radius:50%;}
+  .vc-orb1{width:320px;height:320px;top:5%;right:10%;background:radial-gradient(circle,rgba(200,145,74,.22) 0%,transparent 70%);}
+  .vc-orb2{width:200px;height:200px;bottom:15%;right:30%;background:radial-gradient(circle,rgba(200,145,74,.16) 0%,transparent 70%);}
+  .align-display{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:16px;}
+  .ald-wrap{display:flex;flex-direction:column;align-items:center;}
+  .ald{font-family:'Cormorant Garamond',serif;font-size:88px;font-weight:300;color:rgba(200,145,74,.45);line-height:1;letter-spacing:.05em;cursor:pointer;transition:color .25s,transform .2s;animation:flt 6s ease-in-out infinite;}
+  .ald:nth-child(1){animation-delay:0s;}
+  .ald:nth-child(2){animation-delay:.4s;}
+  .ald:nth-child(3){animation-delay:.8s;}
+  .ald:nth-child(4){animation-delay:1.2s;}
+  .ald:nth-child(5){animation-delay:1.6s;}
+  .ald:hover{color:var(--orange);transform:translateY(-8px) scale(1.15);}
+  .ald-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-align:center;color:rgba(200,145,74,.65);margin-top:6px;text-transform:uppercase;}
+  @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+  /* VIZ BIO */
+  .viz-bio{background:var(--dark2);display:flex;align-items:center;justify-content:center;}
+  .bio-items{display:flex;flex-direction:column;gap:22px;padding:36px;}
+  .bio-item{display:flex;align-items:center;gap:20px;}
+  .bio-num{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:var(--orange);opacity:.25;line-height:1;width:52px;text-align:right;flex-shrink:0;}
+  .bio-word{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--white);letter-spacing:.02em;}
+  .bio-sub{font-size:12px;font-weight:300;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:3px;}
+
+  /* VIZ OVERVIEW */
+  .viz-ov{background:var(--dark2);display:flex;align-items:center;justify-content:center;}
+  .pflow{display:flex;flex-direction:column;gap:8px;padding:28px 36px;width:100%;}
+  .pfstep{display:flex;align-items:center;gap:18px;padding:15px 18px;border-left:2px solid rgba(200,145,74,.2);cursor:pointer;transition:border-color .25s,background .25s;}
+  .pfstep:hover{border-left-color:var(--orange);background:rgba(200,145,74,.05);}
+  .pfl{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--orange);width:36px;flex-shrink:0;line-height:1;}
+  .pfw{font-size:17px;font-weight:600;color:var(--white);letter-spacing:.04em;margin-bottom:2px;}
+  .pfd{font-size:13px;font-weight:300;color:var(--dim);}
+  .pfarrow{margin-left:auto;color:var(--orange);opacity:0;font-size:20px;transition:opacity .2s;}
+  .pfstep:hover .pfarrow{opacity:1;}
+
+  /* VIZ PHASE */
+  .viz-phase{background:var(--dark2);position:relative;overflow:hidden;}
+  .pbgl{position:absolute;bottom:-80px;right:-40px;font-family:'Cormorant Garamond',serif;font-size:500px;font-weight:300;color:rgba(200,145,74,.13);line-height:1;pointer-events:none;user-select:none;}
+  .pgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,145,74,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,145,74,.04) 1px,transparent 1px);background-size:60px 60px;}
+  .pbar{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--orange) 40%,var(--orange) 60%,transparent);}
+  .pca{position:relative;z-index:2;padding:44px 48px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:32px;}
+  .ptql{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:rgba(240,236,228,.52);line-height:1.25;margin-bottom:24px;font-style:italic;}
+  .ppoints{display:flex;flex-direction:column;gap:22px;}
+  .pp{display:flex;gap:14px;align-items:flex-start;}
+  .ppicon{width:30px;height:30px;border:1px solid rgba(200,145,74,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .ppicon span{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--orange);}
+  .pptext{font-size:16px;font-weight:300;color:var(--white);line-height:1.6;}
+  .pptext strong{font-weight:600;color:var(--og2);}
+
+  /* VIZ CLOSE */
+  .viz-close{background:var(--dark2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .ring{position:absolute;border-radius:50%;border:1px solid rgba(200,145,74,.1);animation:pulse 4s ease-in-out infinite;}
+  .ring:nth-child(1){width:200px;height:200px;animation-delay:0s;}
+  .ring:nth-child(2){width:320px;height:320px;animation-delay:.6s;}
+  .ring:nth-child(3){width:440px;height:440px;animation-delay:1.2s;}
+  .ring:nth-child(4){width:560px;height:560px;animation-delay:1.8s;}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
+  .close-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;}
+  .qmark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--orange);opacity:.55;line-height:.7;display:block;margin-bottom:10px;}
+  .qbody{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:400px;opacity:.9;}
+  .qmark-close{font-family:'Cormorant Garamond',serif;font-size:72px;color:var(--orange);opacity:.35;line-height:.5;display:block;margin-top:6px;text-align:right;width:400px;}
+
+  /* COVER LEFT */
+  .slide-cover .lp{width:44%;justify-content:flex-end;padding-bottom:48px;overflow:hidden;}
+  .cover-eyebrow{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .cover-title{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:400;color:var(--white);line-height:1.0;margin-bottom:12px;}
+  .cover-rule{width:60px;height:2px;background:var(--orange);margin-bottom:14px;}
+  .cover-sub{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
+  .cover-hint{font-size:12px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
+  .cover-name{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+  .cover-ctitle{font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dim);}
+
+  /* CLOSE PLAIN LIST */
+  .cblist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .cblist li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:16px;position:relative;line-height:1.55;}
+  .cblist li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.3;}
+  .cblist li strong{font-weight:600;color:var(--og2);}
+
+  /* NAV */
+  .nav-arrows{position:absolute;bottom:14px;right:16px;display:flex;gap:8px;z-index:10;}
+  .nbtn{width:34px;height:34px;background:rgba(200,145,74,.1);border:1px solid rgba(200,145,74,.25);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none;}
+  .nbtn:hover{background:rgba(200,145,74,.22);}
+  .pdots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;}
+  .pdot{width:5px;height:5px;border-radius:50%;background:rgba(200,145,74,.25);cursor:pointer;transition:background .2s,transform .2s;}
+  .pdot.active{background:var(--orange);transform:scale(1.4);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TABBAR -->
+  <div class="tabbar" id="tabbar">
+    <div class="tab active" data-slide="0"><span class="tl">C</span>over</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="1"><span class="tl">A</span>bout</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="2"><span class="tl">O</span>verview</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="3"><span class="tl">A</span>ssess</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="4"><span class="tl">L</span>everage</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="5"><span class="tl">I</span>mplement</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="6"><span class="tl">G</span>overn</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="7"><span class="tl">N</span>avigate</div>
+    <div class="tab-div"></div>
+    <div class="tab" data-slide="8"><span class="tl">C</span>lose</div>
+  </div>
+
+  <div class="slides" id="slides">
+
+    <!-- SLIDE 0: COVER -->
+    <div class="slide active slide-cover">
+      <div class="split">
+        <div class="lp">
+          <div class="cover-eyebrow">Process Overview</div>
+          <div class="cover-title">A.L.I.G.N.</div>
+          <div class="cover-rule"></div>
+          <div class="cover-sub">A structured process for delivering tailored Microsoft 365, Azure, and cloud platform solutions - across organizations of any size or sector.</div>
+          <div class="cover-hint">Click any letter to jump to that phase →</div>
+          <div class="cover-name">Daniel Lepel</div>
+          <div class="cover-ctitle">Principal Microsoft Cloud Architect</div>
+          <div class="byline" style="margin-top:22px;">
+            <div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-cover">
+            <div class="vc-grid"></div>
+            <div class="vc-orb vc-orb1"></div>
+            <div class="vc-orb vc-orb2"></div>
+            <div class="align-display">
+              <div class="ald-wrap"><div class="ald" data-goto="3">A</div><div class="ald-label">Assess</div></div>
+              <div class="ald-wrap"><div class="ald" data-goto="4">L</div><div class="ald-label">Leverage</div></div>
+              <div class="ald-wrap"><div class="ald" data-goto="5">I</div><div class="ald-label">Implement</div></div>
+              <div class="ald-wrap"><div class="ald" data-goto="6">G</div><div class="ald-label">Govern</div></div>
+              <div class="ald-wrap"><div class="ald" data-goto="7">N</div><div class="ald-label">Navigate</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: ABOUT -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lbl">About</div>
+          <div class="stitle">Daniel Lepel</div>
+          <div class="rule"></div>
+          <div class="sbody">20+ years designing, securing, and operating <span class="gt">Microsoft cloud environments<span class="gt-tip"><div class="gt-tip-title">Microsoft Cloud</div><div class="gt-tip-body">Covers Microsoft 365 (email, Teams, SharePoint), Azure cloud infrastructure, and the security and compliance tools built across both platforms.</div></span></span> - from 64,000-user enterprise deployments to complex multi-tenant managed service platforms.</div>
+          <ul class="cblist">
+            <li>Microsoft 365 &amp; Azure platform architecture</li>
+            <li><span class="gt">Microsoft Entra ID<span class="gt-tip"><div class="gt-tip-title">Microsoft Entra ID</div><div class="gt-tip-body">Microsoft's cloud identity platform (formerly Azure Active Directory) - manages who can sign in, what they can access, and under what conditions.</div></span></span>, <span class="gt">Zero Trust<span class="gt-tip"><div class="gt-tip-title">Zero Trust</div><div class="gt-tip-body">A security model that assumes no user or device is trusted by default - every access request is verified regardless of network location.</div></span></span>, and identity governance</li>
+            <li>Endpoint management - <span class="gt">Intune<span class="gt-tip"><div class="gt-tip-title">Microsoft Intune</div><div class="gt-tip-body">Microsoft's endpoint management platform - controls device configuration, app deployment, and compliance policies across Windows, iOS, Android, and Mac.</div></span></span>, <span class="gt">Autopilot<span class="gt-tip"><div class="gt-tip-title">Windows Autopilot</div><div class="gt-tip-body">Microsoft's zero-touch device provisioning service - new devices configure themselves automatically when first powered on, without IT needing to manually image them.</div></span></span>, Defender</li>
+            <li><span class="gt">Microsoft Purview<span class="gt-tip"><div class="gt-tip-title">Microsoft Purview</div><div class="gt-tip-body">Microsoft's compliance and data governance platform - handles data classification, retention policies, eDiscovery, and audit logging.</div></span></span>, compliance, and E5 capability enablement</li>
+            <li>PowerShell automation and infrastructure as code</li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-bio">
+            <div class="bio-items">
+              <div class="bio-item"><div class="bio-num">01</div><div><div class="bio-word">Architect</div><div class="bio-sub">Designs cloud platforms built to last</div></div></div>
+              <div class="bio-item"><div class="bio-num">02</div><div><div class="bio-word">Strategist</div><div class="bio-sub">Aligns technology decisions to business goals</div></div></div>
+              <div class="bio-item"><div class="bio-num">03</div><div><div class="bio-word">Optimizer</div><div class="bio-sub">Eliminates waste, improves operational efficiency</div></div></div>
+              <div class="bio-item"><div class="bio-num">04</div><div><div class="bio-word">Innovator</div><div class="bio-sub">Applies AI and emerging capabilities where they add real value</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: OVERVIEW -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lbl">The Framework</div>
+          <div class="stitle">The A.L.I.G.N. Process</div>
+          <div class="rule"></div>
+          <div class="sbody">A.L.I.G.N. is a structured, repeatable process for delivering cloud architecture that fits the organization - not a generic template applied regardless of context.</div>
+          <div class="sbody">Each phase builds on the last. The result is a platform that is secure, well-governed, and built to support the people who depend on it every day.</div>
+          <div class="sbody" style="font-style:italic;font-size:12.5px;color:var(--dim);">Click any phase on the right to jump directly to it.</div>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-ov">
+            <div class="pflow">
+              <div class="pfstep" data-goto="3"><div class="pfl">A</div><div><div class="pfw">Assess</div><div class="pfd">Understand the environment, identify gaps, define goals</div></div><div class="pfarrow">›</div></div>
+              <div class="pfstep" data-goto="4"><div class="pfl">L</div><div><div class="pfw">Leverage</div><div class="pfd">Select the right tools, apply best practices, build the plan</div></div><div class="pfarrow">›</div></div>
+              <div class="pfstep" data-goto="5"><div class="pfl">I</div><div><div class="pfw">Implement</div><div class="pfd">Deploy, configure, test, and enable with minimal disruption</div></div><div class="pfarrow">›</div></div>
+              <div class="pfstep" data-goto="6"><div class="pfl">G</div><div><div class="pfw">Govern</div><div class="pfd">Enforce policy, maintain security posture, ensure compliance</div></div><div class="pfarrow">›</div></div>
+              <div class="pfstep" data-goto="7"><div class="pfl">N</div><div><div class="pfw">Navigate</div><div class="pfd">Measure, optimize, and evolve as needs and technology change</div></div><div class="pfarrow">›</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: ASSESS -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+          <div class="ai"><span class="on">A</span>·L·I·G·N</div>
+          <div class="lbl">Phase One</div>
+          <div class="stitle">Assess</div>
+          <div class="ssub">Problem &amp; Need</div>
+          <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Conduct discovery sessions to understand the current environment</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>No two environments match their documentation. I map what's actually deployed before touching a single configuration - including shadow IT, licensing gaps, and undocumented dependencies.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Identify business objectives, pain points, and technical gaps</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>The first question I ask every stakeholder: "What's the one thing that keeps your IT team up at night?" The answers usually tell me more than a formal requirements document.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Audit existing systems, processes, and tools for inefficiencies</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>I use a structured checklist covering identity, endpoint management, security policies, and licensing utilization. Gaps in licensing overlap are one of the most common - and most overlooked - findings.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Collaborate with stakeholders to prioritize goals and outcomes</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Priorities set by IT alone rarely match what the business actually needs. Getting both sides in the room early prevents costly rework later in the process.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Document findings to establish a verified baseline for planning</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>A findings report isn't bureaucracy - it's the contract between what exists today and what we're building toward. Every subsequent decision references back to it.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-phase">
+            <div class="pgrid"></div><div class="pbar"></div><div class="pbgl">A</div>
+            <div class="pca">
+              <div class="ptql">"What is actually here,<br>and what actually matters?"</div>
+              <div class="ppoints">
+                <div class="pp"><div class="ppicon"><span>1</span></div><div class="pptext"><strong>Environment audit</strong> - configuration, identity, and security posture verified against actual state, not documentation</div></div>
+                <div class="pp"><div class="ppicon"><span>2</span></div><div class="pptext"><strong>Stakeholder alignment</strong> - what success looks like from both IT and business perspectives</div></div>
+                <div class="pp"><div class="ppicon"><span>3</span></div><div class="pptext"><strong>Prioritized findings</strong> - not everything can be fixed at once; sequence matters as much as content</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: LEVERAGE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+          <div class="ai">A·<span class="on">L</span>·I·G·N</div>
+          <div class="lbl">Phase Two</div>
+          <div class="stitle">Leverage</div>
+          <div class="ssub">Tools &amp; Expertise</div>
+          <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Recommend solutions tailored to the organization's needs and existing investments</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>At Latham Pool Products, I replaced Mimecast entirely with M365 E5 native capabilities - eliminating the third-party licensing cost while improving coverage. The capability was already paid for.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Integrate existing systems with cloud platforms for consistent functionality</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Hybrid identity is the most common integration challenge. <span class="gt">Entra Connect Sync<span class="gt-tip"><div class="gt-tip-title">Entra Connect Sync</div><div class="gt-tip-body">Synchronizes on-premises Active Directory accounts to Microsoft Entra ID, enabling a single identity to work seamlessly across both environments.</div></span></span> handles most scenarios; the key is knowing which approach fits the environment.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Apply PowerShell and infrastructure automation to reduce manual overhead</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>I use PowerShell for bulk user management, compliance reporting, tenant configuration exports, and <span class="gt">Conditional Access<span class="gt-tip"><div class="gt-tip-title">Conditional Access</div><div class="gt-tip-body">A policy engine that evaluates sign-in risk, device health, and user context to decide whether to allow, block, or require additional verification for each access request.</div></span></span> policy deployment - reducing hours of manual work to minutes.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Apply security, compliance, and scalability best practices throughout</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Best practices aren't a checklist applied in parallel - they're applied in order of risk. Identity controls first, then endpoint posture, then data protection. Sequencing matters.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Adapt solutions to fit industry-specific requirements and constraints</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Government environments need FedRAMP-aligned controls. Healthcare maps to HIPAA. Financial services require audit-ready logging. The platform adapts to the regulatory context - not the other way around.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-phase">
+            <div class="pgrid"></div><div class="pbar"></div><div class="pbgl">L</div>
+            <div class="pca">
+              <div class="ptql">"Use what works.<br>Build only what's missing."</div>
+              <div class="ppoints">
+                <div class="pp"><div class="ppicon"><span>1</span></div><div class="pptext"><strong>Investment review</strong> - identify what's already licensed and underused before recommending new tools</div></div>
+                <div class="pp"><div class="ppicon"><span>2</span></div><div class="pptext"><strong>Tool selection</strong> - Microsoft-native first; third-party only where it fills a real, defined gap</div></div>
+                <div class="pp"><div class="ppicon"><span>3</span></div><div class="pptext"><strong>Automation strategy</strong> - PowerShell, policy, and AI-assisted operations applied where they reduce risk and overhead</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: IMPLEMENT -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+          <div class="ai">A·L·<span class="on">I</span>·G·N</div>
+          <div class="lbl">Phase Three</div>
+          <div class="stitle">Implement</div>
+          <div class="ssub">Scalable Solutions</div>
+          <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Develop detailed implementation plans with clear timelines and milestones</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Every plan includes a pilot group, defined success criteria, and a rollback path before any production change is made. The rollback plan is not optional.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Configure systems including <span class="gt">Microsoft Entra ID<span class="gt-tip"><div class="gt-tip-title">Microsoft Entra ID</div><div class="gt-tip-body">Microsoft's cloud identity platform - manages authentication, authorization, and risk-based access decisions across all cloud services.</div></span></span>, Intune, and Microsoft Defender</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>These three together cover identity, endpoint, and threat protection - the core of a Zero Trust posture. They're configured as an integrated system, not independently.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Perform thorough testing to confirm solutions meet requirements before broad deployment</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Every configuration change is tested in a non-production environment first, then validated with a pilot group before expanding. No big-bang rollouts when a phased approach is possible.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Provide hands-on training and documentation for operations teams</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>I write runbooks the ops team can actually follow - not architecture documents that sit on a SharePoint no one visits. If the team can't operate what was built, the project isn't finished.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Manage phased rollouts to minimize disruption to daily operations</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Pilot → validate → expand. Stakeholders get visibility into each phase before the next begins. Surprises in production are a planning failure, not a technical one.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-phase">
+            <div class="pgrid"></div><div class="pbar"></div><div class="pbgl">I</div>
+            <div class="pca">
+              <div class="ptql">"Deploy with precision.<br>Validate at every step."</div>
+              <div class="ppoints">
+                <div class="pp"><div class="ppicon"><span>1</span></div><div class="pptext"><strong>Phased deployment</strong> - pilot, validate, expand; surprises in production are a planning failure</div></div>
+                <div class="pp"><div class="ppicon"><span>2</span></div><div class="pptext"><strong>Configuration validation</strong> - automated checks against defined baselines before and after each change</div></div>
+                <div class="pp"><div class="ppicon"><span>3</span></div><div class="pptext"><strong>Knowledge transfer</strong> - operations teams can support what was built; documentation reflects actual state</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: GOVERN -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+          <div class="ai">A·L·I·<span class="on">G</span>·N</div>
+          <div class="lbl">Phase Four</div>
+          <div class="stitle">Govern</div>
+          <div class="ssub">Governance &amp; Security</div>
+          <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Establish and enforce policy baselines using <span class="gt">Azure Policy<span class="gt-tip"><div class="gt-tip-title">Azure Policy</div><div class="gt-tip-body">A governance service that enforces organizational rules on Azure resources - can audit, deny, or automatically remediate non-compliant configurations.</div></span></span> and Defender for Cloud</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Azure Policy prevents non-compliant resources from being created in the first place. Defender for Cloud scores posture continuously and surfaces drift before it becomes an incident.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Apply <span class="gt">Conditional Access<span class="gt-tip"><div class="gt-tip-title">Conditional Access</div><div class="gt-tip-body">A policy engine that evaluates sign-in risk, device health, and user context to decide whether to allow, block, or require MFA - the enforcement point of Zero Trust.</div></span></span> policies aligned to Zero Trust principles</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>A well-designed Conditional Access policy set is one of the highest-ROI security investments in any M365 environment. Most organizations have it partially configured; few have it fully and correctly applied.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Define and govern administrative role boundaries through <span class="gt">Entra ID PIM<span class="gt-tip"><div class="gt-tip-title">Privileged Identity Management (PIM)</div><div class="gt-tip-body">Grants admin access only when needed, for a defined time window, with optional approval - then removes it automatically. Eliminates standing privileged access.</div></span></span></span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Standing Global Administrator access is one of the most common findings in any security audit. PIM eliminates it with just-in-time elevation and approval workflows.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Monitor for configuration drift and remediate deviations from baseline</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>I configure monitoring that alerts when a setting deviates from the approved baseline - before it becomes a vulnerability or a compliance finding. Drift is inevitable; undetected drift is the problem.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Maintain compliance posture through <span class="gt">Microsoft Purview<span class="gt-tip"><div class="gt-tip-title">Microsoft Purview</div><div class="gt-tip-body">Microsoft's compliance and data governance platform - handles data classification, retention policies, eDiscovery, and audit logging across M365 and Azure.</div></span></span> and audit logging</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Purview handles data classification, retention, and eDiscovery. At Latham Pool Products, I worked directly with Legal to build hold policies that held up in practice - not just on paper.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-phase">
+            <div class="pgrid"></div><div class="pbar"></div><div class="pbgl">G</div>
+            <div class="pca">
+              <div class="ptql">"What isn't governed<br>eventually breaks."</div>
+              <div class="ppoints">
+                <div class="pp"><div class="ppicon"><span>1</span></div><div class="pptext"><strong>Policy enforcement</strong> - Azure Policy, Conditional Access, and Defender for Cloud working as an integrated system</div></div>
+                <div class="pp"><div class="ppicon"><span>2</span></div><div class="pptext"><strong>Identity governance</strong> - least privilege enforced through PIM, access reviews on a defined cycle</div></div>
+                <div class="pp"><div class="ppicon"><span>3</span></div><div class="pptext"><strong>Compliance visibility</strong> - Purview, audit logging, and retention aligned to regulatory requirements</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: NAVIGATE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lp-header">
+          <div class="ai">A·L·I·G·<span class="on">N</span></div>
+          <div class="lbl">Phase Five</div>
+          <div class="stitle">Navigate</div>
+          <div class="ssub">Continuous Improvement</div>
+          <div class="rule"></div>
+          </div>
+          <ul class="blist">
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Use analytics and operational feedback to measure platform performance</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>I track Microsoft 365 admin center reporting, Defender Secure Score trends, and Azure Monitor over time - not just at project close. A platform that looked healthy at launch can degrade quietly.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Identify opportunities for optimization, cost efficiency, and capability expansion</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>License utilization reviews frequently uncover significant waste - unused E5 licenses, duplicate tools, or underused capabilities that could replace paid third-party products entirely.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Track Microsoft and vendor roadmap changes and evaluate impact proactively</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Microsoft announces major changes at Ignite and Build. I track the roadmap and evaluate what's coming before the organization asks - so they're positioned to take advantage of new capabilities, not caught off guard by deprecations.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Provide ongoing support and regular operational reviews</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>Regular check-ins prevent the "set it and forget it" problem - environments that look good at launch but degrade quietly as configurations drift and new capabilities go undeployed.</div></div>
+            </li>
+            <li class="bitem">
+              <div class="btrigger"><span class="barrow">›</span><span class="btext">Anticipate future needs and adapt the architecture accordingly</span></div>
+              <div class="bexpand"><div class="bexpand-inner"><div class="bexpand-label">In Practice</div>The organizations that stay ahead of the curve treat architecture as a living practice, not a project with an end date. Navigate is what keeps the platform aligned to where the organization is going - not just where it was.</div></div>
+            </li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-phase">
+            <div class="pgrid"></div><div class="pbar"></div><div class="pbgl">N</div>
+            <div class="pca">
+              <div class="ptql">"The finish line<br>is a moving target."</div>
+              <div class="ppoints">
+                <div class="pp"><div class="ppicon"><span>1</span></div><div class="pptext"><strong>Performance measurement</strong> - operational health, security posture, and cost efficiency tracked over time</div></div>
+                <div class="pp"><div class="ppicon"><span>2</span></div><div class="pptext"><strong>Roadmap awareness</strong> - proactive evaluation of new Microsoft capabilities before they become urgent</div></div>
+                <div class="pp"><div class="ppicon"><span>3</span></div><div class="pptext"><strong>Continuous alignment</strong> - the architecture evolves as the organization's needs and the platform do</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: CLOSE -->
+    <div class="slide">
+      <div class="split">
+        <div class="lp">
+          <div class="lbl">Closing Thought</div>
+          <div class="stitle">A.L.I.G.N.</div>
+          <div class="rule"></div>
+          <div class="sbody">This framework reflects how I approach every engagement - with a structured process, honest assessment, and a focus on building something that holds up after the project closes.</div>
+          <ul class="cblist">
+            <li><strong>Assess</strong> - understand before designing</li>
+            <li><strong>Leverage</strong> - use what fits, build only what's missing</li>
+            <li><strong>Implement</strong> - deploy carefully, validate at every step</li>
+            <li><strong>Govern</strong> - enforce and maintain what was built</li>
+            <li><strong>Navigate</strong> - evolve as needs and technology change</li>
+          </ul>
+          <div class="byline">
+            <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
+            <div class="bl-contact">daniel@lepel.us · (518) 618-3700<br>daniellepel.com</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="viz viz-close">
+            <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+            <div class="close-center">
+              <span class="qmark">&#8220;</span>
+              <div class="qbody">Good architecture isn't about the technology - it's about whether the people relying on it can do their jobs without thinking about it.</div>
+              <span class="qmark-close">&#8221;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <div class="pdots" id="dots"></div>
+  <div class="nav-arrows">
+    <div class="nbtn" id="prev">&#8592;</div>
+    <div class="nbtn" id="next">&#8594;</div>
+  </div>
+
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const tabs   = document.querySelectorAll('.tab');
+  const dotsEl = document.getElementById('dots');
+  const total  = slides.length;
+  let current  = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    tabs[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    tabs[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  tabs.forEach((t, i) => t.addEventListener('click', () => goTo(i)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  // Clickable ALIGN letters on cover
+  document.querySelectorAll('.ald[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+  });
+
+  // Clickable overview flow steps
+  document.querySelectorAll('.pfstep[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+  });
+
+  // Expandable bullets - only one open at a time per slide
+  document.querySelectorAll('.btrigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.bitem');
+      trigger.closest('.blist').querySelectorAll('.bitem.open').forEach(other => {
+        if (other !== item) other.classList.remove('open');
+      });
+      item.classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>
