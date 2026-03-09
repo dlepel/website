@@ -674,14 +674,17 @@
 <style>
   .chat-bubble {
     position: fixed; bottom: 28px; right: 28px; z-index: 1000;
-    width: 52px; height: 52px; border-radius: 50%;
+    height: 48px; border-radius: 24px;
     background: #c8914a; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 20px rgba(200,145,74,0.4);
-    transition: transform .2s, box-shadow .2s;
+    gap: 10px; padding: 0 22px 0 16px;
+    box-shadow: 0 4px 24px rgba(200,145,74,0.45);
+    transition: transform .2s, box-shadow .2s, background .2s;
+    white-space: nowrap;
   }
-  .chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(200,145,74,0.55); }
-  .chat-bubble svg { width: 24px; height: 24px; fill: #181818; }
+  .chat-bubble:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,145,74,0.6); background: #e0aa6a; }
+  .chat-bubble svg { width: 20px; height: 20px; fill: #181818; flex-shrink: 0; }
+  .chat-bubble-label { font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 700; color: #181818; letter-spacing: .04em; }
 
   .chat-window {
     position: fixed; bottom: 92px; right: 28px; z-index: 1000;
@@ -754,10 +757,11 @@
   @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
 </style>
 
-<div class="chat-bubble" id="chatBubble" title="Ask me anything">
+<div class="chat-bubble" id="chatBubble">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
   </svg>
+  <span class="chat-bubble-label">Ask me anything</span>
 </div>
 
 <div class="chat-window" id="chatWindow">
