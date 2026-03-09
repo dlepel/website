@@ -27,7 +27,7 @@
   /* TABBAR */
   .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
   .tabbar::-webkit-scrollbar{display:none;}
-  .tab{padding:13px 20px;cursor:pointer;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab{padding:14px 20px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
   .tab:hover{color:var(--white);}
   .tab.active{color:var(--white);border-bottom-color:var(--orange);}
   .tab .tl{color:var(--orange);font-size:15px;}
@@ -50,10 +50,10 @@
   .ai{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.18em;color:var(--dim);margin-bottom:5px;}
   .ai .on{color:var(--orange);font-weight:700;}
   .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
-  .stitle{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:500;color:var(--white);line-height:1.05;margin-bottom:4px;}
-  .ssub{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:50px;font-weight:500;color:var(--white);line-height:1.05;margin-bottom:4px;}
+  .ssub{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
   .rule{width:44px;height:1px;background:var(--orange);margin-bottom:12px;opacity:.7;}
-  .sbody{font-size:14px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+  .sbody{font-size:16px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
 
   /* HEADER BLOCK */
   .lp-header{flex-shrink:0;}
@@ -66,10 +66,10 @@
   .btrigger:hover{background:rgba(200,145,74,.05);}
   .barrow{color:var(--orange);font-size:16px;line-height:1.45;flex-shrink:0;transition:transform .25s;margin-top:2px;}
   .bitem.open .barrow{transform:rotate(90deg);}
-  .btext{font-size:16px;font-weight:400;line-height:1.5;color:var(--white);}
+  .btext{font-size:17px;font-weight:400;line-height:1.5;color:var(--white);}
   .bexpand{display:none;padding:2px 4px 12px 26px;}
   .bitem.open .bexpand{display:block;}
-  .bexpand-inner{font-size:13px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-inner{font-size:15px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
   .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
 
   /* GLOSSARY TOOLTIPS */
@@ -77,14 +77,14 @@
   .gt-tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--tip-bg);border:1px solid var(--rule);padding:10px 14px;width:260px;z-index:200;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.7);}
   .gt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--rule);}
   .gt-tip-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
-  .gt-tip-body{font-size:12px;font-weight:300;line-height:1.6;color:var(--white);}
+  .gt-tip-body{font-size:13px;font-weight:300;line-height:1.6;color:var(--white);}
   .gt:hover .gt-tip{visibility:visible;opacity:1;}
 
   /* BYLINE */
   .byline{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,145,74,.15);display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
-  .bl-name{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
-  .bl-title{font-size:11px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
-  .bl-contact{font-size:11px;color:var(--dim);text-align:right;line-height:1.7;}
+  .bl-name{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
+  .bl-title{font-size:12px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
+  .bl-contact{font-size:12px;color:var(--dim);text-align:right;line-height:1.7;}
 
   /* VIZ COVER */
   .viz{width:100%;height:100%;position:relative;overflow:hidden;}
@@ -149,7 +149,7 @@
   @keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
   .close-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;}
   .qmark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--orange);opacity:.55;line-height:.7;display:block;margin-bottom:10px;}
-  .qbody{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:400px;opacity:.9;}
+  .qbody{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:400px;opacity:.9;}
   .qmark-close{font-family:'Cormorant Garamond',serif;font-size:72px;color:var(--orange);opacity:.35;line-height:.5;display:block;margin-top:6px;text-align:right;width:400px;}
 
   /* COVER LEFT */
@@ -157,8 +157,8 @@
   .cover-eyebrow{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
   .cover-title{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:400;color:var(--white);line-height:1.0;margin-bottom:12px;}
   .cover-rule{width:60px;height:2px;background:var(--orange);margin-bottom:14px;}
-  .cover-sub{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
-  .cover-hint{font-size:12px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
+  .cover-sub{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
+  .cover-hint{font-size:14px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
   .cover-name{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
   .cover-ctitle{font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dim);}
 
@@ -216,7 +216,7 @@
           <div class="cover-ctitle">Principal Microsoft Cloud Architect</div>
           <div class="byline" style="margin-top:22px;">
             <div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1a5a0afa8a4ad81ada4b1a4adefb4b2">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -253,7 +253,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7b7e71767a735f737a6f7a73316a6c">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -281,7 +281,7 @@
           <div class="sbody" style="font-style:italic;font-size:12.5px;color:var(--dim);">Click any phase on the right to jump directly to it.</div>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5531343b3c30391539302530397b2026">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -333,7 +333,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="197d7877707c7559757c697c75376c6a">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -387,7 +387,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177376797e727b577b7267727b396264">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -441,7 +441,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="086c6966616d6448646d786d64267d7b">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -495,7 +495,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="187c7976717d7458747d687d74366d6b">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -549,7 +549,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6400050a0d01082408011401084a1117">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -585,7 +585,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us · (518) 618-3700<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fcf9f6f1fdf4d8f4fde8fdf4b6edeb">[email&#160;protected]</a> · (518) 618-3700<br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -610,7 +610,7 @@
   </div>
 
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   const slides = document.querySelectorAll('.slide');
   const tabs   = document.querySelectorAll('.tab');
   const dotsEl = document.getElementById('dots');
@@ -635,35 +635,4 @@
     tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
   }
 
-  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
-  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
-  tabs.forEach((t, i) => t.addEventListener('click', () => goTo(i)));
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
-  });
-
-  // Clickable ALIGN letters on cover
-  document.querySelectorAll('.ald[data-goto]').forEach(el => {
-    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
-  });
-
-  // Clickable overview flow steps
-  document.querySelectorAll('.pfstep[data-goto]').forEach(el => {
-    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
-  });
-
-  // Expandable bullets - only one open at a time per slide
-  document.querySelectorAll('.btrigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-      const item = trigger.closest('.bitem');
-      trigger.closest('.blist').querySelectorAll('.bitem.open').forEach(other => {
-        if (other !== item) other.classList.remove('open');
-      });
-      item.classList.toggle('open');
-    });
-  });
-</script>
-</body>
-</html>
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1))

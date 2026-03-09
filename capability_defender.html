@@ -17,10 +17,10 @@
 
   /* TOP NAV */
   .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
-  .topnav-home{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
+  .topnav-home{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
   .topnav-home:hover{color:var(--orange);}
   .topnav-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--dim);}
-  .topnav-section{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
+  .topnav-section{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
 
   /* SHELL */
   .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
@@ -28,14 +28,14 @@
   /* HERO */
   .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
   .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
-  .hero-title{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
-  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--og2);margin-bottom:12px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:400;color:var(--white);line-height:1.05;margin-bottom:8px;}
+  .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--og2);margin-bottom:12px;}
   .hero-rule{width:48px;height:1px;background:var(--orange);opacity:.7;margin-bottom:14px;}
-  .hero-def{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
+  .hero-def{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:680px;margin-bottom:24px;}
 
   /* TABBAR */
   .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;}
-  .tab{padding:13px 22px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab{padding:13px 22px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
   .tab:hover{color:var(--white);}
   .tab.active{color:var(--white);border-bottom-color:var(--orange);}
   .tab .tl{color:var(--orange);}
@@ -50,18 +50,18 @@
 
   /* SECTIONS */
   .tab-section{margin-bottom:28px;}
-  .section-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
-  .section-body{font-size:15px;font-weight:300;line-height:1.8;color:#c8c2ba;}
-  .section-body.first{font-size:16px;color:var(--white);}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
+  .section-body{font-size:17px;font-weight:300;line-height:1.85;color:#c8c2ba;}
+  .section-body.first{font-size:18px;color:var(--white);}
 
   /* LISTS */
   .cap-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:4px;}
-  .cap-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
+  .cap-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.65;}
   .cap-list li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.4;}
   .cap-list li strong{font-weight:600;color:var(--og2);}
 
   .work-list{list-style:none;display:flex;flex-direction:column;gap:18px;}
-  .work-list li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
+  .work-list li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:18px;position:relative;line-height:1.7;border-left:2px solid rgba(200,145,74,.25);padding-left:16px;}
   .work-list li strong{font-weight:600;color:var(--og2);display:block;margin-bottom:3px;}
 
   /* RELATED CARDS */
@@ -69,13 +69,13 @@
   .related-card{background:var(--dark2);border:1px solid rgba(200,145,74,.2);border-top:2px solid var(--orange);padding:18px;text-decoration:none;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s;}
   .related-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(200,145,74,.12);}
   .related-card-label{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
-  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
-  .related-card-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
-  .related-card-link{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
+  .related-card-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--white);margin-bottom:8px;line-height:1.3;}
+  .related-card-desc{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;flex:1;margin-bottom:10px;}
+  .related-card-link{font-size:13px;font-weight:600;color:var(--orange);letter-spacing:.06em;}
 
   /* PAGE NAV */
   .pagenav{width:100%;max-width:1000px;display:flex;justify-content:space-between;padding:16px 32px;border-top:1px solid var(--rule);margin-top:auto;}
-  .pagenav-btn{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+  .pagenav-btn{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
   .pagenav-btn:hover{color:var(--orange);}
   .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
 </style>

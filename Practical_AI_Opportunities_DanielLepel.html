@@ -27,7 +27,7 @@
   /* TABBAR */
   .tabbar{display:flex;background:var(--panel);border-bottom:1px solid var(--rule);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
   .tabbar::-webkit-scrollbar{display:none;}
-  .tab{padding:13px 16px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
+  .tab{padding:14px 16px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--dim);white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none;}
   .tab:hover{color:var(--white);}
   .tab.active{color:var(--white);border-bottom-color:var(--orange);}
   .tab .tl{color:var(--orange);font-size:13px;}
@@ -48,10 +48,10 @@
 
   /* TEXT */
   .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
-  .stitle{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
-  .ssub{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
+  .stitle{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:500;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .ssub{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:10px;}
   .rule{width:44px;height:1px;background:var(--orange);margin-bottom:12px;opacity:.7;}
-  .sbody{font-size:14px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
+  .sbody{font-size:16px;font-weight:300;line-height:1.7;color:#b8b0a4;margin-bottom:12px;}
   .lp-header{flex-shrink:0;}
 
   /* EXPANDABLE BULLETS */
@@ -62,10 +62,10 @@
   .btrigger:hover{background:rgba(200,145,74,.05);}
   .barrow{color:var(--orange);font-size:16px;line-height:1.45;flex-shrink:0;transition:transform .25s;margin-top:2px;}
   .bitem.open .barrow{transform:rotate(90deg);}
-  .btext{font-size:15px;font-weight:400;line-height:1.5;color:var(--white);}
+  .btext{font-size:17px;font-weight:400;line-height:1.5;color:var(--white);}
   .bexpand{display:none;padding:2px 4px 12px 26px;}
   .bitem.open .bexpand{display:block;}
-  .bexpand-inner{font-size:13px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
+  .bexpand-inner{font-size:15px;font-weight:300;line-height:1.65;color:var(--dim);border-left:2px solid rgba(200,145,74,.35);padding-left:12px;font-style:italic;}
   .bexpand-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);margin-bottom:4px;font-style:normal;}
 
   /* GLOSSARY TOOLTIPS */
@@ -73,14 +73,14 @@
   .gt-tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--tip-bg);border:1px solid var(--rule);padding:10px 14px;width:260px;z-index:200;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.7);}
   .gt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--rule);}
   .gt-tip-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:5px;}
-  .gt-tip-body{font-size:12px;font-weight:300;line-height:1.6;color:var(--white);}
+  .gt-tip-body{font-size:13px;font-weight:300;line-height:1.6;color:var(--white);}
   .gt:hover .gt-tip{visibility:visible;opacity:1;}
 
   /* BYLINE */
   .byline{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,145,74,.15);display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
-  .bl-name{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:2px;}
-  .bl-title{font-size:11px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
-  .bl-contact{font-size:11px;color:var(--dim);text-align:right;line-height:1.7;}
+  .bl-name{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:2px;}
+  .bl-title{font-size:12px;font-weight:300;letter-spacing:.06em;color:var(--dim);}
+  .bl-contact{font-size:12px;color:var(--dim);text-align:right;line-height:1.7;}
 
   /* VIZ - SHARED */
   .viz{width:100%;height:100%;position:relative;overflow:hidden;}
@@ -88,12 +88,12 @@
   .vp-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--orange) 40%,var(--orange) 60%,transparent);}
   .vp-bgl{position:absolute;bottom:-60px;right:-30px;font-family:'Cormorant Garamond',serif;font-size:380px;font-weight:300;color:rgba(200,145,74,.13);line-height:1;pointer-events:none;user-select:none;}
   .vp-ca{position:relative;z-index:2;padding:44px 48px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:28px;}
-  .vp-quote{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:rgba(240,236,228,.52);line-height:1.35;font-style:italic;}
+  .vp-quote{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:rgba(240,236,228,.52);line-height:1.35;font-style:italic;}
   .vp-points{display:flex;flex-direction:column;gap:20px;}
   .vp-pt{display:flex;gap:14px;align-items:flex-start;}
   .vp-icon{width:28px;height:28px;border:1px solid rgba(200,145,74,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
   .vp-icon span{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--orange);}
-  .vp-text{font-size:15px;font-weight:300;color:var(--white);line-height:1.6;}
+  .vp-text{font-size:17px;font-weight:300;color:var(--white);line-height:1.6;}
   .vp-text strong{font-weight:600;color:var(--og2);}
 
   /* COVER */
@@ -101,8 +101,8 @@
   .cover-eyebrow{font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
   .cover-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:400;color:var(--white);line-height:1.1;margin-bottom:12px;}
   .cover-rule{width:60px;height:2px;background:var(--orange);margin-bottom:14px;}
-  .cover-sub{font-size:14px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
-  .cover-hint{font-size:12px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
+  .cover-sub{font-size:16px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:10px;}
+  .cover-hint{font-size:14px;font-weight:300;color:rgba(200,145,74,.55);font-style:italic;margin-bottom:24px;}
   .cover-name{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:3px;}
   .cover-ctitle{font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dim);}
 
@@ -117,7 +117,7 @@
 
   /* PLAIN LIST */
   .clist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-  .clist li{font-size:14px;font-weight:300;color:#c8c2ba;padding-left:16px;position:relative;line-height:1.55;}
+  .clist li{font-size:16px;font-weight:300;color:#c8c2ba;padding-left:16px;position:relative;line-height:1.55;}
   .clist li::before{content:'›';position:absolute;left:0;color:var(--orange);font-size:16px;line-height:1.3;}
   .clist li strong{font-weight:600;color:var(--og2);}
 
@@ -133,7 +133,7 @@
   @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   .close-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;}
   .qmark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--orange);opacity:.55;line-height:.7;display:block;margin-bottom:10px;}
-  .qbody{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:420px;opacity:.9;}
+  .qbody{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;font-style:italic;color:var(--white);line-height:1.65;max-width:420px;opacity:.9;}
   .qmark-close{font-family:'Cormorant Garamond',serif;font-size:72px;color:var(--orange);opacity:.35;line-height:.5;display:block;margin-top:6px;text-align:right;width:420px;}
 
   /* NAV */
@@ -181,7 +181,7 @@
           <div class="cover-ctitle">Principal Microsoft Cloud Architect</div>
           <div class="byline" style="margin-top:22px;">
             <div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076366696e626b476b6277626b297274">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -238,7 +238,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1175707f78747d517d7461747d3f6462">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -288,7 +288,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="debabfb0b7bbb29eb2bbaebbb2f0abad">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -338,7 +338,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761217181f131a361a1306131a580305">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -388,7 +388,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1377727d7a767f537f7663767f3d6660">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -438,7 +438,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d9bdb8b7b0bcb599b5bca9bcb5f7acaa">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -488,7 +488,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2b2e21262a230f232a3f2a23613a3c">[email&#160;protected]</a><br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -527,7 +527,7 @@
           </ul>
           <div class="byline">
             <div><div class="bl-name">Daniel Lepel</div><div class="bl-title">Principal Microsoft Cloud Architect</div></div>
-            <div class="bl-contact">daniel@lepel.us · (518) 618-3700<br>daniellepel.com</div>
+            <div class="bl-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5236333c3b373e123e3722373e7c2721">[email&#160;protected]</a> · (518) 618-3700<br>daniellepel.com</div>
           </div>
         </div>
         <div class="rp">
@@ -552,7 +552,7 @@
   </div>
 
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   const slides = document.querySelectorAll('.slide');
   const tabs   = document.querySelectorAll('.tab');
   const dotsEl = document.getElementById('dots');
@@ -574,31 +574,4 @@
     slides[current].classList.add('active');
     tabs[current].classList.add('active');
     dotsEl.children[current].classList.add('active');
-    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
-  }
-
-  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
-  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
-  tabs.forEach((t, i) => t.addEventListener('click', () => goTo(i)));
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
-  });
-
-  document.querySelectorAll('.vi-cap[data-goto]').forEach(el => {
-    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
-  });
-
-  document.querySelectorAll('.btrigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-      const item = trigger.closest('.bitem');
-      trigger.closest('.blist').querySelectorAll('.bitem.open').forEach(other => {
-        if (other !== item) other.classList.remove('open');
-      });
-      item.classList.toggle('open');
-    });
-  });
-</script>
-</body>
-</html>
+    tabs[current].scro
