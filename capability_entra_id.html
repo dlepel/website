@@ -120,7 +120,7 @@
                 <div class="tab-section" style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(200,145,74,.15);">
                   <div class="section-label" style="color:var(--orange);margin-bottom:12px;">In Practice</div>
                   <p class="section-body" style="color:var(--dim);line-height:1.75;">At National Business Technologies, I was the sole Microsoft platform architect across approximately 25 MSP client tenants. Every environment had an Entra ID footprint I owned end-to-end, from authentication configuration and Conditional Access frameworks through hybrid identity, guest access governance, and privileged access controls. No two were identical, which meant developing architectural patterns that adapted rather than applied verbatim.</p>
-                </div></div><div class="tab-pane" id="experience">
+                </div></div></div><div class="tab-pane" id="experience">
                 <div class="tab-section">
                   <div class="section-body first">Entra ID is the capability I have worked with most consistently across the widest range of environments. At National Business Technologies, I was the sole Microsoft platform architect across approximately 25 MSP client tenants. Every one of those environments had an Entra ID footprint that I owned, from the authentication configuration and Conditional Access framework through to hybrid identity, guest access governance, and privileged access controls. No two environments were identical, which meant developing architectural patterns that could be adapted rather than applied verbatim.</div>
                 </div>
@@ -169,14 +169,14 @@
 </div><script>
   const tabs = document.querySelectorAll('.tab');
   const panes = document.querySelectorAll('.tab-pane');
-  tabs.forEach((tab, i) => {{
-    tab.addEventListener('click', () => {{
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       panes.forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       panes[i].classList.add('active');
-    }});
-  }});
+    });
+  });
 </script>
 </body>
 </html>

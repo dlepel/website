@@ -120,7 +120,7 @@
                 <div class="tab-section" style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(200,145,74,.15);">
                   <div class="section-label" style="color:var(--orange);margin-bottom:12px;">In Practice</div>
                   <p class="section-body" style="color:var(--dim);line-height:1.75;">The clearest example is the Mimecast replacement at Latham Pool Products. The organization was paying for Mimecast while simultaneously holding an E5 license that already included Defender for Office 365 Plan 2. I designed and executed the migration to the native capability, eliminating the third-party cost entirely. Across the NBT portfolio, identifying and activating underused E5 capabilities was a recurring pattern: organizations paying for E5 and using E3.</p>
-                </div></div><div class="tab-pane" id="experience">
+                </div></div></div><div class="tab-pane" id="experience">
                 <div class="tab-section">
                   <div class="section-body first">The clearest example of E5 enablement work in my career is the Mimecast replacement at Latham Pool Products. The organization was paying for Mimecast as a secure email gateway while simultaneously holding an M365 E5 license that included Defender for Office 365 Plan 2, which covered the same function. I designed and executed the migration from Mimecast to Defender for Office 365, activating the native capability and eliminating the third-party licensing cost entirely. The protection quality was equivalent; the cost was zero once the E5 license was already in place.</div>
                 </div>
@@ -169,14 +169,14 @@
 </div><script>
   const tabs = document.querySelectorAll('.tab');
   const panes = document.querySelectorAll('.tab-pane');
-  tabs.forEach((tab, i) => {{
-    tab.addEventListener('click', () => {{
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       panes.forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       panes[i].classList.add('active');
-    }});
-  }});
+    });
+  });
 </script>
 </body>
 </html>

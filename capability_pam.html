@@ -120,7 +120,7 @@
                 <div class="tab-section" style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(200,145,74,.15);">
                   <div class="section-label" style="color:var(--orange);margin-bottom:12px;">In Practice</div>
                   <p class="section-body" style="color:var(--dim);line-height:1.75;">Across the NBT client portfolio, the baseline goal was consistent: no standing Global Administrator accounts assigned to real user accounts. PIM deployment meant developing a configuration pattern that could be adapted to each organization's administrative team structure and risk tolerance, including break-glass account controls, activation justification requirements, and fixed-schedule access reviews.</p>
-                </div></div><div class="tab-pane" id="experience">
+                </div></div></div><div class="tab-pane" id="experience">
                 <div class="tab-section">
                   <div class="section-body first">Privileged Identity Management deployment is a standard component of the identity governance work I do in every Microsoft environment. The baseline goal is consistent: no standing Global Administrator accounts assigned to real user accounts. Break-glass emergency access accounts are the only exception, and those are tightly controlled, monitored, and reviewed on a fixed schedule.</div>
                 </div>
@@ -162,14 +162,14 @@
 </div><script>
   const tabs = document.querySelectorAll('.tab');
   const panes = document.querySelectorAll('.tab-pane');
-  tabs.forEach((tab, i) => {{
-    tab.addEventListener('click', () => {{
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
       panes.forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       panes[i].classList.add('active');
-    }});
-  }});
+    });
+  });
 </script>
 </body>
 </html>
