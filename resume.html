@@ -92,7 +92,7 @@
   .tl-role{font-size:17px;font-weight:600;color:var(--white);line-height:1.3;}
   .tl-company{font-size:14px;font-weight:300;color:var(--orange);margin-top:3px;}
 
-  .skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+  .skills-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:8px;}
   .skill-group-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
   .skill-group ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
   .skill-group ul li{font-size:15px;font-weight:300;color:#c8c2ba;padding-left:14px;position:relative;line-height:1.5;}
@@ -118,7 +118,7 @@
   <div class="hero">
     <div class="hero-eyebrow">Career Profile</div>
     <div class="hero-title">Daniel R. Lepel</div>
-    <div class="hero-tagline">Principal Microsoft Cloud Architect</div>
+    <div class="hero-tagline">Principal Microsoft Cloud Architect<br>Microsoft 365 &amp; Azure Platform Architecture</div>
     <div class="hero-rule"></div>
     <div class="hero-def">Albany, NY &nbsp;·&nbsp; <span id="em"></span> &nbsp;·&nbsp; (518) 618-3700</div>
   </div>
@@ -167,6 +167,14 @@
           <div class="comp-card">
             <div class="comp-card-title">Automation &amp; Operational Reliability</div>
             <div class="comp-card-body">PowerShell 7, Microsoft Graph API, Azure Automation, reporting, and platform health automation</div>
+          </div>
+          <div class="comp-card">
+            <div class="comp-card-title">Governance &amp; Compliance</div>
+            <div class="comp-card-body">Microsoft Purview, DLP, sensitivity labels, retention policies, eDiscovery, Azure Policy, regulatory compliance frameworks</div>
+          </div>
+          <div class="comp-card">
+            <div class="comp-card-title">Hybrid Infrastructure &amp; Virtualization</div>
+            <div class="comp-card-body">Windows Server, Active Directory, Group Policy, Hyper-V, VMware ESX, Scale Computing HC3, Azure Arc, hybrid identity, and on-premises to cloud migration</div>
           </div>
         </div>
       </div>
@@ -239,6 +247,8 @@
           <li>Consolidated MSP security offerings around <a href="capability_defender.html" target="_blank">Microsoft Defender</a> and Intune, reducing tool sprawl while improving visibility and protection</li>
           <li>Developed PowerShell and Microsoft Graph automation to support platform assessments, reporting, and SharePoint-based data ingestion</li>
           <li>Acted as senior technical authority during platform transitions, driving architectural changes that reduced escalation volume and improved customer and internal team satisfaction</li>
+          <li>Managed Hyper-V and Scale Computing HC3 hyperconverged infrastructure across client environments, supporting server consolidation and business continuity planning</li>
+          <li>Established change management and documentation standards where none existed, creating SOPs for repeatable platform tasks and building an audit trail for configuration decisions across the MSP portfolio</li>
         </ul>
       </div>
       <div class="tab-section">
@@ -280,6 +290,9 @@
           <li>Enhanced security posture through CrowdStrike, <a href="capability_defender.html" target="_blank">Defender</a>, and Azure Arc integration</li>
           <li>Automated manual processes using PowerShell, improving efficiency and reducing error rates across routine infrastructure tasks</li>
           <li>Served as senior escalation resource for complex Azure, Exchange, and Microsoft 365 issues</li>
+          <li>Managed disaster recovery and backup strategy using Rubrik and Azure Backup, covering on-premises servers and Azure workloads with defined RTOs and tested recovery procedures</li>
+          <li>Deployed Azure Blob Storage and Azure File Share to replace aging on-premises file infrastructure, reducing storage costs and enabling cloud-accessible file services for distributed teams</li>
+          <li>Created operational SOPs for recurring platform tasks, improving consistency and reducing dependency on institutional knowledge for routine infrastructure work</li>
         </ul>
       </div>
       <div class="tab-section">
@@ -313,14 +326,9 @@
       <div class="tab-section">
         <div class="section-label">What I Did</div>
         <ul class="cap-list">
-          <li>Supported and maintained Windows Server infrastructure underpinning FIS banking and payment platforms for financial institution clients nationwide</li>
           <li>Administered Active Directory across multiple domains, including a functional domain upgrade, coordinating the transition while maintaining platform stability for banking operations</li>
-          <li>Led Windows Server migrations across banking application environments, maintaining application continuity throughout</li>
-          <li>Supported banking applications and AS/400 connectivity across multiple U.S. data centers</li>
           <li>Redesigned the daily report generation process for bank clients. Replaced a fragmented series of scheduled tasks spread across multiple servers with two concurrent jobs that ran toward each other from opposite ends of the client list, completing full coverage faster and more reliably</li>
-          <li>Built error handling and automatic restart logic into the job framework. There was none before, meaning failed runs went undetected. The new jobs ran until all files were confirmed complete</li>
           <li>Built an Operations dashboard showing each bank's report status in real time: pending, running, or completed. Gave the team visibility they previously had to chase manually</li>
-          <li>Delivered all automation using CMD batch scripting within the constraints of the environment</li>
         </ul>
       </div>
       <div class="tab-section">
@@ -387,6 +395,8 @@
           <li>Delivered 24x7 operational support with sustained 98-100% SLA performance, mentoring junior engineers and coordinating cross-team response efforts</li>
           <li>Managed and provided process improvements for the Security &amp; ID Administration team of 15</li>
           <li>Led and supported the Tier 3 escalation team for all Messaging and Notes database issues</li>
+          <li>Managed SAN storage infrastructure supporting the MetLife global server estate, including provisioning, capacity planning, and coordination with storage operations teams</li>
+          <li>Administered network infrastructure including VLAN configuration, DNS, DHCP, and load balancer coordination across enterprise data center environments</li>
         </ul>
       </div>
       <div class="tab-section">
@@ -439,7 +449,9 @@
               <li>Microsoft Intune</li>
               <li>Autopilot</li>
               <li>Windows Hello for Business</li>
-              <li>Modern device lifecycle</li>
+              <li>Co-management</li>
+              <li>Group Policy migration</li>
+              <li>Device compliance policies</li>
             </ul>
           </div>
           <div class="skill-group">
@@ -458,9 +470,34 @@
               <li>PowerShell 7 (daily use)</li>
               <li>Microsoft Graph API</li>
               <li>Azure Automation</li>
-              <li>Windows Server (2000-2025)</li>
+              <li>Windows Server (2000–2025)</li>
               <li>Active Directory</li>
-              <li>VMware ESX (MetLife)</li>
+              <li>Group Policy</li>
+              <li>Hyper-V</li>
+              <li>VMware ESX (MetLife/FIS)</li>
+              <li>Scale Computing HC3 (NBT)</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <div class="skill-group-label">Governance &amp; Compliance</div>
+            <ul>
+              <li>Microsoft Purview</li>
+              <li>DLP &amp; Sensitivity Labels</li>
+              <li>Retention &amp; eDiscovery</li>
+              <li>Azure Policy</li>
+              <li>Microsoft Secure Score</li>
+              <li>NIST 800-207, HIPAA, SOC 2</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <div class="skill-group-label">Networking &amp; Storage</div>
+            <ul>
+              <li>DNS, DHCP, VLAN</li>
+              <li>Site-to-site VPN</li>
+              <li>ExpressRoute</li>
+              <li>Azure Blob / File Share</li>
+              <li>SAN storage (MetLife)</li>
+              <li>Rubrik, Azure Backup</li>
             </ul>
           </div>
         </div>
