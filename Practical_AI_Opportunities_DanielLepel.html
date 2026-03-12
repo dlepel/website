@@ -574,7 +574,7 @@
     dotsEl.appendChild(d);
   }
 
-  function goTo(n) {
+    function goTo(n) {
     slides[current].classList.remove('active');
     tabs[current].classList.remove('active');
     dotsEl.children[current].classList.remove('active');
@@ -582,7 +582,10 @@
     slides[current].classList.add('active');
     tabs[current].classList.add('active');
     dotsEl.children[current].classList.add('active');
-    tabs[current].scro
+    tabs[current].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+
   document.getElementById('next').addEventListener('click', () => goTo(current + 1))
   document.getElementById('prev').addEventListener('click', () => goTo(current - 1))
 
