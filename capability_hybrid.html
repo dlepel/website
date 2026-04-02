@@ -23,12 +23,12 @@
   html,body{height:100%;background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
   body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;min-height:100vh;}
 
-  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;}
+  .topnav{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--rule);flex-shrink:0;;position:relative;z-index:2;}
   .topnav-home{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s;}
   .topnav-home:hover{color:var(--orange);}
   .topnav-section{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
 
-  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;}
+  .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;flex:1;;position:relative;z-index:2;}
 
   .hero{padding:36px 32px 0;border-bottom:1px solid rgba(200,145,74,.12);}
   .hero-eyebrow{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;}
@@ -76,9 +76,98 @@
   .pagenav-btn{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
   .pagenav-btn:hover{color:var(--orange);}
   .pagenav-btn.disabled{pointer-events:none;opacity:.2;}
+
+/* ── ANIMATED GRADIENT MESH BACKGROUND ── */
+.gradient-mesh {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none; overflow: hidden;
+}
+.gradient-mesh .blob {
+  position: absolute; border-radius: 50%; filter: blur(90px);
+  opacity: 0; animation: blobFadeIn 2s ease forwards;
+}
+@keyframes blobFadeIn { to { opacity: 1; } }
+
+.blob-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(200,145,74,0.35) 0%, transparent 70%);
+  top: -10%; right: -5%;
+  animation: drift1 25s ease-in-out infinite, blobFadeIn 2s ease forwards !important;
+}
+@keyframes drift1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25% { transform: translate(-180px,120px) scale(1.15); }
+  50% { transform: translate(-80px,250px) scale(0.9); }
+  75% { transform: translate(100px,150px) scale(1.08); }
+}
+
+.blob-2 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(160,100,50,0.30) 0%, transparent 70%);
+  top: 30%; left: -8%;
+  animation: drift2 30s ease-in-out infinite, blobFadeIn 2s ease 0.5s forwards !important;
+}
+@keyframes drift2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25% { transform: translate(200px,-100px) scale(1.12); }
+  50% { transform: translate(280px,80px) scale(0.88); }
+  75% { transform: translate(120px,-50px) scale(1.05); }
+}
+
+.blob-3 {
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(200,145,74,0.25) 0%, transparent 70%);
+  bottom: -15%; right: 20%;
+  animation: drift3 35s ease-in-out infinite, blobFadeIn 2s ease 1s forwards !important;
+}
+@keyframes drift3 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25% { transform: translate(-150px,-160px) scale(1.15); }
+  50% { transform: translate(120px,-220px) scale(0.85); }
+  75% { transform: translate(-80px,-100px) scale(1.1); }
+}
+
+.blob-4 {
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(140,90,40,0.22) 0%, transparent 70%);
+  top: 55%; right: -3%;
+  animation: drift4 28s ease-in-out infinite, blobFadeIn 2s ease 1.5s forwards !important;
+}
+@keyframes drift4 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25% { transform: translate(-160px,130px) scale(1.18); }
+  50% { transform: translate(-220px,-80px) scale(0.85); }
+  75% { transform: translate(60px,100px) scale(1.1); }
+}
+
+.noise-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1; pointer-events: none; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat; background-size: 256px 256px;
+}
+
+.cursor-glow {
+  position: fixed; width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,145,74,0.15) 0%, rgba(200,145,74,0.05) 30%, transparent 65%);
+  pointer-events: none; z-index: 1; transform: translate(-50%,-50%);
+  opacity: 0; transition: opacity 0.4s ease; filter: blur(30px);
+}
+.cursor-glow.visible { opacity: 1; }
+/* ── END GRADIENT MESH ── */
 </style>
 </head>
 <body>
+<!-- Animated gradient mesh background -->
+<div class="gradient-mesh">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="noise-overlay"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
 <div class="topnav">
   <a href="index.html" class="topnav-home">← daniellepel.com</a>
   <div class="topnav-section">Capability Profile</div>
@@ -210,5 +299,17 @@
     });
   });
 </script>
+<script>
+/* Cursor glow */
+(function(){
+  var glow=document.getElementById('cursorGlow');
+  if(!glow)return;
+  var gx=0,gy=0,cx=0,cy=0,vis=false;
+  document.addEventListener('mousemove',function(e){gx=e.clientX;gy=e.clientY;if(!vis){vis=true;glow.classList.add('visible');}});
+  document.addEventListener('mouseleave',function(){vis=false;glow.classList.remove('visible');});
+  (function loop(){cx+=(gx-cx)*0.08;cy+=(gy-cy)*0.08;glow.style.left=cx+'px';glow.style.top=cy+'px';requestAnimationFrame(loop);})();
+})();
+</script>
+
 </body>
 </html>

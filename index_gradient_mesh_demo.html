@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel Lepel | Gradient Mesh Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #c8914a;
+            --dark: #1a1a1a;
+            --medium: #2d2d2d;
+            --light: #f5f5f5;
+            --border: #404040;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           ANIMATED GRADIENT MESH BACKGROUND
+           ======================================== */
+        .gradient-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .gradient-mesh .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0;
+            animation: blobFadeIn 2s ease forwards;
+        }
+
+        @keyframes blobFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Blob 1: warm gold, top-right area */
+        .blob-1 {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(200, 145, 74, 0.35) 0%, transparent 70%);
+            top: -10%;
+            right: -5%;
+            animation: drift1 25s ease-in-out infinite, blobFadeIn 2s ease forwards !important;
+        }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-180px, 120px) scale(1.15); }
+            50% { transform: translate(-80px, 250px) scale(0.9); }
+            75% { transform: translate(100px, 150px) scale(1.08); }
+        }
+
+        /* Blob 2: deep copper, center-left */
+        .blob-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(160, 100, 50, 0.30) 0%, transparent 70%);
+            top: 30%;
+            left: -8%;
+            animation: drift2 30s ease-in-out infinite, blobFadeIn 2s ease 0.5s forwards !important;
+        }
+
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(200px, -100px) scale(1.12); }
+            50% { transform: translate(280px, 80px) scale(0.88); }
+            75% { transform: translate(120px, -50px) scale(1.05); }
+        }
+
+        /* Blob 3: warm amber, bottom area */
+        .blob-3 {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(200, 145, 74, 0.25) 0%, transparent 70%);
+            bottom: -15%;
+            right: 20%;
+            animation: drift3 35s ease-in-out infinite, blobFadeIn 2s ease 1s forwards !important;
+        }
+
+        @keyframes drift3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-150px, -160px) scale(1.15); }
+            50% { transform: translate(120px, -220px) scale(0.85); }
+            75% { transform: translate(-80px, -100px) scale(1.1); }
+        }
+
+        /* Blob 4: dark bronze, mid-right */
+        .blob-4 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(140, 90, 40, 0.22) 0%, transparent 70%);
+            top: 55%;
+            right: -3%;
+            animation: drift4 28s ease-in-out infinite, blobFadeIn 2s ease 1.5s forwards !important;
+        }
+
+        @keyframes drift4 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-160px, 130px) scale(1.18); }
+            50% { transform: translate(-220px, -80px) scale(0.85); }
+            75% { transform: translate(60px, 100px) scale(1.1); }
+        }
+
+        /* Subtle noise overlay for texture */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
+        }
+
+        /* ========================================
+           EXISTING SITE STYLES (preserved)
+           ======================================== */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-weight: 400;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 0.02em;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info a, .contact-info span {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-info a:hover { color: var(--primary); }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #a87540;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200, 145, 74, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        section { margin-bottom: 3rem; }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+        }
+
+        .bio p {
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-size: 1.05rem;
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .expertise-card {
+            background: rgba(45, 45, 45, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-top: 3px solid transparent;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, border-top-color 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardIn 0.5s ease forwards;
+        }
+
+        .expertise-card:nth-child(1) { animation-delay: 0.05s; }
+        .expertise-card:nth-child(2) { animation-delay: 0.15s; }
+        .expertise-card:nth-child(3) { animation-delay: 0.25s; }
+        .expertise-card:nth-child(4) { animation-delay: 0.35s; }
+
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-4px);
+            border-top-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(200, 145, 74, 0.12);
+        }
+
+        .expertise-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+        }
+
+        .expertise-card ul { list-style: none; }
+
+        .expertise-card li {
+            padding: 0.35rem 0;
+            color: var(--text);
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .expertise-card li::before {
+            content: "\25B8";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .expertise-card li a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(200,145,74,0.4);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .expertise-card li a:hover {
+            color: #e0a55a;
+            border-bottom-color: #e0a55a;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .doc-card {
+            background: rgba(45, 45, 45, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-top: 3px solid #c8914a;
+            padding: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            border-color: #c8914a;
+            box-shadow: 0 6px 20px rgba(200, 145, 74, 0.15);
+        }
+
+        .doc-card-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #c8914a;
+            margin-bottom: 0.6rem;
+        }
+
+        .doc-card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .doc-card p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            flex: 1;
+            margin-bottom: 0.75rem;
+        }
+
+        .doc-card-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: rgba(200, 145, 74, 0.7);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid rgba(200, 145, 74, 0.3);
+        }
+
+        .doc-card-peek {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.3s ease;
+            opacity: 0;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .doc-card:hover .doc-card-peek {
+            max-height: 200px;
+            opacity: 1;
+            margin-bottom: 0.85rem;
+        }
+
+        .doc-card-peek ul { list-style: none; padding: 0; }
+
+        .doc-card-peek li {
+            padding-left: 1rem;
+            position: relative;
+            margin-bottom: 2px;
+        }
+
+        .doc-card-peek li::before {
+            content: "\203A";
+            position: absolute;
+            left: 0;
+            color: #c8914a;
+        }
+
+        .doc-card-link {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #c8914a;
+            letter-spacing: 0.05em;
+            transition: letter-spacing 0.2s;
+        }
+
+        .doc-card:hover .doc-card-link { letter-spacing: 0.1em; }
+
+        /* Experience section */
+        .exp-item { border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .exp-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+
+        .exp-trigger {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 0;
+            cursor: pointer;
+            list-style: none;
+            transition: color 0.2s;
+        }
+
+        .exp-trigger:hover { color: var(--primary); }
+
+        .exp-arrow {
+            color: var(--primary);
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: transform 0.25s;
+            margin-top: 3px;
+            line-height: 1;
+        }
+
+        .exp-item.open .exp-arrow { transform: rotate(90deg); }
+
+        .exp-label {
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .exp-detail {
+            display: none;
+            padding: 4px 0 14px 24px;
+        }
+
+        .exp-item.open .exp-detail { display: block; }
+
+        .exp-detail p {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 8px;
+            border-left: 2px solid rgba(200,145,74,0.3);
+            padding-left: 12px;
+            font-style: italic;
+        }
+
+        .exp-detail-link {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.06em;
+            text-decoration: none;
+            margin-top: 2px;
+            transition: letter-spacing 0.2s;
+        }
+
+        .exp-detail-link:hover { letter-spacing: 0.1em; }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        /* Mouse-reactive glow */
+        .cursor-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(200, 145, 74, 0.15) 0%, rgba(200, 145, 74, 0.05) 30%, transparent 65%);
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            filter: blur(30px);
+        }
+
+        .cursor-glow.visible {
+            opacity: 1;
+        }
+
+        /* Demo toggle button */
+        .demo-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: background 0.2s;
+        }
+
+        .demo-toggle:hover { background: #a87540; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .tagline { font-size: 1.1rem; }
+            .contact-info { flex-direction: column; gap: 0.5rem; }
+            .expertise-grid { grid-template-columns: 1fr; }
+            .doc-grid { grid-template-columns: 1fr; }
+            .blob-1, .blob-2, .blob-3, .blob-4 {
+                filter: blur(80px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated gradient mesh background -->
+    <div class="gradient-mesh" id="gradientMesh">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <!-- Subtle noise texture overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Mouse-reactive glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Page content -->
+    <div class="container">
+        <header>
+            <h1>Daniel Lepel</h1>
+            <p class="tagline">Microsoft 365 & Azure Architect</p>
+            <div class="contact-info">
+                <a href="#" id="email-link"></a>
+                <script>var e="daniel"+"@"+"lepel.us";var el=document.getElementById("email-link");el.href="mailto:"+e;el.textContent=e;</script>
+                <a href="https://www.linkedin.com/in/daniellepel" target="_blank">LinkedIn</a>
+                <span>Albany, NY Capital District (Remote)</span>
+            </div>
+            <div class="cta-buttons">
+                <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
+                <a href="Daniel_Lepel_Resume.pdf" class="btn btn-secondary" download>Download PDF</a>
+                <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
+            </div>
+        </header>
+
+        <section class="bio">
+            <h2>About</h2>
+            <p>Effective architecture stays out of the way, supporting teams and users without drawing attention. Over the past decade, I have designed scalable Microsoft 365 and Azure environments that run reliably with minimal intervention.</p>
+            <p>My work centers on foundational elements that enable broader success: identity architecture with Entra ID, Zero Trust security frameworks, reliable endpoint platforms, and governance standards that simplify complexity. I have built multi-tenant environments, modernized legacy platforms, and developed architectural patterns that support operational teams.</p>
+            <p>I am seeking a new role focused on architecture and strategy, distinct from daily operations. My expertise includes platform vision, security design, and technical standards. If your organization needs a strategic architect to guide technology direction, I welcome the opportunity to discuss how I can contribute to your goals.</p>
+        </section>
+
+        <section class="expertise">
+            <h2>Core Expertise</h2>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <h3>Identity & Security</h3>
+                    <ul>
+                        <li><a href="capability_entra_id.html" target="_blank">Microsoft Entra ID</a></li>
+                        <li><a href="capability_zero_trust.html" target="_blank">Zero Trust Architecture</a></li>
+                        <li><a href="capability_entra_id.html" target="_blank">Conditional Access & MFA</a></li>
+                        <li><a href="capability_pam.html" target="_blank">Privileged Access Management</a></li>
+                        <li><a href="capability_entra_id.html" target="_blank">Identity Governance</a></li>
+                        <li><a href="capability_defender.html" target="_blank">Microsoft Defender Suite</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Insider Risk Management</a></li>
+                    </ul>
+                </div>
+
+                <div class="expertise-card">
+                    <h3>Cloud Platform</h3>
+                    <ul>
+                        <li><a href="capability_m365.html" target="_blank">Microsoft 365 Architecture</a></li>
+                        <li><a href="capability_azure.html" target="_blank">Azure Platform Design</a></li>
+                        <li><a href="MSP_Architecture_DanielLepel.html" target="_blank">Multi-tenant Solutions</a></li>
+                        <li><a href="capability_hybrid.html" target="_blank">Hybrid Cloud Infrastructure</a></li>
+                        <li><a href="capability_migration.html" target="_blank">Migration Strategy</a></li>
+                        <li><a href="capability_e5.html" target="_blank">E5 Capability Enablement</a></li>
+                    </ul>
+                </div>
+
+                <div class="expertise-card">
+                    <h3>Governance & Compliance</h3>
+                    <ul>
+                        <li><a href="capability_purview.html" target="_blank">Microsoft Purview Data Governance</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Information Protection & DLP</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Sensitivity Labels & Encryption</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Records Management & eDiscovery</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Compliance Standards & Frameworks</a></li>
+                        <li><a href="Cloud_Architecture_Principles_DanielLepel.html" target="_blank">Policy Architecture</a></li>
+                        <li><a href="capability_purview.html" target="_blank">Risk Management & Audit</a></li>
+                    </ul>
+                </div>
+
+                <div class="expertise-card">
+                    <h3>Recent Experience</h3>
+                    <ul style="list-style:none;padding:0;">
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">&rsaquo;</span>
+                                <span class="exp-label">Multi-tenant Microsoft cloud architecture across 25+ client environments</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>As Principal Microsoft Cloud Architect at National Business Technologies, I owned the Microsoft platform architecture across approximately 25 MSP client tenants with no technical oversight above me. Covered M365, Azure, Entra ID, Intune, Defender, and Purview across environments ranging from small business to mid-market.</p>
+                            </div>
+                        </li>
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">&rsaquo;</span>
+                                <span class="exp-label">Replaced third-party security tooling with native M365 E5 capabilities</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>At Latham Pool Products (via cb20 Technology Solutions), I replaced Mimecast entirely with native Microsoft 365 E5 capabilities, specifically Defender for Office 365, Exchange Online Protection, and Purview information protection.</p>
+                            </div>
+                        </li>
+                        <li class="exp-item">
+                            <div class="exp-trigger">
+                                <span class="exp-arrow">&rsaquo;</span>
+                                <span class="exp-label">Entra ID identity architecture with Conditional Access and privileged access controls</span>
+                            </div>
+                            <div class="exp-detail">
+                                <p>Designed and implemented Entra ID identity architectures across multiple organizations, including hybrid identity with Entra Connect Sync, Conditional Access policy frameworks aligned to Zero Trust, and Privileged Identity Management.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="documents">
+            <h2>Document Library</h2>
+            <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1.25rem;">A set of reference documents covering architectural process, operating principles, Microsoft licensing, and the role of AI in modern cloud environments.</p>
+            <div class="doc-grid">
+                <a href="ALIGN_Process_DanielLepel.html" class="doc-card" target="_blank">
+                    <div class="doc-card-label">Process Framework</div>
+                    <h3>The A.L.I.G.N. Process</h3>
+                    <p>A structured five-phase approach to delivering Microsoft 365, Azure, and cloud platform solutions.</p>
+                    <div class="doc-card-quote">"What is actually here, and what actually matters?"</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>How I structure every engagement from day one</li>
+                            <li>The five phases: Assess, Leverage, Implement, Govern, Navigate</li>
+                            <li>Real examples from enterprise and MSP deployments</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">Read the framework &rarr;</span>
+                </a>
+
+                <a href="Cloud_Architecture_Principles_DanielLepel.html" class="doc-card" target="_blank">
+                    <div class="doc-card-label">Architecture Philosophy</div>
+                    <h3>Cloud Architecture Operating Principles</h3>
+                    <p>Seven principles that guide how I design, assess, and operate modern Microsoft cloud environments.</p>
+                    <div class="doc-card-quote">"Identity is the new perimeter. Everything else depends on getting this right first."</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>Zero Trust, least privilege, and governance before growth</li>
+                            <li>Why observability and documentation are not optional</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">Read the principles &rarr;</span>
+                </a>
+
+                <a href="MSP_Architecture_DanielLepel.html" class="doc-card" target="_blank">
+                    <div class="doc-card-label">Multi-Tenant Design</div>
+                    <h3>MSP Architecture Reference</h3>
+                    <p>Architecture patterns for managing multiple Microsoft 365 tenants at scale.</p>
+                    <div class="doc-card-quote">"Every tenant gets the same security baseline, no exceptions."</div>
+                    <div class="doc-card-peek">
+                        <ul>
+                            <li>Standardized security baselines across client tenants</li>
+                            <li>Delegated administration and GDAP patterns</li>
+                        </ul>
+                    </div>
+                    <span class="doc-card-link">Read the reference &rarr;</span>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Daniel Lepel. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Toggle button to compare with/without animation -->
+    <button class="demo-toggle" onclick="toggleMesh()">Toggle Animation Off</button>
+
+    <script>
+        // Expand/collapse experience items
+        document.querySelectorAll('.exp-trigger').forEach(function(trigger) {
+            trigger.addEventListener('click', function() {
+                this.closest('.exp-item').classList.toggle('open');
+            });
+        });
+
+        // Mouse-reactive glow
+        var glow = document.getElementById('cursorGlow');
+        var glowX = 0, glowY = 0, currentX = 0, currentY = 0;
+        var glowVisible = false;
+
+        document.addEventListener('mousemove', function(e) {
+            glowX = e.clientX;
+            glowY = e.clientY;
+            if (!glowVisible) {
+                glowVisible = true;
+                glow.classList.add('visible');
+            }
+        });
+
+        document.addEventListener('mouseleave', function() {
+            glowVisible = false;
+            glow.classList.remove('visible');
+        });
+
+        // Smooth follow with requestAnimationFrame for buttery movement
+        function updateGlow() {
+            currentX += (glowX - currentX) * 0.08;
+            currentY += (glowY - currentY) * 0.08;
+            glow.style.left = currentX + 'px';
+            glow.style.top = currentY + 'px';
+            requestAnimationFrame(updateGlow);
+        }
+        requestAnimationFrame(updateGlow);
+
+        // Demo toggle for comparing with/without the gradient mesh
+        var meshOn = true;
+        function toggleMesh() {
+            var mesh = document.getElementById('gradientMesh');
+            var btn = document.querySelector('.demo-toggle');
+            meshOn = !meshOn;
+            mesh.style.display = meshOn ? 'block' : 'none';
+            glow.style.display = meshOn ? 'block' : 'none';
+            btn.textContent = meshOn ? 'Toggle Animation Off' : 'Toggle Animation On';
+        }
+    </script>
+</body>
+</html>
