@@ -33,8 +33,14 @@
   .topnav-home:hover{color:var(--orange);}
   .topnav-right{display:flex;align-items:center;gap:20px;}
   .topnav-section{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);}
-  .pdf-btn{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dark);background:var(--orange);padding:7px 16px;text-decoration:none;transition:background .2s;}
+  .pdf-btn{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dark);background:var(--orange);padding:7px 16px;text-decoration:none;transition:background .2s;cursor:pointer;border:none;position:relative;}
   .pdf-btn:hover{background:var(--og2);}
+  .pdf-dropdown{position:relative;display:inline-block;}
+  .pdf-dropdown-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--dark2,#202020);border:1px solid var(--rule);min-width:280px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+  .pdf-dropdown.open .pdf-dropdown-menu{display:block;}
+  .pdf-dropdown-menu a{display:block;padding:10px 16px;font-size:13px;font-weight:500;color:var(--white);text-decoration:none;letter-spacing:.02em;transition:background .15s;text-transform:none;}
+  .pdf-dropdown-menu a:hover{background:rgba(200,145,74,.15);}
+  .pdf-dropdown-menu a .variant-sub{display:block;font-size:10px;color:var(--dim);margin-top:2px;letter-spacing:.04em;text-transform:uppercase;}
 
   .shell{display:flex;flex-direction:column;width:100%;max-width:1000px;;position:relative;z-index:2;}
 
@@ -205,7 +211,15 @@
   <a href="index.html" class="topnav-home">← daniellepel.com</a>
   <div class="topnav-right">
     <div class="topnav-section">Resume</div>
-    <a href="Daniel_Lepel_Resume.pdf" class="pdf-btn" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Daniel_Lepel_Resume.pdf'});">Download PDF</a>
+    <div class="pdf-dropdown" id="pdfDropdown">
+      <button class="pdf-btn" onclick="document.getElementById('pdfDropdown').classList.toggle('open')">Download Resume ▾</button>
+      <div class="pdf-dropdown-menu">
+        <a href="Daniel_Lepel_Resume_Principal_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_M365'});">Principal Architect<span class="variant-sub">Microsoft 365 Focus</span></a>
+        <a href="Daniel_Lepel_Resume_Principal_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_Azure'});">Principal Architect<span class="variant-sub">Azure Infrastructure Focus</span></a>
+        <a href="Daniel_Lepel_Resume_SrEngineer_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_M365'});">Senior Engineer / Technical Lead<span class="variant-sub">Microsoft 365 Focus</span></a>
+        <a href="Daniel_Lepel_Resume_SrEngineer_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_Azure'});">Senior Engineer / Technical Lead<span class="variant-sub">Azure Infrastructure Focus</span></a>
+      </div>
+    </div>
   </div>
 </div>
 <div class="shell">
@@ -618,6 +632,12 @@
   document.addEventListener('mouseleave',function(){vis=false;glow.classList.remove('visible');});
   (function loop(){cx+=(gx-cx)*0.08;cy+=(gy-cy)*0.08;glow.style.left=cx+'px';glow.style.top=cy+'px';requestAnimationFrame(loop);})();
 })();
+</script>
+<script>
+document.addEventListener('click',function(e){
+  var dd=document.getElementById('pdfDropdown');
+  if(dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
 </script>
 
 </body>

@@ -130,6 +130,50 @@
             transform: translateY(-2px);
         }
 
+        .resume-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .resume-dropdown .btn {
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .resume-dropdown-menu {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: calc(100% + 8px);
+            background: var(--medium);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            min-width: 300px;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0,0,0,.5);
+        }
+        .resume-dropdown.open .resume-dropdown-menu {
+            display: block;
+        }
+        .resume-dropdown-menu a {
+            display: block;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            text-decoration: none;
+            transition: background .15s;
+        }
+        .resume-dropdown-menu a:hover {
+            background: rgba(200,145,74,.15);
+        }
+        .resume-dropdown-menu a .variant-sub {
+            display: block;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
         section {
             margin-bottom: 3rem;
         }
@@ -462,7 +506,15 @@
             </div>
             <div class="cta-buttons">
                 <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
-                <a href="Daniel_Lepel_Resume.pdf" class="btn btn-secondary" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'index_page'});">Download PDF</a>
+                <div class="resume-dropdown" id="resumeDropdown">
+                    <button class="btn btn-secondary" onclick="document.getElementById('resumeDropdown').classList.toggle('open')">Download Resume ▾</button>
+                    <div class="resume-dropdown-menu">
+                        <a href="Daniel_Lepel_Resume_Principal_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_M365'});">Principal Architect<span class="variant-sub">Microsoft 365 Focus</span></a>
+                        <a href="Daniel_Lepel_Resume_Principal_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_Azure'});">Principal Architect<span class="variant-sub">Azure Infrastructure Focus</span></a>
+                        <a href="Daniel_Lepel_Resume_SrEngineer_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_M365'});">Senior Engineer / Technical Lead<span class="variant-sub">Microsoft 365 Focus</span></a>
+                        <a href="Daniel_Lepel_Resume_SrEngineer_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_Azure'});">Senior Engineer / Technical Lead<span class="variant-sub">Azure Infrastructure Focus</span></a>
+                    </div>
+                </div>
                 <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
             </div>
         </header>
@@ -977,5 +1029,11 @@
 })();
 </script>
 
+<script>
+document.addEventListener('click',function(e){
+  var dd=document.getElementById('resumeDropdown');
+  if(dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+</script>
 </body>
 </html>
