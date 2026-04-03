@@ -19,7 +19,7 @@
 <title>A.L.I.G.N. Process – Daniel Lepel</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
+  :root {h
     --dark:   #181818;
     --dark2:  #202020;
     --dark3:  #262626;
@@ -769,6 +769,10 @@
     tab.addEventListener('click', () => goTo(i));
   });
 
+  document.querySelectorAll('[data-goto]').forEach(el => {
+        el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+  });
+  
   document.querySelectorAll('.bitem').forEach(item => {
     item.querySelector('.btrigger').addEventListener('click', () => {
       item.classList.toggle('open');
