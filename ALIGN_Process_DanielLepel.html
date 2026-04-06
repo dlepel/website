@@ -19,7 +19,7 @@
 <title>A.L.I.G.N. Process – Daniel Lepel</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {h
+  :root {
     --dark:   #181818;
     --dark2:  #202020;
     --dark3:  #262626;
@@ -267,6 +267,55 @@
 }
 .cursor-glow.visible { opacity: 1; }
 /* ── END GRADIENT MESH ── */
+
+/* ── VIDEO HERO OVERLAY ── */
+.video-hero {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(10,10,10,0.92);
+  transition: opacity 0.6s ease;
+}
+.video-hero.hidden { opacity: 0; pointer-events: none; }
+
+.vh-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  max-width: 960px; width: 90%;
+}
+
+.vh-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .25em;
+  text-transform: uppercase; color: var(--orange);
+}
+
+.vh-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 400;
+  color: var(--white); letter-spacing: .04em; text-align: center;
+}
+
+.vh-rule { width: 60px; height: 2px; background: var(--orange); opacity: .7; }
+
+.vh-video-wrap {
+  position: relative; width: 100%; aspect-ratio: 16/9;
+  background: #000; border: 1px solid rgba(200,145,74,0.2);
+  box-shadow: 0 8px 60px rgba(0,0,0,0.6);
+}
+
+.vh-video-wrap iframe {
+  width: 100%; height: 100%; display: block; border: none;
+}
+
+.vh-skip {
+  font-size: 14px; font-weight: 300; color: var(--dim);
+  cursor: pointer; transition: color 0.2s; border: none; background: none;
+  font-family: 'Source Sans 3', sans-serif; letter-spacing: .04em;
+}
+.vh-skip:hover { color: var(--orange); }
+
+.vh-byline {
+  font-size: 11px; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(240,236,228,0.5);
+}
+/* ── END VIDEO HERO ── */
 </style>
 </head>
 <body>
@@ -279,6 +328,24 @@
 </div>
 <div class="noise-overlay"></div>
 <div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- VIDEO HERO OVERLAY -->
+<div class="video-hero" id="videoHero">
+  <div class="vh-inner">
+    <div class="vh-eyebrow">Process Overview</div>
+    <div class="vh-title">A.L.I.G.N.</div>
+    <div class="vh-rule"></div>
+    <div class="vh-video-wrap" id="videoWrap">
+      <iframe id="ytPlayer"
+        src="https://www.youtube.com/embed/6QeKzXfcWSw?rel=0&modestbranding=1&showinfo=0&color=white&enablejsapi=1&origin=https://daniellepel.com"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <button class="vh-skip" id="skipBtn">Skip to interactive version &#8594;</button>
+    <div class="vh-byline">Daniel Lepel | Principal Microsoft Cloud Architect</div>
+  </div>
+</div>
 
 <div class="shell">
 
@@ -738,6 +805,40 @@
 
 </div>
 <script>
+/* ── Video Hero ── */
+(function(){
+  var hero    = document.getElementById('videoHero');
+  var skipBtn = document.getElementById('skipBtn');
+  var player;
+
+  function dismiss(){
+    hero.classList.add('hidden');
+    if(player && player.pauseVideo) player.pauseVideo();
+    setTimeout(function(){ hero.style.display='none'; }, 700);
+  }
+
+  skipBtn.addEventListener('click', dismiss);
+
+  /* YouTube IFrame API */
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+
+  window.onYouTubeIframeAPIReady = function(){
+    player = new YT.Player('ytPlayer', {
+      events: {
+        onStateChange: function(e){
+          if(e.data === YT.PlayerState.ENDED){
+            setTimeout(dismiss, 800);
+          }
+        }
+      }
+    });
+  };
+})();
+</script>
+
+<script>
   const slides = document.querySelectorAll('.slide');
   const tabs   = document.querySelectorAll('.tab');
   const dotsEl = document.getElementById('dots');
@@ -770,9 +871,9 @@
   });
 
   document.querySelectorAll('[data-goto]').forEach(el => {
-        el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
+    el.addEventListener('click', () => goTo(parseInt(el.dataset.goto)));
   });
-  
+
   document.querySelectorAll('.bitem').forEach(item => {
     item.querySelector('.btrigger').addEventListener('click', () => {
       item.classList.toggle('open');
