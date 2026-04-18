@@ -276,7 +276,7 @@
       My twenty years are in Microsoft infrastructure. Tenants, identity, endpoints, Exchange, the plumbing. In February my position at National Business Technologies was eliminated in a reduction in force, and I had ninety days to replace a principal-level role. I treated it as a forcing function. Rather than running a job search on spreadsheets and manual follow-ups, I rebuilt the whole thing as an agent system and became my own Customer Zero.
     </p>
     <p class="sec-body">
-      Today it runs my pipeline end to end. <b>145 opportunities tracked</b>, <b>six active interview threads</b>, <b>continuous operation since February 6</b>. It scans my inbox every morning, drafts recruiter replies in my voice, screens new postings against my criteria, generates interview prep documents grounded in confirmed experience, and refuses to fabricate anything the source material does not support. It is the same pattern enterprises now need for tenant assessment, license optimization, oversharing review, and agent governance.
+      Today it runs my pipeline end to end. <b>145 opportunities tracked</b>, <b>six active interview threads</b>, <b>continuous operation since February 6</b>. Scheduled jobs run unattended on cron, regenerating the dashboard, classifying new email, and scraping job boards without a session open. Inside the session, it scans my inbox via Graph, drafts recruiter replies in my voice, tailors resumes, generates interview prep documents grounded in confirmed experience, and refuses to fabricate anything the source material does not support. It is the same pattern enterprises now need for tenant assessment, license optimization, oversharing review, and agent governance.
     </p>
     <p class="sec-body">
       The reason this is worth a long read is specific. Most Microsoft infrastructure engineers have not yet shipped a production agent. I have. This document is how it is built, why the choices are the ones that transfer to a customer engagement, and where the pattern is directly portable to the work a Microsoft cloud practice is already being asked to do.
@@ -299,7 +299,7 @@
       <div class="metric"><div class="n">71</div><div class="l">Days of continuous run</div><div class="h">Autonomous morning digest and triage</div></div>
       <div class="metric"><div class="n">16</div><div class="l">Specialist skills</div><div class="h">Routed by task signature</div></div>
       <div class="metric"><div class="n">15</div><div class="l">Python services</div><div class="h">Graph API, tracker, digest, health</div></div>
-      <div class="metric"><div class="n">13</div><div class="l">PowerShell jobs</div><div class="h">Scheduled tasks, sync, startup</div></div>
+      <div class="metric"><div class="n">10</div><div class="l">Scheduled and startup jobs</div><div class="h">6 Cowork cron, 4 Windows Task Scheduler</div></div>
       <div class="metric"><div class="n">17</div><div class="l">Context files</div><div class="h">Confirmed experience, rules, lessons</div></div>
     </div>
     <p class="metrics-note">
@@ -319,7 +319,8 @@
       <div class="cap"><div class="t">Grounded interview prep</div><div class="d">Builds company and role prep docs keyed to the job description and the operator's confirmed experience. Refuses to claim tools the operator has not used. Spells out every acronym on first use. Includes a meeting-join button pulled from the calendar invite.</div></div>
       <div class="cap"><div class="t">Posting screener</div><div class="d">Reads full job descriptions before queueing anything. Checks that the core platform is Microsoft. Verifies the posting link is live. Rejects with tracker evidence so the record stays auditable for the DOL.</div></div>
       <div class="cap"><div class="t">Resume tailoring with provenance</div><div class="d">Variants per role, built from a branded docx template. Strips AI and tool metadata from docProps XML and runs pikepdf on the PDF before delivery. Every change is traceable to the source bullet in the master resume.</div></div>
-      <div class="cap"><div class="t">Morning digest and dashboard</div><div class="d">Python service regenerates a digest page, a command-center page, and an actions page. Runs as a Windows scheduled task. The operator opens one URL in the morning and sees the whole pipeline.</div></div>
+      <div class="cap"><div class="t">Scheduled execution</div><div class="d">Six cron tasks run unattended via the Cowork scheduled-tasks MCP: morning digest (06:00), dashboard and briefing (06:00 weekdays), email classification (09:00 weekdays), LinkedIn sweep (07:00 weekdays), Dice and Indeed sweep (07:15 Mon/Thu), session-usage monitor (22:00). Four more run via Windows Task Scheduler: the action and chatbot API servers start at login, rclone backup fires nightly at 23:00, and a toast notifier hangs on a manual trigger. Sessions open onto work already done.</div></div>
+      <div class="cap"><div class="t">Morning digest and dashboard</div><div class="d">Python service regenerates a digest page, a command-center page, and an actions page. Runs on a Cowork cron schedule at 06:00 ET. The operator opens one URL in the morning and sees the whole pipeline.</div></div>
     </div>
   </section>
 
@@ -851,7 +852,7 @@
       <div class="cc-view">
         <div class="cc-view-header">
           <div class="cc-view-title">Morning Digest | Apr 17 2026</div>
-          <div class="cc-view-meta">regenerated nightly by Windows scheduled task at 06:00 ET</div>
+          <div class="cc-view-meta">regenerated nightly by a Cowork cron task at 06:00 ET</div>
         </div>
         <table class="cc-digest">
           <tbody>
