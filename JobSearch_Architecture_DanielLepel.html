@@ -35,6 +35,7 @@
     --rule2:  rgba(200,145,74,0.15);
     --purple: #3B1A6B;
     --purple2:#4A2680;
+    --purple-l:#a890d0;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;line-height:1.6;}
@@ -84,17 +85,20 @@
   .arch .row:last-child{margin-bottom:0;}
   .arch .node{flex:1;background:var(--panel);border:1px solid var(--rule2);padding:14px 16px;border-radius:2px;}
   .arch .node.primary{border-color:var(--orange);background:linear-gradient(180deg,rgba(200,145,74,.08),rgba(200,145,74,.02));}
+  .arch .node.prob{border-color:var(--purple-l);background:linear-gradient(180deg,rgba(168,144,208,.10),rgba(168,144,208,.02));}
   .arch .node .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .arch .node.prob .lbl{color:var(--purple-l);}
   .arch .node .ttl{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;font-family:'Source Sans 3',sans-serif;}
   .arch .node .d{font-size:12px;font-weight:300;color:var(--dim);line-height:1.5;font-family:'Source Sans 3',sans-serif;}
   .arch .arrow{display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:18px;padding:0 4px;}
+  .arch .arrow.prob{color:var(--purple-l);}
   .arch .col{display:flex;flex-direction:column;gap:10px;flex:1;}
   .arch .col .node{flex:1;}
   .arch-legend{display:flex;gap:24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule2);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;font-family:'Source Sans 3',sans-serif;}
   .arch-legend span{display:flex;align-items:center;gap:8px;}
   .arch-legend .dot{width:10px;height:10px;border-radius:50%;}
   .arch-legend .dot.det{background:var(--orange);}
-  .arch-legend .dot.prob{background:var(--purple2);}
+  .arch-legend .dot.prob{background:var(--purple-l);}
 
   /* DECISIONS */
   .decisions{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule2);}
@@ -324,17 +328,17 @@
 
     <div class="arch">
       <div class="row">
-        <div class="node primary" style="flex:1;">
+        <div class="node primary prob" style="flex:1;">
           <div class="lbl">Tier 1 | Interface</div>
           <div class="ttl">Natural language, voice or text</div>
           <div class="d">Operator gives a request in plain English. No DSL, no form. The session-start skill fires on every new session and gates all other work until the inbox is scanned and the tracker is current.</div>
         </div>
       </div>
 
-      <div class="row"><div class="arrow" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
+      <div class="row"><div class="arrow prob" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
 
       <div class="row">
-        <div class="node primary" style="flex:1;">
+        <div class="node primary prob" style="flex:1;">
           <div class="lbl">Tier 2 | Skill Router</div>
           <div class="ttl">16 specialist skills, markdown-defined</div>
           <div class="d">Each skill is a markdown file with a description field the model matches against the request. The router picks one or more skills based on task signature. Skills are isolated: the resume-work skill cannot rewrite the email-and-drafts skill. This is the same pattern Claude Agent SDK uses for production agents.</div>
