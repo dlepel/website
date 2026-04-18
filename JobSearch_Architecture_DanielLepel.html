@@ -167,6 +167,45 @@
   .layer-single{font-size:15px;font-weight:600;color:var(--white);font-family:'Source Sans 3',sans-serif;}
   .layer-sub{font-size:12px;font-weight:300;color:var(--dim);margin-top:2px;line-height:1.5;}
 
+  /* COMMAND CENTER */
+  .cc-wrap{display:flex;flex-direction:column;gap:22px;margin-bottom:22px;}
+  .cc-note{background:rgba(200,145,74,0.06);border:1px solid rgba(200,145,74,0.35);padding:12px 18px;margin-bottom:22px;font-size:12px;color:var(--og2);letter-spacing:.02em;font-family:'JetBrains Mono',monospace;line-height:1.6;}
+  .cc-note b{color:var(--white);font-weight:600;}
+  .cc-view{background:var(--dark);border:1px solid var(--rule2);overflow:hidden;}
+  .cc-view-header{background:var(--panel);padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
+  .cc-view-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);letter-spacing:-0.01em;}
+  .cc-view-meta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;}
+  .cc-table{width:100%;border-collapse:collapse;}
+  .cc-table thead th{background:var(--panel);padding:10px 16px;font-size:9px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;color:var(--orange);text-align:left;border-bottom:1px solid var(--rule2);}
+  .cc-table tbody td{padding:13px 16px;font-size:13px;font-weight:300;color:#b8b0a4;border-bottom:1px solid var(--rule2);line-height:1.5;vertical-align:top;}
+  .cc-table tbody tr:last-child td{border-bottom:none;}
+  .cc-table tbody td:first-child{color:var(--white);font-weight:600;}
+  .cc-table .muted{color:var(--dim);font-size:12px;}
+  .cc-badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
+  .cc-badge.active{background:rgba(200,145,74,0.15);color:var(--og2);border:1px solid rgba(200,145,74,0.35);}
+  .cc-badge.prospect{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
+  .cc-badge.applied{background:rgba(80,100,140,0.15);color:#a0b8e0;border:1px solid rgba(120,160,220,0.3);}
+  .cc-badge.screen{background:rgba(60,120,90,0.15);color:#9ecc9e;border:1px solid rgba(110,180,140,0.35);}
+  .cc-badge.passed{background:rgba(120,60,60,0.15);color:#c88a8a;border:1px solid rgba(200,120,120,0.3);}
+  .cc-actions{display:flex;flex-direction:column;}
+  .cc-action{padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;flex-direction:column;gap:7px;}
+  .cc-action:last-child{border-bottom:none;}
+  .cc-action-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .cc-action-type{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);}
+  .cc-action-time{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);}
+  .cc-action-body{font-size:13px;font-weight:300;color:#b8b0a4;line-height:1.6;}
+  .cc-action-who{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--og2);}
+  .cc-action-badge{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border-radius:2px;white-space:nowrap;}
+  .cc-action-badge.staged{background:rgba(200,145,74,0.15);color:var(--og2);border:1px solid rgba(200,145,74,0.3);}
+  .cc-action-badge.pending{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
+  .cc-digest{display:flex;flex-direction:column;}
+  .cc-digest-row{padding:13px 22px;display:grid;grid-template-columns:200px 1fr;gap:24px;border-bottom:1px solid var(--rule2);font-size:13px;line-height:1.6;align-items:baseline;}
+  .cc-digest-row:last-child{border-bottom:none;}
+  .cc-digest-lbl{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);}
+  .cc-digest-val{font-weight:300;color:#b8b0a4;}
+  .cc-digest-val b{color:var(--white);font-weight:600;}
+  .cc-digest-val .good{color:#9ecc9e;}
+
   /* RESPONSIVE */
   @media (max-width: 820px){
     .page{padding:36px 24px 64px;}
@@ -178,6 +217,10 @@
     .arch .arrow{transform:rotate(90deg);padding:4px 0;}
     .sec-title{font-size:30px;}
     .trans .tr{grid-template-columns:1fr;}
+    .cc-digest-row{grid-template-columns:1fr;gap:4px;}
+    .cc-view-header{flex-direction:column;align-items:flex-start;}
+    .cc-table{font-size:12px;}
+    .cc-table thead th, .cc-table tbody td{padding:8px 10px;}
   }
 
   @media print{
@@ -627,6 +670,212 @@
     </div>
   </section>
 
+
+  <!-- SECTION 4.6: COMMAND CENTER -->
+  <section>
+    <div class="sec-label">Section 4.6 | The Command Center</div>
+    <h2 class="sec-title">What the operator actually sees.</h2>
+    <div class="sec-sub">The morning view, rendered with sample data.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The maps above describe the shape of the system. The Command Center is where the operator lives. One URL opened at the start of the day, three stacked views, every piece of state the pipeline produced since the last run. The views below are rendered against <b>sample data</b> because the live pipeline holds confidential recruiter correspondence and other active interview threads. The layout, the field structure, and the rendering pattern are exactly what ships. Company names are placeholders from the Microsoft documentation tradition: Fabrikam, Contoso, Northwind, Adventure Works, and friends.
+    </p>
+
+    <div class="cc-note"><b>Sample data only.</b> Rows, recruiters, dates, and compensation figures are fabricated. The real dashboard runs locally on the operator's own machine.</div>
+
+    <div class="cc-wrap">
+
+      <!-- VIEW 1: Pipeline Snapshot -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Pipeline Snapshot</div>
+          <div class="cc-view-meta">regenerated from Job_Tracker.xlsx on every change</div>
+        </div>
+        <table class="cc-table">
+          <thead>
+            <tr>
+              <th style="width:170px;">Company</th>
+              <th>Role</th>
+              <th>Stage</th>
+              <th>Next Action</th>
+              <th>Contact</th>
+              <th style="width:70px;">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fabrikam Industries</td>
+              <td>Principal M365 Architect</td>
+              <td><span class="cc-badge screen">Round 2 Scheduled</span></td>
+              <td>Prep doc due Fri</td>
+              <td class="muted">Alex Morgan | talent recruiter</td>
+              <td class="muted">Apr 15</td>
+            </tr>
+            <tr>
+              <td>Contoso Ltd</td>
+              <td>Director of IT Infrastructure</td>
+              <td><span class="cc-badge active">Awaiting Feedback</span></td>
+              <td>Follow up Apr 24</td>
+              <td class="muted">Jordan Chen | direct</td>
+              <td class="muted">Apr 12</td>
+            </tr>
+            <tr>
+              <td>Northwind Traders</td>
+              <td>Senior Cloud Engineer</td>
+              <td><span class="cc-badge applied">Applied</span></td>
+              <td>ATS confirmation received</td>
+              <td class="muted">direct apply</td>
+              <td class="muted">Apr 14</td>
+            </tr>
+            <tr>
+              <td>Adventure Works</td>
+              <td>Cloud Governance Lead</td>
+              <td><span class="cc-badge screen">Screen Scheduled</span></td>
+              <td>Screen Apr 21 10:00 AM ET</td>
+              <td class="muted">Sam Rivera | agency</td>
+              <td class="muted">Apr 16</td>
+            </tr>
+            <tr>
+              <td>Wingtip Toys</td>
+              <td>Azure Platform Architect</td>
+              <td><span class="cc-badge prospect">Prospect</span></td>
+              <td>Research company, confirm comp floor</td>
+              <td class="muted">proactive lead</td>
+              <td class="muted">Apr 11</td>
+            </tr>
+            <tr>
+              <td>Tailwind Traders</td>
+              <td>Principal Cloud Architect</td>
+              <td><span class="cc-badge passed">Declined</span></td>
+              <td>Rate below floor, logged</td>
+              <td class="muted">Casey Patel | staffing</td>
+              <td class="muted">Apr 10</td>
+            </tr>
+            <tr>
+              <td>Proseware</td>
+              <td>Senior M365 Engineer</td>
+              <td><span class="cc-badge applied">Applied</span></td>
+              <td>ATS silent past SLA</td>
+              <td class="muted">direct apply</td>
+              <td class="muted">Apr 08</td>
+            </tr>
+            <tr>
+              <td>Lucerne Publishing</td>
+              <td>IT Director</td>
+              <td><span class="cc-badge active">Phone Screen Done</span></td>
+              <td>Waiting decision</td>
+              <td class="muted">Morgan Bell | search firm</td>
+              <td class="muted">Apr 09</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- VIEW 2: Action Queue -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Action Queue</div>
+          <div class="cc-view-meta">drafts awaiting operator review | stale threshold 48h</div>
+        </div>
+        <div class="cc-actions">
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Draft reply staged</span>
+              <span class="cc-action-time">2h ago</span>
+            </div>
+            <div class="cc-action-body">Recruiter follow-up at Fabrikam Industries. Full signature block embedded inline. Needs operator review and send.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">amorgan@fabrikam.example</span>
+              <span class="cc-action-badge staged">Staged in Outlook</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Interview confirm</span>
+              <span class="cc-action-time">6h ago</span>
+            </div>
+            <div class="cc-action-body">Adventure Works screen confirmed for Apr 21 10:00 AM ET. Calendar invite accepted. Prep doc scheduled for build Fri.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">srivera@recruitco.example</span>
+              <span class="cc-action-badge pending">Prep doc queued</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Stale draft audit</span>
+              <span class="cc-action-time">18h ago</span>
+            </div>
+            <div class="cc-action-body">Two drafts to Proseware recruiter unsent past 48h threshold. Operator decision required: send, rewrite, or close out.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">draft_queue.json</span>
+              <span class="cc-action-badge pending">Operator action</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Proactive lead</span>
+              <span class="cc-action-time">Today 06:15</span>
+            </div>
+            <div class="cc-action-body">New posting detected on Dice. Title: Principal Cloud Architect at Fabrikam Industries. Core platform Microsoft: yes. Posting link live: yes. Compensation inside floor. Queued for operator review.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">dice MCP | screened by posting-screener skill</span>
+              <span class="cc-action-badge staged">Queued</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 3: Morning Digest -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Morning Digest | Apr 17 2026</div>
+          <div class="cc-view-meta">regenerated nightly by Windows scheduled task at 06:00 ET</div>
+        </div>
+        <div class="cc-digest">
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">New since last scan</div>
+            <div class="cc-digest-val"><b>3</b> recruiter replies | <b>2</b> ATS confirmations | <b>1</b> interview invite</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">Interview today</div>
+            <div class="cc-digest-val"><b>Adventure Works</b> | Screen | 10:00 AM ET | Teams join button active on prep doc</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">Interviews this week</div>
+            <div class="cc-digest-val"><b>2</b> confirmed | <b>1</b> pending recruiter confirmation</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">Stale drafts</div>
+            <div class="cc-digest-val"><b>2</b> recruiter drafts past 48h threshold | flagged for operator action</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">Proactive leads</div>
+            <div class="cc-digest-val"><b>5</b> new postings matched against criteria | <b>3</b> queued | <b>2</b> auto-rejected below comp floor</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">DOL / unemployment</div>
+            <div class="cc-digest-val">RESEA complete | UI active | next certification Sunday | job-search log current</div>
+          </div>
+          <div class="cc-digest-row">
+            <div class="cc-digest-lbl">Run health</div>
+            <div class="cc-digest-val">session-start last run 06:00 ET | action_server uptime <span class="good">71 days</span> | no errors in last scan</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="sec-body" style="margin-top:26px;">
+      This view is where the architecture pays off. The operator does not open Job_Tracker.xlsx, action_log.json, or the skill directory during a normal morning run. One URL holds the whole pipeline. Replace the operator with a customer tenant administrator and the rendering pattern still holds. Different data, same state spine, same deterministic rebuild every time the pipeline changes.
+    </p>
+  </section>
+
   <!-- SECTION 5: KEY DECISIONS -->
   <section>
     <div class="sec-label">Section 5 | Decisions that made it real</div>
@@ -716,7 +965,7 @@
   <div class="close">
     <h3>The short version.</h3>
     <p>
-      You said you are looking for someone with solid grounding in M365 and a comfort level with AI, and that infrastructure people usually do not bring both. I built the evidence already, for the hardest customer I have ever had: me, under a ninety-day clock. It works. The numbers are in Section 2. The architecture is in Section 4. The decisions are in Section 5. The reason it maps to the role is in Section 6.
+      You said you are looking for someone with solid grounding in M365 and a comfort level with AI, and that infrastructure people usually do not bring both. I built the evidence already, for the hardest customer I have ever had: me, under a ninety-day clock. It works. The numbers are in Section 2. The architecture is in Section 4. The operator view is in Section 4.6. The decisions are in Section 5. The reason it maps to the role is in Section 6.
     </p>
     <p>
       I would be glad to walk through any of this live, or with your customers, any day this week or next.
@@ -737,4 +986,5 @@
   <div class="foot">Prepared April 17, 2026 | For Stephanie Donahue, Softchoice | Req 7295</div>
 
 </div>
-</
+</body>
+</html>
