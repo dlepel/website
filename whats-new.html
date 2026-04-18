@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-E563220FPH');
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New | Daniel Lepel</title>
+    <meta name="description" content="Recent additions to daniellepel.com: case studies, architectural reference documents, and other new material.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c8914a;
+            --dark: #1a1a1a;
+            --medium: #2d2d2d;
+            --light: #f5f5f5;
+            --border: #404040;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.7;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem;
+        }
+
+        .topnav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .topnav-home {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .topnav-home:hover { color: var(--primary); }
+
+        .topnav-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            letter-spacing: 0.02em;
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .page-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .page-rule {
+            width: 60px;
+            height: 1px;
+            background: var(--primary);
+            opacity: 0.7;
+            margin-bottom: 1.25rem;
+        }
+
+        .page-dek {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            line-height: 1.7;
+        }
+
+        .entries {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .entry {
+            background: var(--medium);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--primary);
+            padding: 1.75rem;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .entry:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(200, 145, 74, 0.15);
+        }
+
+        .entry-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .entry-date {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+
+        .entry-tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            padding: 0.15rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+        }
+
+        .entry-headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.65rem;
+            font-weight: 500;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+        }
+
+        .entry-dek {
+            font-size: 0.98rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .entry-link {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+            transition: letter-spacing 0.2s;
+        }
+
+        .entry:hover .entry-link { letter-spacing: 0.1em; }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1.25rem 1.25rem 3rem; }
+            .page-title { font-size: 2.4rem; }
+            .topnav { padding-top: 0; margin-bottom: 2rem; }
+            .topnav-name { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="topnav">
+            <a href="index.html" class="topnav-home">← Home</a>
+            <span class="topnav-name">Daniel Lepel</span>
+        </nav>
+
+        <header class="page-header">
+            <div class="page-eyebrow">Recent Additions</div>
+            <h1 class="page-title">What's New</h1>
+            <div class="page-rule"></div>
+            <p class="page-dek">A running log of case studies, architectural reference documents, and other new material added to daniellepel.com. Newest entries at the top.</p>
+        </header>
+
+        <div class="entries">
+            <a href="Agent_Architecture_Case_Study_DanielLepel.html" class="entry" target="_blank">
+                <div class="entry-meta">
+                    <span class="entry-date">April 18, 2026</span>
+                    <span class="entry-tag">Case Study</span>
+                    <span class="entry-tag">AI &amp; Automation</span>
+                </div>
+                <h2 class="entry-headline">Agent Architecture Case Study: A production multi-agent system, designed and operated by one person.</h2>
+                <p class="entry-dek">A detailed walkthrough of a multi-agent system built on the Claude Agent SDK, Microsoft Graph, and Python. Ten weeks of continuous operation, 16 specialist skills, 145 opportunities tracked. The pattern enterprises now need for tenant assessment, licensing optimization, oversharing review, and agent governance.</p>
+                <span class="entry-link">Read the case study →</span>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Daniel Lepel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
