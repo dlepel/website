@@ -475,12 +475,148 @@
             letter-spacing: 0.1em;
         }
 
+        /* ── FEATURED CASE STUDY ── */
+        .featured-case-study {
+            position: relative;
+            background: linear-gradient(135deg, rgba(45,45,45,0.95) 0%, rgba(28,28,28,0.95) 100%);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--primary);
+            padding: 2.25rem 2rem 2rem;
+            margin-top: 3.5rem;
+            overflow: hidden;
+        }
+
+        .featured-case-study::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle at top right, rgba(200,145,74,0.08), transparent 65%);
+            pointer-events: none;
+        }
+
+        .featured-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .featured-headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.95rem;
+            font-weight: 500;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 0.95rem;
+            letter-spacing: 0.01em;
+            max-width: 760px;
+            position: relative;
+        }
+
+        .featured-dek {
+            font-size: 0.98rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 780px;
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-metric {
+            background: #1f1f1f;
+            padding: 1.1rem 1.1rem 1rem;
+        }
+
+        .featured-metric-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 500;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.01em;
+        }
+
+        .featured-metric-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .featured-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-tag {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            padding: 0.3rem 0.7rem;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.25);
+        }
+
+        .featured-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: #fff;
+            text-decoration: none;
+            background: var(--primary);
+            padding: 0.75rem 1.4rem;
+            border: 1px solid var(--primary);
+            transition: background 0.2s, letter-spacing 0.2s, transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .featured-cta:hover {
+            background: #d9a25f;
+            letter-spacing: 0.09em;
+            transform: translateX(2px);
+            box-shadow: 0 4px 14px rgba(200,145,74,0.25);
+        }
+
+        .featured-cta-arrow {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .tagline { font-size: 1.1rem; }
             .contact-info { flex-direction: column; gap: 0.5rem; }
             .expertise-grid { grid-template-columns: 1fr; }
             .doc-grid { grid-template-columns: 1fr; }
+            .featured-metrics { grid-template-columns: repeat(2, 1fr); }
+            .featured-headline { font-size: 1.55rem; }
+            .featured-case-study { padding: 1.75rem 1.25rem; }
         }
     </style>
 </head>
@@ -622,6 +758,46 @@
                 </div>
 
             </div>
+        </section>
+
+
+        <section class="featured-case-study">
+            <div class="featured-label">Featured Work · Agent Architecture</div>
+            <h2 class="featured-headline">A production multi-agent system, designed and operated by one person.</h2>
+            <p class="featured-dek">Over the past ten weeks I designed, deployed, and have continuously operated a multi-agent system on the Claude Agent SDK. It orchestrates Microsoft Graph, scheduled automation, analytics, and document generation across an end-to-end workflow. The case study walks through the architecture, the design decisions, the guardrails, and what it means for Microsoft cloud customers rolling out Copilot Studio and Agent 365.</p>
+
+            <div class="featured-metrics">
+                <div class="featured-metric">
+                    <div class="featured-metric-num">145</div>
+                    <div class="featured-metric-label">Opportunities managed</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">16</div>
+                    <div class="featured-metric-label">Specialist skills</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">13</div>
+                    <div class="featured-metric-label">PowerShell jobs</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">71</div>
+                    <div class="featured-metric-label">Days continuous run</div>
+                </div>
+            </div>
+
+            <div class="featured-tags">
+                <span class="featured-tag">Claude Agent SDK</span>
+                <span class="featured-tag">Microsoft Graph</span>
+                <span class="featured-tag">Python</span>
+                <span class="featured-tag">PowerShell</span>
+                <span class="featured-tag">MCP</span>
+                <span class="featured-tag">Customer Zero</span>
+            </div>
+
+            <a href="Agent_Architecture_Case_Study_DanielLepel.html" class="featured-cta" target="_blank">
+                Read the case study
+                <span class="featured-cta-arrow">→</span>
+            </a>
         </section>
 
 

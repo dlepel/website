@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Architecture Case Study | Daniel Lepel</title>
+<meta name="description" content="A production agent architecture built on Claude Agent SDK, Microsoft Graph, and Python. Ten weeks of continuous operation, 16 specialist skills, 145 opportunities tracked. The pattern enterprises now need for tenant assessment, license optimization, oversharing review, and agent governance.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:   #181818;
+    --dark2:  #202020;
+    --dark3:  #262626;
+    --panel:  #111111;
+    --orange: #c8914a;
+    --og2:    #e0aa6a;
+    --white:  #f0ece4;
+    --dim:    #9a9288;
+    --rule:   rgba(200,145,74,0.3);
+    --rule2:  rgba(200,145,74,0.15);
+    --purple: #3B1A6B;
+    --purple2:#4A2680;
+    --purple-l:#a890d0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;line-height:1.6;}
+  body{padding:0;}
+
+  .page{max-width:1080px;margin:0 auto;padding:56px 48px 96px;}
+
+  /* SITE NAV */
+  .site-nav{margin-bottom:32px;}
+  .site-nav a{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s, border-color .2s;}
+  .site-nav a:hover{color:var(--orange);border-bottom-color:var(--orange);}
+
+  /* HERO */
+  .hero{border-bottom:1px solid var(--rule);padding-bottom:44px;margin-bottom:56px;}
+  .brand-mark{font-size:10px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--orange);margin-bottom:28px;}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:500;line-height:1.05;color:var(--white);margin-bottom:16px;letter-spacing:-0.01em;}
+  .hero h1 em{font-style:italic;color:var(--og2);font-weight:400;}
+  .hero-sub{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:24px;line-height:1.4;max-width:820px;}
+  .hero-dek{font-size:17px;font-weight:300;line-height:1.7;color:#b8b0a4;max-width:780px;}
+  .hero-meta{margin-top:28px;display:flex;gap:32px;flex-wrap:wrap;font-size:13px;color:var(--dim);letter-spacing:.04em;}
+  .hero-meta span{padding-right:32px;border-right:1px solid var(--rule2);}
+  .hero-meta span:last-child{border-right:none;padding-right:0;}
+  .hero-meta b{color:var(--white);font-weight:600;letter-spacing:.02em;}
+
+  /* SECTION */
+  section{margin-bottom:72px;}
+  .sec-label{font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .sec-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--white);line-height:1.15;margin-bottom:14px;}
+  .sec-sub{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:22px;}
+  .sec-rule{width:56px;height:1px;background:var(--orange);opacity:.7;margin-bottom:28px;}
+  .sec-body{font-size:16px;font-weight:300;line-height:1.75;color:#b8b0a4;margin-bottom:22px;}
+  .sec-body b{color:var(--white);font-weight:600;}
+  .sec-body em{color:var(--og2);font-style:italic;}
+
+  /* METRICS GRID */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule2);border:1px solid var(--rule2);margin-bottom:22px;}
+  .metric{background:var(--dark);padding:28px 22px 24px;text-align:left;}
+  .metric .n{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;color:var(--og2);line-height:1;margin-bottom:8px;letter-spacing:-0.01em;}
+  .metric .l{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);line-height:1.4;}
+  .metric .h{font-size:13px;font-weight:300;color:#b8b0a4;margin-top:6px;line-height:1.5;}
+  .metrics-note{font-size:13px;color:var(--dim);font-style:italic;line-height:1.6;}
+
+  /* CAPABILITY LIST */
+  .caps{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 32px;margin-bottom:22px;}
+  .cap{border-left:2px solid var(--orange);padding:4px 0 6px 18px;}
+  .cap .t{font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--white);margin-bottom:6px;}
+  .cap .d{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.6;}
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch{background:var(--dark);border:1px solid var(--rule2);padding:32px 28px;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
+  .arch .row{display:flex;align-items:stretch;gap:14px;margin-bottom:12px;}
+  .arch .row:last-child{margin-bottom:0;}
+  .arch .node{flex:1;background:var(--panel);border:1px solid var(--rule2);padding:14px 16px;border-radius:2px;}
+  .arch .node.primary{border-color:var(--orange);background:linear-gradient(180deg,rgba(200,145,74,.08),rgba(200,145,74,.02));}
+  .arch .node.prob{border-color:var(--purple-l);background:linear-gradient(180deg,rgba(168,144,208,.10),rgba(168,144,208,.02));}
+  .arch .node .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .arch .node.prob .lbl{color:var(--purple-l);}
+  .arch .node .ttl{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;font-family:'Source Sans 3',sans-serif;}
+  .arch .node .d{font-size:12px;font-weight:300;color:var(--dim);line-height:1.5;font-family:'Source Sans 3',sans-serif;}
+  .arch .arrow{display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:18px;padding:0 4px;}
+  .arch .arrow.prob{color:var(--purple-l);}
+  .arch .col{display:flex;flex-direction:column;gap:10px;flex:1;}
+  .arch .col .node{flex:1;}
+  .arch-legend{display:flex;gap:24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule2);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;font-family:'Source Sans 3',sans-serif;}
+  .arch-legend span{display:flex;align-items:center;gap:8px;}
+  .arch-legend .dot{width:10px;height:10px;border-radius:50%;}
+  .arch-legend .dot.det{background:var(--orange);}
+  .arch-legend .dot.prob{background:var(--purple-l);}
+
+  /* DECISIONS */
+  .decisions{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule2);}
+  .dec{border-bottom:1px solid var(--rule2);padding:22px 0;display:grid;grid-template-columns:56px 1fr;gap:22px;}
+  .dec .num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--orange);line-height:1;letter-spacing:-0.02em;}
+  .dec .t{font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px;letter-spacing:.02em;}
+  .dec .p{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.7;margin-bottom:8px;}
+  .dec .w{font-size:13px;font-weight:400;color:var(--og2);font-style:italic;line-height:1.6;}
+  .dec .w b{color:var(--og2);font-weight:600;font-style:normal;letter-spacing:.08em;text-transform:uppercase;font-size:10px;margin-right:6px;}
+
+  /* TRANSLATION TABLE */
+  .trans{border:1px solid var(--rule2);margin-bottom:22px;}
+  .trans .tr{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule2);}
+  .trans .tr:not(:last-child){border-bottom:1px solid var(--rule2);}
+  .trans .th{background:var(--panel);padding:12px 20px;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);}
+  .trans .td{background:var(--dark);padding:18px 20px;font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.65;}
+  .trans .td b{color:var(--white);font-weight:600;}
+
+  /* CLOSE CARD */
+  .close{background:linear-gradient(180deg,var(--dark),var(--panel));border:1px solid var(--rule);padding:40px 44px;position:relative;}
+  .close::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);}
+  .close h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--white);margin-bottom:14px;line-height:1.2;}
+  .close p{font-size:15px;font-weight:300;color:#b8b0a4;line-height:1.75;margin-bottom:18px;max-width:720px;}
+  .close .sig{margin-top:24px;padding-top:22px;border-top:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+  .close .name{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:4px;}
+  .close .title{font-size:13px;font-weight:300;color:var(--dim);letter-spacing:.04em;}
+  .close .contact{font-size:13px;font-weight:300;color:var(--dim);text-align:right;line-height:1.8;letter-spacing:.02em;}
+  .close .contact b{color:var(--og2);font-weight:500;}
+
+  /* FOOTER */
+  .foot{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule2);font-size:11px;color:var(--dim);letter-spacing:.08em;text-align:center;}
+  .foot a{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--rule2);}
+  .foot a:hover{color:var(--orange);border-bottom-color:var(--orange);}
+
+  /* GRAPHICAL MAPS */
+  .maps{display:flex;flex-direction:column;gap:36px;margin-bottom:22px;}
+  .map-block{background:var(--dark);border:1px solid var(--rule2);padding:32px 30px;}
+  .map-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .map-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--white);line-height:1.2;}
+  .map-tag{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);}
+  .map-intro{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.7;margin-bottom:24px;max-width:820px;}
+
+  .constellation{width:100%;max-width:920px;margin:0 auto;}
+  .constellation svg{width:100%;height:auto;display:block;}
+
+  .swim-wrap{width:100%;overflow-x:auto;padding-bottom:6px;}
+  .swim{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:18px;min-width:920px;}
+  .swim .step{background:var(--panel);border:1px solid var(--rule2);padding:16px 14px 14px;position:relative;display:flex;flex-direction:column;gap:6px;}
+  .swim .step::after{content:'\25B6';position:absolute;right:-14px;top:32px;color:var(--orange);font-size:10px;z-index:2;}
+  .swim .step:last-child::after{display:none;}
+  .swim .step-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--orange);line-height:1;letter-spacing:-0.02em;margin-bottom:2px;}
+  .swim .step-ttl{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.04em;line-height:1.3;}
+  .swim .step-skill{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--og2);letter-spacing:.02em;word-break:break-word;}
+  .swim .step-desc{font-size:12px;font-weight:300;color:#b8b0a4;line-height:1.5;}
+  .swim .step-tool{font-size:11px;font-weight:300;color:var(--dim);line-height:1.55;margin-top:4px;padding-top:8px;border-top:1px dashed var(--rule2);}
+  .swim .step-tool b{display:block;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
+
+  .layers{display:flex;flex-direction:column;gap:0;align-items:stretch;}
+  .layer{padding:18px 22px;border:1px solid var(--rule2);background:var(--panel);position:relative;}
+  .layer + .layer{margin-top:14px;}
+  .layer::before{content:'';position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:2px;height:14px;background:var(--orange);opacity:0.55;}
+  .layer:first-child::before{display:none;}
+  .layer-lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .layer-body{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-start;}
+  .layer-group{display:flex;flex-direction:column;gap:6px;min-width:180px;}
+  .layer-group-hdr{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+  .layer-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{background:var(--dark);border:1px solid var(--rule2);padding:5px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#b8b0a4;border-radius:2px;letter-spacing:.02em;}
+  .chip.mcp{border-color:var(--orange);color:var(--og2);background:rgba(200,145,74,0.06);}
+  .chip.skill{color:var(--white);}
+  .chip.state{background:var(--dark);border-color:var(--rule2);color:var(--og2);}
+  .layer-single{font-size:15px;font-weight:600;color:var(--white);font-family:'Source Sans 3',sans-serif;}
+  .layer-sub{font-size:12px;font-weight:300;color:var(--dim);margin-top:2px;line-height:1.5;}
+
+  /* COMMAND CENTER */
+  .cc-wrap{display:block;margin-bottom:22px;}
+  .cc-wrap > .cc-view{margin-bottom:22px;}
+  .cc-wrap > .cc-view:last-child{margin-bottom:0;}
+  .cc-note{background:rgba(200,145,74,0.06);border:1px solid rgba(200,145,74,0.35);padding:12px 18px;margin-bottom:22px;font-size:12px;color:var(--og2);letter-spacing:.02em;font-family:'JetBrains Mono',monospace;line-height:1.6;}
+  .cc-note b{color:var(--white);font-weight:600;}
+  .cc-view{background:var(--dark);border:1px solid var(--rule2);}
+  .cc-view-header{background:var(--panel);padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
+  .cc-view-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);letter-spacing:-0.01em;}
+  .cc-view-meta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;}
+  .cc-table{width:100%;border-collapse:collapse;}
+  .cc-table thead th{background:var(--panel);padding:10px 16px;font-size:9px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;color:var(--orange);text-align:left;border-bottom:1px solid var(--rule2);}
+  .cc-table tbody td{padding:13px 16px;font-size:13px;font-weight:300;color:#b8b0a4;border-bottom:1px solid var(--rule2);line-height:1.5;vertical-align:top;}
+  .cc-table tbody tr:last-child td{border-bottom:none;}
+  .cc-table tbody td:first-child{color:var(--white);font-weight:600;}
+  .cc-table .muted{color:var(--dim);font-size:12px;}
+  .cc-badge{display:inline-block;padding:3px 10px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
+  .cc-badge.active{background:rgba(200,145,74,0.15);color:var(--og2);border:1px solid rgba(200,145,74,0.35);}
+  .cc-badge.prospect{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
+  .cc-badge.applied{background:rgba(80,100,140,0.15);color:#a0b8e0;border:1px solid rgba(120,160,220,0.3);}
+  .cc-badge.screen{background:rgba(60,120,90,0.15);color:#9ecc9e;border:1px solid rgba(110,180,140,0.35);}
+  .cc-badge.passed{background:rgba(120,60,60,0.15);color:#c88a8a;border:1px solid rgba(200,120,120,0.3);}
+  .cc-actions{display:flex;flex-direction:column;}
+  .cc-action{padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;flex-direction:column;gap:7px;}
+  .cc-action:last-child{border-bottom:none;}
+  .cc-action-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .cc-action-type{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);}
+  .cc-action-time{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);}
+  .cc-action-body{font-size:13px;font-weight:300;color:#b8b0a4;line-height:1.6;}
+  .cc-action-who{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--og2);}
+  .cc-action-badge{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border-radius:2px;white-space:nowrap;}
+  .cc-action-badge.staged{background:rgba(200,145,74,0.15);color:var(--og2);border:1px solid rgba(200,145,74,0.3);}
+  .cc-action-badge.pending{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
+  .cc-digest{width:100%;border-collapse:collapse;}
+  .cc-digest tr{border-bottom:1px solid var(--rule2);}
+  .cc-digest tr:last-child{border-bottom:none;}
+  .cc-digest td{padding:13px 22px;font-size:13px;line-height:1.6;vertical-align:top;}
+  .cc-digest-lbl{width:200px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);padding-right:24px !important;}
+  .cc-digest-val{font-weight:300;color:#b8b0a4;}
+  .cc-digest-val b{color:var(--white);font-weight:600;}
+  .cc-digest-val .good{color:#9ecc9e;}
+
+  /* RESPONSIVE */
+  @media (max-width: 820px){
+    .page{padding:36px 24px 64px;}
+    .hero h1{font-size:42px;}
+    .hero-sub{font-size:19px;}
+    .metrics{grid-template-columns:repeat(2,1fr);}
+    .caps{grid-template-columns:1fr;}
+    .arch .row{flex-direction:column;}
+    .arch .arrow{transform:rotate(90deg);padding:4px 0;}
+    .sec-title{font-size:30px;}
+    .trans .tr{grid-template-columns:1fr;}
+    .cc-digest td{display:block;width:auto;padding:6px 12px;}
+    .cc-digest-lbl{padding-bottom:0 !important;}
+    .cc-view-header{flex-direction:column;align-items:flex-start;}
+    .cc-table{font-size:12px;}
+    .cc-table thead th, .cc-table tbody td{padding:8px 10px;}
+  }
+
+  @media print{
+    html,body{background:#fff;color:#111;}
+    .page{padding:24px;}
+    .hero h1,.sec-title,.close h3{color:#111;}
+    .metric .n,.close h3 em{color:#3B1A6B;}
+    .arch .node,.metric,.close{background:#fafafa;color:#111;}
+    .site-nav{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- SITE NAV -->
+  <div class="site-nav"><a href="index.html">&larr; daniellepel.com</a></div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="brand-mark">Daniel Lepel | M365 &amp; Azure Architect</div>
+    <h1>An Agent Architecture <em>Case&nbsp;Study</em></h1>
+    <div class="hero-sub">A production agent system, built on Microsoft Graph and Claude Agent SDK, running continuously for ten weeks against a real operating problem.</div>
+    <div class="hero-dek">
+      This is a long-form technical case study of an agent architecture I built and run. It is a production system, not a demo. The numbers are real. The code is shipping. The problem domain is my own job search, which gave me a ninety-day forcing function and the fastest possible feedback loop. The patterns behind it are the ones any organization moving infrastructure teams into agent territory is going to keep running into: grounding, skill isolation, deterministic state, writable memory, and operator integration.
+    </div>
+    <div class="hero-meta">
+      <span><b>Production agent architecture</b></span>
+      <span>Continuous operation since Feb 6, 2026</span>
+      <span>Claude Agent SDK &middot; Microsoft Graph &middot; Python</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: POSITIONING -->
+  <section>
+    <div class="sec-label">Section 1 | Positioning</div>
+    <h2 class="sec-title">I built the agent architecture enterprises are about to need.</h2>
+    <div class="sec-rule"></div>
+    <p class="sec-body">
+      My twenty years are in Microsoft infrastructure. Tenants, identity, endpoints, Exchange, the plumbing. In February my position at National Business Technologies was eliminated in a reduction in force, and I had ninety days to replace a principal-level role. I treated it as a forcing function. Rather than running a job search on spreadsheets and manual follow-ups, I rebuilt the whole thing as an agent system and became my own Customer Zero.
+    </p>
+    <p class="sec-body">
+      Today it runs my pipeline end to end. <b>145 opportunities tracked</b>, <b>six active interview threads</b>, <b>continuous operation since February 6</b>. It scans my inbox every morning, drafts recruiter replies in my voice, screens new postings against my criteria, generates interview prep documents grounded in confirmed experience, and refuses to fabricate anything the source material does not support. It is the same pattern enterprises now need for tenant assessment, license optimization, oversharing review, and agent governance.
+    </p>
+    <p class="sec-body">
+      The reason this is worth a long read is specific. Most Microsoft infrastructure engineers have not yet shipped a production agent. I have. This document is how it is built, why the choices are the ones that transfer to a customer engagement, and where the pattern is directly portable to the work a Microsoft cloud practice is already being asked to do.
+    </p>
+  </section>
+
+  <!-- SECTION 2: METRICS -->
+  <section>
+    <div class="sec-label">Section 2 | By the numbers</div>
+    <h2 class="sec-title">The system is live, not a demo.</h2>
+    <div class="sec-rule"></div>
+    <p class="sec-body">
+      These numbers come from the running system. Every row is an opportunity I acted on. Every folder holds drafted correspondence, screening notes, and prep artifacts the agent produced or helped produce.
+    </p>
+
+    <div class="metrics">
+      <div class="metric"><div class="n">145</div><div class="l">Opportunities managed</div><div class="h">Feb 6 to Apr 16, one operator</div></div>
+      <div class="metric"><div class="n">6</div><div class="l">Active interview threads</div><div class="h">Running concurrent</div></div>
+      <div class="metric"><div class="n">129</div><div class="l">Opportunity folders</div><div class="h">JD, resume, prep, correspondence</div></div>
+      <div class="metric"><div class="n">71</div><div class="l">Days of continuous run</div><div class="h">Autonomous morning digest and triage</div></div>
+      <div class="metric"><div class="n">16</div><div class="l">Specialist skills</div><div class="h">Routed by task signature</div></div>
+      <div class="metric"><div class="n">15</div><div class="l">Python services</div><div class="h">Graph API, tracker, digest, health</div></div>
+      <div class="metric"><div class="n">13</div><div class="l">PowerShell jobs</div><div class="h">Scheduled tasks, sync, startup</div></div>
+      <div class="metric"><div class="n">17</div><div class="l">Context files</div><div class="h">Confirmed experience, rules, lessons</div></div>
+    </div>
+    <p class="metrics-note">
+      Every metric above is queryable from the running system. The tracker is an .xlsx with a regenerated HTML view. The skills live in a plain directory the agent reads at session start. The run counts come from the action log.
+    </p>
+  </section>
+
+  <!-- SECTION 3: WHAT IT DOES -->
+  <section>
+    <div class="sec-label">Section 3 | Capabilities</div>
+    <h2 class="sec-title">What it actually does, in operator terms.</h2>
+    <div class="sec-rule"></div>
+
+    <div class="caps">
+      <div class="cap"><div class="t">Inbox triage with accountability</div><div class="d">Paginates the Outlook inbox via Graph. Finds recruiter replies, application confirmations, interview invites, and DOL mail. Never relies on keyword search because staffing firms use unpredictable senders. Writes every new recruiter contact to a tracker row the same pass.</div></div>
+      <div class="cap"><div class="t">Draft generation in operator voice</div><div class="d">Produces Outlook drafts directly via Graph instead of asking the operator to copy and paste. Embeds the full signature block inline because the Outlook auto-signature is disabled. Handles decline, interest, redirect, and thank-you flows with separate templates.</div></div>
+      <div class="cap"><div class="t">Grounded interview prep</div><div class="d">Builds company and role prep docs keyed to the job description and the operator's confirmed experience. Refuses to claim tools the operator has not used. Spells out every acronym on first use. Includes a meeting-join button pulled from the calendar invite.</div></div>
+      <div class="cap"><div class="t">Posting screener</div><div class="d">Reads full job descriptions before queueing anything. Checks that the core platform is Microsoft. Verifies the posting link is live. Rejects with tracker evidence so the record stays auditable for the DOL.</div></div>
+      <div class="cap"><div class="t">Resume tailoring with provenance</div><div class="d">Variants per role, built from a branded docx template. Strips AI and tool metadata from docProps XML and runs pikepdf on the PDF before delivery. Every change is traceable to the source bullet in the master resume.</div></div>
+      <div class="cap"><div class="t">Morning digest and dashboard</div><div class="d">Python service regenerates a digest page, a command-center page, and an actions page. Runs as a Windows scheduled task. The operator opens one URL in the morning and sees the whole pipeline.</div></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ARCHITECTURE -->
+  <section>
+    <div class="sec-label">Section 4 | Architecture</div>
+    <h2 class="sec-title">How the pieces fit.</h2>
+    <div class="sec-sub">Natural-language in, deterministic state out.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The architecture has four tiers. A natural-language entry point, a skill router, a tool layer that mixes Model Context Protocol connectors with Python services, and a state layer on disk. Probabilistic work stays in the model. Deterministic work stays in Python. The two halves never pretend to be each other.
+    </p>
+
+    <div class="arch">
+      <div class="row">
+        <div class="node primary prob" style="flex:1;">
+          <div class="lbl">Tier 1 | Interface</div>
+          <div class="ttl">Natural language, voice or text</div>
+          <div class="d">Operator gives a request in plain English. No DSL, no form. The session-start skill fires on every new session and gates all other work until the inbox is scanned and the tracker is current.</div>
+        </div>
+      </div>
+
+      <div class="row"><div class="arrow prob" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
+
+      <div class="row">
+        <div class="node primary prob" style="flex:1;">
+          <div class="lbl">Tier 2 | Skill Router</div>
+          <div class="ttl">16 specialist skills, markdown-defined</div>
+          <div class="d">Each skill is a markdown file with a description field the model matches against the request. The router picks one or more skills based on task signature. Skills are isolated: the resume-work skill cannot rewrite the email-and-drafts skill. This is the same pattern Claude Agent SDK uses for production agents.</div>
+        </div>
+      </div>
+
+      <div class="row"><div class="arrow" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
+
+      <div class="row">
+        <div class="col">
+          <div class="node">
+            <div class="lbl">Tier 3a | MCP connectors</div>
+            <div class="ttl">ms365 | dice | indeed | microsoft-learn</div>
+            <div class="d">Graph API access for mail, calendar, SharePoint, OneDrive. Job board search. Microsoft documentation lookup. Added April 2 after the outlook-assistant MCP was deprecated.</div>
+          </div>
+          <div class="node">
+            <div class="lbl">Tier 3b | Python services</div>
+            <div class="ttl">Deterministic work</div>
+            <div class="d">action_server.py, chatbot_server.py, generate_morning_digest.py, generate_tracker_html.py, graph_api_helper.py. 15 services total. Anything that needs to be the same every time runs here, not in the model.</div>
+          </div>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="col">
+          <div class="node">
+            <div class="lbl">Tier 4 | State</div>
+            <div class="ttl">Disk, not a database</div>
+            <div class="d">Job_Tracker.xlsx is the spine. action_log.json, sent_log.json, action_queue.json track the agent's own work. MEMORY.md and a memory/ directory hold persistent facts across sessions.</div>
+          </div>
+          <div class="node">
+            <div class="lbl">Ground truth</div>
+            <div class="ttl">CLAUDE.md and context/</div>
+            <div class="d">The agent reads CLAUDE.md at session start. Identity rules, compensation floors, writing rules, thoroughness rules. 17 context files hold confirmed experience. Anything not in here is not a claim the agent will make.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-legend">
+        <span><span class="dot det"></span>Deterministic | Python</span>
+        <span><span class="dot prob"></span>Probabilistic | Model + skill</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4.5: AGENT MAPS -->
+  <section>
+    <div class="sec-label">Section 4.5 | The agent map</div>
+    <h2 class="sec-title">All sixteen skills, drawn three ways.</h2>
+    <div class="sec-sub">Structure, sequence, and system stack.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The four-tier block above is the bones. The three visuals below are the muscle. Constellation shows what each skill does and which ones share a tool. Swim lane shows how they execute in order during a normal morning run. Layered stack shows every moving part named in one place.
+    </p>
+
+    <div class="maps">
+
+      <!-- MAP 1: SKILL CONSTELLATION -->
+      <div class="map-block">
+        <div class="map-header">
+          <div class="map-title">Map 1. Skill Constellation</div>
+          <div class="map-tag">Structure</div>
+        </div>
+        <p class="map-intro">
+          Main Agent in the center. Sixteen specialist skills grouped into four functional domains. The tool line under each cluster name is the primary MCP or Python library the skills in that domain invoke.
+        </p>
+
+        <div class="constellation">
+          <svg viewBox="0 0 920 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skill constellation diagram">
+            <line x1="460" y1="320" x2="180" y2="130" stroke="#c8914a" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <line x1="460" y1="320" x2="740" y2="160" stroke="#c8914a" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <line x1="460" y1="320" x2="180" y2="510" stroke="#c8914a" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <line x1="460" y1="320" x2="740" y2="510" stroke="#c8914a" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+            <circle cx="460" cy="320" r="74" fill="#181818" stroke="#c8914a" stroke-width="2"/>
+            <circle cx="460" cy="320" r="62" fill="none" stroke="#c8914a" stroke-opacity="0.25" stroke-width="1"/>
+            <text x="460" y="306" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="9" font-weight="700" letter-spacing="2.5" fill="#c8914a">SKILL ROUTER</text>
+            <text x="460" y="331" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="24" font-weight="500" fill="#f0ece4">Main Agent</text>
+            <text x="460" y="349" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="10" font-style="italic" fill="#9a9288">session-start gate</text>
+
+            <g>
+              <rect x="40" y="40" width="280" height="180" fill="#111111" stroke="rgba(200,145,74,0.30)" stroke-width="1"/>
+              <text x="180" y="64" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="#c8914a">CORRESPONDENCE</text>
+              <text x="180" y="82" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#9a9288">ms365 MCP | Graph mail</text>
+              <rect x="60" y="102" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="119" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">email-and-drafts</text>
+              <rect x="60" y="134" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="151" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">post-screen-thankyou</text>
+              <rect x="60" y="166" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="183" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">linkedin-posts</text>
+            </g>
+
+            <g>
+              <rect x="600" y="40" width="280" height="246" fill="#111111" stroke="rgba(200,145,74,0.30)" stroke-width="1"/>
+              <text x="740" y="64" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="#c8914a">RESUME &amp; ASSETS</text>
+              <text x="740" y="82" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#9a9288">python-docx | pikepdf | openpyxl</text>
+              <rect x="620" y="102" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="119" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">resume-work</text>
+              <rect x="620" y="134" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="151" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">workday-resume</text>
+              <rect x="620" y="166" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="183" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">docx</text>
+              <rect x="620" y="198" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">pdf</text>
+              <rect x="620" y="230" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="247" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">pptx</text>
+              <rect x="620" y="262" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="279" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">xlsx</text>
+            </g>
+
+            <g>
+              <rect x="40" y="420" width="280" height="180" fill="#111111" stroke="rgba(200,145,74,0.30)" stroke-width="1"/>
+              <text x="180" y="444" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="#c8914a">PIPELINE &amp; STATE</text>
+              <text x="180" y="462" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#9a9288">openpyxl | JSON | HTML regen</text>
+              <rect x="60" y="482" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="499" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">session-start</text>
+              <rect x="60" y="514" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="531" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">action-queue</text>
+              <rect x="60" y="546" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="180" y="563" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">tracker-and-dashboard</text>
+            </g>
+
+            <g>
+              <rect x="600" y="388" width="280" height="212" fill="#111111" stroke="rgba(200,145,74,0.30)" stroke-width="1"/>
+              <text x="740" y="412" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="#c8914a">INTERVIEW &amp; META</text>
+              <text x="740" y="430" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#9a9288">ms365 calendar | scheduled tasks</text>
+              <rect x="620" y="450" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="467" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">interview-prep</text>
+              <rect x="620" y="482" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="499" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">folder-layout</text>
+              <rect x="620" y="514" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="531" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">schedule</text>
+              <rect x="620" y="546" width="240" height="26" fill="#1a1a1a" stroke="rgba(200,145,74,0.22)"/>
+              <text x="740" y="563" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#f0ece4">skill-creator</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- MAP 2: DAILY WORKFLOW SWIM LANE -->
+      <div class="map-block">
+        <div class="map-header">
+          <div class="map-title">Map 2. Daily Workflow</div>
+          <div class="map-tag">Sequence</div>
+        </div>
+        <p class="map-intro">
+          A normal weekday morning, left to right. Each step is one skill acting on state produced by the step before it. No step is skipped. The session gate on the far left forbids any downstream work until the inbox scan and tracker refresh are complete.
+        </p>
+
+        <div class="swim-wrap">
+          <div class="swim">
+            <div class="step">
+              <div class="step-num">01</div>
+              <div class="step-ttl">Session Gate</div>
+              <div class="step-skill">session-start</div>
+              <div class="step-desc">Reads CLAUDE.md. Loads rules, identity facts, comp floors. Refuses to do anything else until the inbox has been scanned.</div>
+              <div class="step-tool"><b>State</b>CLAUDE.md | context/</div>
+            </div>
+            <div class="step">
+              <div class="step-num">02</div>
+              <div class="step-ttl">Inbox Triage</div>
+              <div class="step-skill">email-and-drafts</div>
+              <div class="step-desc">Paginates Outlook via Graph. Finds recruiter replies, ATS confirmations, interview invites, DOL mail. Stages drafts for each new recruiter contact.</div>
+              <div class="step-tool"><b>Tool</b>ms365 MCP</div>
+            </div>
+            <div class="step">
+              <div class="step-num">03</div>
+              <div class="step-ttl">Draft Generation</div>
+              <div class="step-skill">email-and-drafts | post-screen-thankyou</div>
+              <div class="step-desc">Writes Outlook drafts directly. Embeds signature inline. Selects template by flow: decline, redirect, interest, thank-you.</div>
+              <div class="step-tool"><b>Tool</b>ms365 MCP | create-draft-email</div>
+            </div>
+            <div class="step">
+              <div class="step-num">04</div>
+              <div class="step-ttl">Prep Sync</div>
+              <div class="step-skill">interview-prep</div>
+              <div class="step-desc">For any confirmed interview on the calendar, rebuilds the prep doc. Pulls Teams join link. Adds it as a button on the doc and on the dashboard.</div>
+              <div class="step-tool"><b>Tool</b>ms365 calendar | python-docx</div>
+            </div>
+            <div class="step">
+              <div class="step-num">05</div>
+              <div class="step-ttl">Tracker Regen</div>
+              <div class="step-skill">tracker-and-dashboard</div>
+              <div class="step-desc">Any change to Job_Tracker.xlsx triggers generate_tracker_html.py. The HTML view is never edited by hand.</div>
+              <div class="step-tool"><b>Tool</b>openpyxl | Python</div>
+            </div>
+            <div class="step">
+              <div class="step-num">06</div>
+              <div class="step-ttl">Morning Digest</div>
+              <div class="step-skill">action-queue | scheduled task</div>
+              <div class="step-desc">Renders a digest page with open actions, interview schedule, proactive leads, and pending DOL items. One URL for the whole pipeline.</div>
+              <div class="step-tool"><b>Tool</b>Python service | Windows Scheduler</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAP 3: LAYERED SYSTEM STACK -->
+      <div class="map-block">
+        <div class="map-header">
+          <div class="map-title">Map 3. Layered System Stack</div>
+          <div class="map-tag">System</div>
+        </div>
+        <p class="map-intro">
+          The whole thing as a stack. Operator on top, disk state on the bottom, request flow downward, state flow upward. Every named component in the running system appears somewhere on this map. Orange outlines are MCP connectors. Gold fills are skill boundaries. Italic caption text is the underlying tool.
+        </p>
+
+        <div class="layers">
+          <div class="layer">
+            <div class="layer-lbl">Layer 1 | Operator</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-single">Daniel</div>
+                <div class="layer-sub">Natural-language requests, voice or text. One operator, no queue.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 2 | Orchestrator</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-single">Main Agent | Skill Router</div>
+                <div class="layer-sub">Matches request to skill descriptions. Enforces the session-start gate. Loads CLAUDE.md and context/ on every new session.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 3 | Specialist skills (16)</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">Correspondence</div>
+                <div class="layer-chips">
+                  <span class="chip skill">email-and-drafts</span>
+                  <span class="chip skill">post-screen-thankyou</span>
+                  <span class="chip skill">linkedin-posts</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Resume &amp; assets</div>
+                <div class="layer-chips">
+                  <span class="chip skill">resume-work</span>
+                  <span class="chip skill">workday-resume</span>
+                  <span class="chip skill">docx</span>
+                  <span class="chip skill">pdf</span>
+                  <span class="chip skill">pptx</span>
+                  <span class="chip skill">xlsx</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Pipeline &amp; state</div>
+                <div class="layer-chips">
+                  <span class="chip skill">session-start</span>
+                  <span class="chip skill">action-queue</span>
+                  <span class="chip skill">tracker-and-dashboard</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Interview &amp; meta</div>
+                <div class="layer-chips">
+                  <span class="chip skill">interview-prep</span>
+                  <span class="chip skill">folder-layout</span>
+                  <span class="chip skill">schedule</span>
+                  <span class="chip skill">skill-creator</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 4 | Tool layer</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">MCP connectors</div>
+                <div class="layer-chips">
+                  <span class="chip mcp">ms365</span>
+                  <span class="chip mcp">microsoft-learn</span>
+                  <span class="chip mcp">dice</span>
+                  <span class="chip mcp">indeed</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Python services (15)</div>
+                <div class="layer-chips">
+                  <span class="chip">action_server.py</span>
+                  <span class="chip">chatbot_server.py</span>
+                  <span class="chip">generate_morning_digest.py</span>
+                  <span class="chip">generate_tracker_html.py</span>
+                  <span class="chip">graph_api_helper.py</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">PowerShell jobs (13)</div>
+                <div class="layer-chips">
+                  <span class="chip">scheduled tasks</span>
+                  <span class="chip">sync scripts</span>
+                  <span class="chip">startup hooks</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 5 | State on disk</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">Pipeline state</div>
+                <div class="layer-chips">
+                  <span class="chip state">Job_Tracker.xlsx</span>
+                  <span class="chip state">action_log.json</span>
+                  <span class="chip state">action_queue.json</span>
+                  <span class="chip state">sent_log.json</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Ground truth</div>
+                <div class="layer-chips">
+                  <span class="chip state">CLAUDE.md</span>
+                  <span class="chip state">context/ (17)</span>
+                  <span class="chip state">MEMORY.md</span>
+                  <span class="chip state">memory/</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Opportunity files</div>
+                <div class="layer-chips">
+                  <span class="chip state">opportunities/ (129)</span>
+                  <span class="chip state">resume variants</span>
+                  <span class="chip state">prep docs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- SECTION 4.6: COMMAND CENTER -->
+  <section>
+    <div class="sec-label">Section 4.6 | The Command Center</div>
+    <h2 class="sec-title">What the operator actually sees.</h2>
+    <div class="sec-sub">The morning view, rendered with sample data.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The maps above describe the shape of the system. The Command Center is where the operator lives. One URL opened at the start of the day, three stacked views, every piece of state the pipeline produced since the last run. The views below are rendered against <b>sample data</b> because the live pipeline holds confidential recruiter correspondence and active interview threads. The layout, the field structure, and the rendering pattern are exactly what ships. Company names are placeholders from the Microsoft documentation tradition: Fabrikam, Contoso, Northwind, Adventure Works, and friends.
+    </p>
+
+    <div class="cc-note"><b>Sample data only.</b> Rows, recruiters, dates, and compensation figures are fabricated. The real dashboard runs locally on the operator's own machine.</div>
+
+    <div class="cc-wrap">
+
+      <!-- VIEW 1: Pipeline Snapshot -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Pipeline Snapshot</div>
+          <div class="cc-view-meta">regenerated from Job_Tracker.xlsx on every change</div>
+        </div>
+        <table class="cc-table">
+          <thead>
+            <tr>
+              <th style="width:170px;">Company</th>
+              <th>Role</th>
+              <th>Stage</th>
+              <th>Next Action</th>
+              <th>Contact</th>
+              <th style="width:70px;">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fabrikam Industries</td>
+              <td>Principal M365 Architect</td>
+              <td><span class="cc-badge screen">Round 2 Scheduled</span></td>
+              <td>Prep doc due Fri</td>
+              <td class="muted">Alex Morgan | talent recruiter</td>
+              <td class="muted">Apr 15</td>
+            </tr>
+            <tr>
+              <td>Contoso Ltd</td>
+              <td>Director of IT Infrastructure</td>
+              <td><span class="cc-badge active">Awaiting Feedback</span></td>
+              <td>Follow up Apr 24</td>
+              <td class="muted">Jordan Chen | direct</td>
+              <td class="muted">Apr 12</td>
+            </tr>
+            <tr>
+              <td>Northwind Traders</td>
+              <td>Senior Cloud Engineer</td>
+              <td><span class="cc-badge applied">Applied</span></td>
+              <td>ATS confirmation received</td>
+              <td class="muted">direct apply</td>
+              <td class="muted">Apr 14</td>
+            </tr>
+            <tr>
+              <td>Adventure Works</td>
+              <td>Cloud Governance Lead</td>
+              <td><span class="cc-badge screen">Screen Scheduled</span></td>
+              <td>Screen Apr 21 10:00 AM ET</td>
+              <td class="muted">Sam Rivera | agency</td>
+              <td class="muted">Apr 16</td>
+            </tr>
+            <tr>
+              <td>Wingtip Toys</td>
+              <td>Azure Platform Architect</td>
+              <td><span class="cc-badge prospect">Prospect</span></td>
+              <td>Research company, confirm comp floor</td>
+              <td class="muted">proactive lead</td>
+              <td class="muted">Apr 11</td>
+            </tr>
+            <tr>
+              <td>Tailwind Traders</td>
+              <td>Principal Cloud Architect</td>
+              <td><span class="cc-badge passed">Declined</span></td>
+              <td>Rate below floor, logged</td>
+              <td class="muted">Casey Patel | staffing</td>
+              <td class="muted">Apr 10</td>
+            </tr>
+            <tr>
+              <td>Proseware</td>
+              <td>Senior M365 Engineer</td>
+              <td><span class="cc-badge applied">Applied</span></td>
+              <td>ATS silent past SLA</td>
+              <td class="muted">direct apply</td>
+              <td class="muted">Apr 08</td>
+            </tr>
+            <tr>
+              <td>Lucerne Publishing</td>
+              <td>IT Director</td>
+              <td><span class="cc-badge active">Phone Screen Done</span></td>
+              <td>Waiting decision</td>
+              <td class="muted">Morgan Bell | search firm</td>
+              <td class="muted">Apr 09</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- VIEW 2: Action Queue -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Action Queue</div>
+          <div class="cc-view-meta">drafts awaiting operator review | stale threshold 48h</div>
+        </div>
+        <div class="cc-actions">
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Draft reply staged</span>
+              <span class="cc-action-time">2h ago</span>
+            </div>
+            <div class="cc-action-body">Recruiter follow-up at Fabrikam Industries. Full signature block embedded inline. Needs operator review and send.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">amorgan@fabrikam.example</span>
+              <span class="cc-action-badge staged">Staged in Outlook</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Interview confirm</span>
+              <span class="cc-action-time">6h ago</span>
+            </div>
+            <div class="cc-action-body">Adventure Works screen confirmed for Apr 21 10:00 AM ET. Calendar invite accepted. Prep doc scheduled for build Fri.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">srivera@recruitco.example</span>
+              <span class="cc-action-badge pending">Prep doc queued</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Stale draft audit</span>
+              <span class="cc-action-time">18h ago</span>
+            </div>
+            <div class="cc-action-body">Two drafts to Proseware recruiter unsent past 48h threshold. Operator decision required: send, rewrite, or close out.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">draft_queue.json</span>
+              <span class="cc-action-badge pending">Operator action</span>
+            </div>
+          </div>
+
+          <div class="cc-action">
+            <div class="cc-action-row">
+              <span class="cc-action-type">Proactive lead</span>
+              <span class="cc-action-time">Today 06:15</span>
+            </div>
+            <div class="cc-action-body">New posting detected on Dice. Title: Principal Cloud Architect at Fabrikam Industries. Core platform Microsoft: yes. Posting link live: yes. Compensation inside floor. Queued for operator review.</div>
+            <div class="cc-action-row">
+              <span class="cc-action-who">dice MCP | screened by posting-screener skill</span>
+              <span class="cc-action-badge staged">Queued</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 3: Morning Digest -->
+      <div class="cc-view">
+        <div class="cc-view-header">
+          <div class="cc-view-title">Morning Digest | Apr 17 2026</div>
+          <div class="cc-view-meta">regenerated nightly by Windows scheduled task at 06:00 ET</div>
+        </div>
+        <table class="cc-digest">
+          <tbody>
+          <tr>
+            <td class="cc-digest-lbl">New since last scan</td>
+            <td class="cc-digest-val"><b>3</b> recruiter replies | <b>2</b> ATS confirmations | <b>1</b> interview invite</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Interview today</td>
+            <td class="cc-digest-val"><b>Adventure Works</b> | Screen | 10:00 AM ET | Teams join button active on prep doc</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Interviews this week</td>
+            <td class="cc-digest-val"><b>2</b> confirmed | <b>1</b> pending recruiter confirmation</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Stale drafts</td>
+            <td class="cc-digest-val"><b>2</b> recruiter drafts past 48h threshold | flagged for operator action</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Proactive leads</td>
+            <td class="cc-digest-val"><b>5</b> new postings matched against criteria | <b>3</b> queued | <b>2</b> auto-rejected below comp floor</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">DOL / unemployment</td>
+            <td class="cc-digest-val">RESEA complete | UI active | next certification Sunday | job-search log current</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Run health</td>
+            <td class="cc-digest-val">session-start last run 06:00 ET | action_server uptime <span class="good">71 days</span> | no errors in last scan</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <p class="sec-body" style="margin-top:26px;">
+      This view is where the architecture pays off. The operator does not open Job_Tracker.xlsx, action_log.json, or the skill directory during a normal morning run. One URL holds the whole pipeline. Replace the operator with a customer tenant administrator and the rendering pattern still holds. Different data, same state spine, same deterministic rebuild every time the pipeline changes.
+    </p>
+  </section>
+
+  <!-- SECTION 5: KEY DECISIONS -->
+  <section>
+    <div class="sec-label">Section 5 | Decisions that made it real</div>
+    <h2 class="sec-title">The choices I would bring to a customer conversation.</h2>
+    <div class="sec-rule"></div>
+
+    <div class="decisions">
+      <div class="dec">
+        <div class="num">01</div>
+        <div>
+          <div class="t">Split deterministic and probabilistic work cleanly.</div>
+          <div class="p">Anything that must be the same every time runs in Python. Anything that has to sound like a person runs in the model. The tracker calculation, the HTML regeneration, the log write, the file copy: Python. The email draft, the screening judgment, the prep-doc narrative: model. The two halves never pretend to be each other.</div>
+          <div class="w"><b>Why it matters</b>Customers will try to let an agent move money, delete tenants, or compute payroll. The right answer is to bracket the probabilistic part with deterministic guardrails, not to trust the model to behave.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">02</div>
+        <div>
+          <div class="t">Ground every claim in source files.</div>
+          <div class="p">The agent is not allowed to claim experience I cannot back up. CLAUDE.md has explicit identity rules. Context files hold confirmed work history. If a prep doc would need a capability I do not have, the agent either omits it or flags the gap. No fabrication, no inflation, no plausible hallucination.</div>
+          <div class="w"><b>Why it matters</b>Customer-facing agents that fabricate will destroy trust on the first contact. Grounding is the only pattern that scales.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">03</div>
+        <div>
+          <div class="t">Make the agent refuse shortcuts.</div>
+          <div class="p">If there is a more rigorous method available to verify something, the agent uses it, even if it costs more tool calls. Verify by querying Sent Items, not by asking the operator. Paginate the full inbox, not a keyword search, because staffing firms use unpredictable senders. Fix data quality issues in the same pass you find them, not a list for later.</div>
+          <div class="w"><b>Why it matters</b>Shortcut behavior is how agents drift. Building the opposite habit into the system prompt and into the skill descriptions is what keeps behavior stable over weeks of runs.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">04</div>
+        <div>
+          <div class="t">Close the loop with writable memory.</div>
+          <div class="p">The agent writes lessons back to skill files, context files, and auto-memory after each task. CLAUDE.md stays lean; archived lessons live in context/lessons-archive.md. The next session gets a sharper tool than the last one. This is the feedback loop most agent pilots are missing.</div>
+          <div class="w"><b>Why it matters</b>Without a writable memory tier, an agent starts every engagement cold. With one, it compounds.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">05</div>
+        <div>
+          <div class="t">Treat the operator as the integration point.</div>
+          <div class="p">The agent pushes state into tools the operator already uses: Outlook drafts, Excel tracker, HTML dashboard. The operator never has to learn a new interface. The agent adapts to the environment rather than asking the environment to adapt.</div>
+          <div class="w"><b>Why it matters</b>This is the move that unlocks adoption. Customers will not migrate to a new console. They will accept an agent that makes their existing console better.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: TRANSLATION -->
+  <section>
+    <div class="sec-label">Section 6 | Translation</div>
+    <h2 class="sec-title">Why this pattern matches the work enterprises are being asked to do.</h2>
+    <div class="sec-sub">Same architecture, bigger surface area.</div>
+    <div class="sec-rule"></div>
+
+    <div class="trans">
+      <div class="tr">
+        <div class="th">What I built for my own pipeline</div>
+        <div class="th">What a Microsoft cloud customer now needs</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Inbox triage that writes back to a tracker.</b> Agent paginates Graph, classifies recruiter correspondence, stages Outlook drafts, updates the .xlsx spine.</div>
+        <div class="td"><b>Tenant assessment, oversharing review, license optimization, and migration.</b> All four share the same architectural shape: paginate a Graph source, classify each record, stage an action, write back with a full audit log. My pipeline runs that pattern on mail and a tracker. A customer engagement runs the same pattern on SharePoint permissions, Exchange rules, license entitlements, or a full tenant transfer. The pattern is the portable piece. Scale and the zero-loss bar on migration are what a customer tenant adds.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Grounded interview prep.</b> Refuses to claim tools the operator has not used. Pulls facts from context files. Every acronym spelled out on first use.</div>
+        <div class="td"><b>Agent governance for customer-facing agents.</b> Grounding is the foundational discipline, and it is the one I have built into my own system. Enterprise agent governance adds what I have not yet shipped at customer scale: multi-tenant data isolation, Purview DLP and sensitivity labels, data residency controls, and audit export for regulated industries. The grounding muscle transfers. The rest is M365 plumbing that already maps to components I know how to wire.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>16 skills, one router.</b> Task signatures pick the right specialist. Skills stay isolated. The router cannot rewrite a skill's behavior at runtime.</div>
+        <div class="td"><b>Copilot Studio and Agent 365 patterns.</b> Topics, actions, and tools in Copilot Studio are the direct analogue of my skills, Python services, and MCP connectors. The primitives are the same; the packaging and licensing differ. Translation between Claude Agent SDK and Copilot Studio is pattern recognition, not net new learning. The architectural vocabulary carries over cleanly.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Session gate, memory tier, deterministic state.</b> Agent cannot do downstream work until upstream state is verified. Memory writes after every task. State lives on disk, not in the model.</div>
+        <div class="td"><b>Customer Zero discipline for agent rollouts.</b> I ran the pilot on myself, instrumented everything, wrote the lessons back to the guardrails, and widened scope only after the loop closed. A one-operator pipeline is smaller than a customer fleet by several orders of magnitude. The discipline is what transfers. The blast radius is what gets sized up inside a customer engagement.</div>
+      </div>
+    </div>
+
+    <p class="sec-body" style="margin-top:20px;">
+      The architecture above is pattern transfer from a pipeline I built and run. I have not yet applied the same pattern at customer scale on a Copilot Studio or Agent 365 engagement. That is the honest distinction, and it is why Customer Zero is the right framing. My twenty years are in the Microsoft infrastructure these agents plug into: tenants, identity, Exchange, SharePoint, endpoints, the M365 control plane. I know how those components wire together. What they need is the right tenant to live in. Given the platform depth and the architectural fluency, the ramp into a customer conversation is short.
+    </p>
+  </section>
+
+  <!-- CLOSE CARD -->
+  <div class="close">
+    <h3>The short version.</h3>
+    <p>
+      Most Microsoft infrastructure engineers have not yet shipped a production agent. I have. The system has been running for ten weeks. The architecture is in Section 4. The operator view is in Section 4.6. The decisions that made it real are in Section 5. The translation from my pipeline to customer work is in Section 6.
+    </p>
+    <p>
+      If you are building a Microsoft cloud practice, running a Copilot or Agent 365 customer-zero program, or staffing a Principal Architect role where this pattern is part of the job, I would be glad to walk through any of it live.
+    </p>
+    <div class="sig">
+      <div>
+        <div class="name">Daniel Lepel</div>
+        <div class="title">Principal Microsoft Cloud Architect</div>
+      </div>
+      <div class="contact">
+        <b>daniel@lepel.us</b><br>
+        518-838-1600<br>
+        Albany, NY Capital District
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Agent Architecture Case Study | <a href="index.html">daniellepel.com</a> | Published April 2026</div>
+
+</div>
+</body>
+</html>
