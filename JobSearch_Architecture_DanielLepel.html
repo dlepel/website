@@ -168,10 +168,12 @@
   .layer-sub{font-size:12px;font-weight:300;color:var(--dim);margin-top:2px;line-height:1.5;}
 
   /* COMMAND CENTER */
-  .cc-wrap{display:flex;flex-direction:column;gap:22px;margin-bottom:22px;}
+  .cc-wrap{display:block;margin-bottom:22px;}
+  .cc-wrap > .cc-view{margin-bottom:22px;}
+  .cc-wrap > .cc-view:last-child{margin-bottom:0;}
   .cc-note{background:rgba(200,145,74,0.06);border:1px solid rgba(200,145,74,0.35);padding:12px 18px;margin-bottom:22px;font-size:12px;color:var(--og2);letter-spacing:.02em;font-family:'JetBrains Mono',monospace;line-height:1.6;}
   .cc-note b{color:var(--white);font-weight:600;}
-  .cc-view{background:var(--dark);border:1px solid var(--rule2);overflow:hidden;}
+  .cc-view{background:var(--dark);border:1px solid var(--rule2);}
   .cc-view-header{background:var(--panel);padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
   .cc-view-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);letter-spacing:-0.01em;}
   .cc-view-meta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;}
@@ -198,10 +200,11 @@
   .cc-action-badge{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border-radius:2px;white-space:nowrap;}
   .cc-action-badge.staged{background:rgba(200,145,74,0.15);color:var(--og2);border:1px solid rgba(200,145,74,0.3);}
   .cc-action-badge.pending{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
-  .cc-digest{display:flex;flex-direction:column;}
-  .cc-digest-row{padding:13px 22px;display:grid;grid-template-columns:200px 1fr;gap:24px;border-bottom:1px solid var(--rule2);font-size:13px;line-height:1.6;align-items:baseline;}
-  .cc-digest-row:last-child{border-bottom:none;}
-  .cc-digest-lbl{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);}
+  .cc-digest{width:100%;border-collapse:collapse;}
+  .cc-digest tr{border-bottom:1px solid var(--rule2);}
+  .cc-digest tr:last-child{border-bottom:none;}
+  .cc-digest td{padding:13px 22px;font-size:13px;line-height:1.6;vertical-align:top;}
+  .cc-digest-lbl{width:200px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);padding-right:24px !important;}
   .cc-digest-val{font-weight:300;color:#b8b0a4;}
   .cc-digest-val b{color:var(--white);font-weight:600;}
   .cc-digest-val .good{color:#9ecc9e;}
@@ -217,7 +220,8 @@
     .arch .arrow{transform:rotate(90deg);padding:4px 0;}
     .sec-title{font-size:30px;}
     .trans .tr{grid-template-columns:1fr;}
-    .cc-digest-row{grid-template-columns:1fr;gap:4px;}
+    .cc-digest td{display:block;width:auto;padding:6px 12px;}
+    .cc-digest-lbl{padding-bottom:0 !important;}
     .cc-view-header{flex-direction:column;align-items:flex-start;}
     .cc-table{font-size:12px;}
     .cc-table thead th, .cc-table tbody td{padding:8px 10px;}
@@ -837,36 +841,38 @@
           <div class="cc-view-title">Morning Digest | Apr 17 2026</div>
           <div class="cc-view-meta">regenerated nightly by Windows scheduled task at 06:00 ET</div>
         </div>
-        <div class="cc-digest">
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">New since last scan</div>
-            <div class="cc-digest-val"><b>3</b> recruiter replies | <b>2</b> ATS confirmations | <b>1</b> interview invite</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">Interview today</div>
-            <div class="cc-digest-val"><b>Adventure Works</b> | Screen | 10:00 AM ET | Teams join button active on prep doc</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">Interviews this week</div>
-            <div class="cc-digest-val"><b>2</b> confirmed | <b>1</b> pending recruiter confirmation</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">Stale drafts</div>
-            <div class="cc-digest-val"><b>2</b> recruiter drafts past 48h threshold | flagged for operator action</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">Proactive leads</div>
-            <div class="cc-digest-val"><b>5</b> new postings matched against criteria | <b>3</b> queued | <b>2</b> auto-rejected below comp floor</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">DOL / unemployment</div>
-            <div class="cc-digest-val">RESEA complete | UI active | next certification Sunday | job-search log current</div>
-          </div>
-          <div class="cc-digest-row">
-            <div class="cc-digest-lbl">Run health</div>
-            <div class="cc-digest-val">session-start last run 06:00 ET | action_server uptime <span class="good">71 days</span> | no errors in last scan</div>
-          </div>
-        </div>
+        <table class="cc-digest">
+          <tbody>
+          <tr>
+            <td class="cc-digest-lbl">New since last scan</td>
+            <td class="cc-digest-val"><b>3</b> recruiter replies | <b>2</b> ATS confirmations | <b>1</b> interview invite</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Interview today</td>
+            <td class="cc-digest-val"><b>Adventure Works</b> | Screen | 10:00 AM ET | Teams join button active on prep doc</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Interviews this week</td>
+            <td class="cc-digest-val"><b>2</b> confirmed | <b>1</b> pending recruiter confirmation</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Stale drafts</td>
+            <td class="cc-digest-val"><b>2</b> recruiter drafts past 48h threshold | flagged for operator action</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Proactive leads</td>
+            <td class="cc-digest-val"><b>5</b> new postings matched against criteria | <b>3</b> queued | <b>2</b> auto-rejected below comp floor</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">DOL / unemployment</td>
+            <td class="cc-digest-val">RESEA complete | UI active | next certification Sunday | job-search log current</td>
+          </tr>
+          <tr>
+            <td class="cc-digest-lbl">Run health</td>
+            <td class="cc-digest-val">session-start last run 06:00 ET | action_server uptime <span class="good">71 days</span> | no errors in last scan</td>
+          </tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
