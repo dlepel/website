@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-E563220FPH');
+</script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRAFT | Copilot Concierge Case Study | Daniel Lepel</title>
+<meta name="description" content="Copilot Concierge: a generalized M365 triage agent for any Outlook user, built on Copilot Studio and Azure AI Foundry with Claude as the reasoning model. Scope study and architecture, derived from a production Claude Agent SDK pipeline.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:   #181818;
+    --dark2:  #202020;
+    --dark3:  #262626;
+    --panel:  #111111;
+    --orange: #c8914a;
+    --og2:    #e0aa6a;
+    --white:  #f0ece4;
+    --dim:    #9a9288;
+    --rule:   rgba(200,145,74,0.3);
+    --rule2:  rgba(200,145,74,0.15);
+    --purple: #3B1A6B;
+    --purple2:#4A2680;
+    --purple-l:#a890d0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#0e0e0e;font-family:'Source Sans 3',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;line-height:1.6;}
+  body{padding:0;}
+
+  .page{max-width:1080px;margin:0 auto;padding:56px 48px 96px;}
+
+  /* DRAFT BANNER */
+  .draft-banner{background:rgba(200,145,74,0.10);border:1px solid var(--orange);padding:14px 22px;margin-bottom:32px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--og2);letter-spacing:.04em;line-height:1.6;}
+  .draft-banner b{color:var(--white);font-weight:700;letter-spacing:.10em;text-transform:uppercase;}
+
+  /* SITE NAV */
+  .site-nav{margin-bottom:32px;}
+  .site-nav a{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s, border-color .2s;}
+  .site-nav a:hover{color:var(--orange);border-bottom-color:var(--orange);}
+
+  /* HERO */
+  .hero{border-bottom:1px solid var(--rule);padding-bottom:44px;margin-bottom:56px;}
+  .brand-mark{font-size:10px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--orange);margin-bottom:28px;}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:500;line-height:1.05;color:var(--white);margin-bottom:16px;letter-spacing:-0.01em;}
+  .hero h1 em{font-style:italic;color:var(--og2);font-weight:400;}
+  .hero-sub{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:24px;line-height:1.4;max-width:820px;}
+  .hero-dek{font-size:17px;font-weight:300;line-height:1.7;color:#b8b0a4;max-width:780px;}
+  .hero-meta{margin-top:28px;display:flex;gap:32px;flex-wrap:wrap;font-size:13px;color:var(--dim);letter-spacing:.04em;}
+  .hero-meta span{padding-right:32px;border-right:1px solid var(--rule2);}
+  .hero-meta span:last-child{border-right:none;padding-right:0;}
+  .hero-meta b{color:var(--white);font-weight:600;letter-spacing:.02em;}
+
+  /* SECTION */
+  section{margin-bottom:72px;}
+  .sec-label{font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .sec-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--white);line-height:1.15;margin-bottom:14px;}
+  .sec-sub{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;font-style:italic;color:var(--og2);margin-bottom:22px;}
+  .sec-rule{width:56px;height:1px;background:var(--orange);opacity:.7;margin-bottom:28px;}
+  .sec-body{font-size:16px;font-weight:300;line-height:1.75;color:#b8b0a4;margin-bottom:22px;}
+  .sec-body b{color:var(--white);font-weight:600;}
+  .sec-body em{color:var(--og2);font-style:italic;}
+
+  /* METRICS GRID */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule2);border:1px solid var(--rule2);margin-bottom:22px;}
+  .metric{background:var(--dark);padding:28px 22px 24px;text-align:left;}
+  .metric .n{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;color:var(--og2);line-height:1;margin-bottom:8px;letter-spacing:-0.01em;}
+  .metric .l{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);line-height:1.4;}
+  .metric .h{font-size:13px;font-weight:300;color:#b8b0a4;margin-top:6px;line-height:1.5;}
+  .metrics-note{font-size:13px;color:var(--dim);font-style:italic;line-height:1.6;}
+
+  /* CAPABILITY LIST */
+  .caps{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 32px;margin-bottom:22px;}
+  .cap{border-left:2px solid var(--orange);padding:4px 0 6px 18px;}
+  .cap .t{font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--white);margin-bottom:6px;}
+  .cap .d{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.6;}
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch{background:var(--dark);border:1px solid var(--rule2);padding:32px 28px;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
+  .arch .row{display:flex;align-items:stretch;gap:14px;margin-bottom:12px;}
+  .arch .row:last-child{margin-bottom:0;}
+  .arch .node{flex:1;background:var(--panel);border:1px solid var(--rule2);padding:14px 16px;border-radius:2px;}
+  .arch .node.primary{border-color:var(--orange);background:linear-gradient(180deg,rgba(200,145,74,.08),rgba(200,145,74,.02));}
+  .arch .node.prob{border-color:var(--purple-l);background:linear-gradient(180deg,rgba(168,144,208,.10),rgba(168,144,208,.02));}
+  .arch .node .lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .arch .node.prob .lbl{color:var(--purple-l);}
+  .arch .node .ttl{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;font-family:'Source Sans 3',sans-serif;}
+  .arch .node .d{font-size:12px;font-weight:300;color:var(--dim);line-height:1.5;font-family:'Source Sans 3',sans-serif;}
+  .arch .arrow{display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:18px;padding:0 4px;}
+  .arch .arrow.prob{color:var(--purple-l);}
+  .arch .col{display:flex;flex-direction:column;gap:10px;flex:1;}
+  .arch .col .node{flex:1;}
+  .arch-legend{display:flex;gap:24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule2);font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;font-family:'Source Sans 3',sans-serif;}
+  .arch-legend span{display:flex;align-items:center;gap:8px;}
+  .arch-legend .dot{width:10px;height:10px;border-radius:50%;}
+  .arch-legend .dot.det{background:var(--orange);}
+  .arch-legend .dot.prob{background:var(--purple-l);}
+
+  /* DECISIONS */
+  .decisions{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule2);}
+  .dec{border-bottom:1px solid var(--rule2);padding:22px 0;display:grid;grid-template-columns:56px 1fr;gap:22px;}
+  .dec .num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--orange);line-height:1;letter-spacing:-0.02em;}
+  .dec .t{font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px;letter-spacing:.02em;}
+  .dec .p{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.7;margin-bottom:8px;}
+  .dec .w{font-size:13px;font-weight:400;color:var(--og2);font-style:italic;line-height:1.6;}
+  .dec .w b{color:var(--og2);font-weight:600;font-style:normal;letter-spacing:.08em;text-transform:uppercase;font-size:10px;margin-right:6px;}
+
+  /* TRANSLATION TABLE */
+  .trans{border:1px solid var(--rule2);margin-bottom:22px;}
+  .trans .tr{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule2);}
+  .trans .tr:not(:last-child){border-bottom:1px solid var(--rule2);}
+  .trans .th{background:var(--panel);padding:12px 20px;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);}
+  .trans .td{background:var(--dark);padding:18px 20px;font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.65;}
+  .trans .td b{color:var(--white);font-weight:600;}
+
+  /* CATEGORY CARDS */
+  .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+  .cat{background:var(--dark);border:1px solid var(--rule2);padding:18px 18px 16px;border-top:3px solid var(--orange);}
+  .cat .ct{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);margin-bottom:4px;line-height:1.1;}
+  .cat .cl{font-size:9px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;color:var(--og2);margin-bottom:10px;}
+  .cat .cd{font-size:13px;font-weight:300;color:#b8b0a4;line-height:1.6;margin-bottom:8px;}
+  .cat .ca{font-size:12px;font-weight:400;color:var(--og2);font-style:italic;letter-spacing:.02em;border-top:1px dashed var(--rule2);padding-top:8px;margin-top:6px;}
+  .cat.c1{border-top-color:#d96a6a;}
+  .cat.c2{border-top-color:#e0aa6a;}
+  .cat.c3{border-top-color:#c8914a;}
+  .cat.c4{border-top-color:#9ecc9e;}
+  .cat.c5{border-top-color:#a890d0;}
+  .cat.c6{border-top-color:#9a9288;}
+  .cat.c1 .cl{color:#d96a6a;}
+  .cat.c4 .cl{color:#9ecc9e;}
+  .cat.c5 .cl{color:#a890d0;}
+  .cat.c6 .cl{color:#9a9288;}
+
+  /* SETTINGS PREVIEW */
+  .settings{background:var(--dark);border:1px solid var(--rule2);margin-bottom:22px;}
+  .settings-header{background:var(--panel);padding:16px 22px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
+  .settings-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--white);letter-spacing:-0.01em;}
+  .settings-meta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;}
+  .settings-body{padding:18px 22px 22px;}
+  .setting-row{display:grid;grid-template-columns:170px 1fr 110px;gap:18px;padding:13px 0;border-bottom:1px solid var(--rule2);align-items:center;}
+  .setting-row:last-child{border-bottom:none;}
+  .setting-cat{font-size:13px;font-weight:600;color:var(--white);letter-spacing:.02em;}
+  .setting-desc{font-size:12px;font-weight:300;color:var(--dim);line-height:1.5;}
+  .setting-toggle{display:inline-block;padding:5px 12px;font-size:10px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;border-radius:2px;text-align:center;white-space:nowrap;}
+  .setting-toggle.on{background:rgba(154,204,154,0.15);color:#9ecc9e;border:1px solid rgba(154,204,154,0.35);}
+  .setting-toggle.off{background:rgba(154,146,136,0.12);color:var(--dim);border:1px solid rgba(154,146,136,0.3);}
+  .setting-section{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--rule);}
+  .setting-section:first-child{margin-top:0;padding-top:0;border-top:none;}
+
+  /* SWIM LANE */
+  .swim-wrap{width:100%;overflow-x:auto;padding-bottom:6px;}
+  .swim{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:18px;min-width:920px;}
+  .swim .step{background:var(--panel);border:1px solid var(--rule2);padding:16px 14px 14px;position:relative;display:flex;flex-direction:column;gap:6px;}
+  .swim .step::after{content:'\25B6';position:absolute;right:-14px;top:32px;color:var(--orange);font-size:10px;z-index:2;}
+  .swim .step:last-child::after{display:none;}
+  .swim .step-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--orange);line-height:1;letter-spacing:-0.02em;margin-bottom:2px;}
+  .swim .step-ttl{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.04em;line-height:1.3;}
+  .swim .step-skill{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--og2);letter-spacing:.02em;word-break:break-word;}
+  .swim .step-desc{font-size:12px;font-weight:300;color:#b8b0a4;line-height:1.5;}
+  .swim .step-tool{font-size:11px;font-weight:300;color:var(--dim);line-height:1.55;margin-top:4px;padding-top:8px;border-top:1px dashed var(--rule2);}
+  .swim .step-tool b{display:block;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:3px;}
+
+  /* LAYERED STACK */
+  .layers{display:flex;flex-direction:column;gap:0;align-items:stretch;}
+  .layer{padding:18px 22px;border:1px solid var(--rule2);background:var(--panel);position:relative;}
+  .layer + .layer{margin-top:14px;}
+  .layer::before{content:'';position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:2px;height:14px;background:var(--orange);opacity:0.55;}
+  .layer:first-child::before{display:none;}
+  .layer-lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+  .layer-body{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-start;}
+  .layer-group{display:flex;flex-direction:column;gap:6px;min-width:180px;}
+  .layer-group-hdr{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+  .layer-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{background:var(--dark);border:1px solid var(--rule2);padding:5px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#b8b0a4;border-radius:2px;letter-spacing:.02em;}
+  .chip.mcp{border-color:var(--orange);color:var(--og2);background:rgba(200,145,74,0.06);}
+  .chip.skill{color:var(--white);}
+  .chip.state{background:var(--dark);border-color:var(--rule2);color:var(--og2);}
+
+  /* PHASES */
+  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule2);border:1px solid var(--rule2);margin-bottom:22px;}
+  .phase{background:var(--dark);padding:22px 20px;}
+  .phase .ph-lbl{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;}
+  .phase .ph-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;color:var(--og2);line-height:1;letter-spacing:-0.02em;margin-bottom:10px;}
+  .phase .ph-ttl{font-size:14px;font-weight:700;color:var(--white);margin-bottom:8px;letter-spacing:.02em;}
+  .phase .ph-d{font-size:12px;font-weight:300;color:#b8b0a4;line-height:1.6;margin-bottom:8px;}
+  .phase .ph-eta{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;}
+
+  /* MAPS WRAPPER */
+  .maps{display:flex;flex-direction:column;gap:36px;margin-bottom:22px;}
+  .map-block{background:var(--dark);border:1px solid var(--rule2);padding:32px 30px;}
+  .map-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .map-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--white);line-height:1.2;}
+  .map-tag{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);}
+  .map-intro{font-size:14px;font-weight:300;color:#b8b0a4;line-height:1.7;margin-bottom:24px;max-width:820px;}
+
+  /* CLOSE CARD */
+  .close{background:linear-gradient(180deg,var(--dark),var(--panel));border:1px solid var(--rule);padding:40px 44px;position:relative;}
+  .close::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);}
+  .close h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--white);margin-bottom:14px;line-height:1.2;}
+  .close p{font-size:15px;font-weight:300;color:#b8b0a4;line-height:1.75;margin-bottom:18px;max-width:720px;}
+  .close .sig{margin-top:24px;padding-top:22px;border-top:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+  .close .name{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);margin-bottom:4px;}
+  .close .title{font-size:13px;font-weight:300;color:var(--dim);letter-spacing:.04em;}
+  .close .contact{font-size:13px;font-weight:300;color:var(--dim);text-align:right;line-height:1.8;letter-spacing:.02em;}
+  .close .contact b{color:var(--og2);font-weight:500;}
+
+  /* FOOTER */
+  .foot{margin-top:64px;padding-top:24px;border-top:1px solid var(--rule2);font-size:11px;color:var(--dim);letter-spacing:.08em;text-align:center;}
+  .foot a{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--rule2);}
+  .foot a:hover{color:var(--orange);border-bottom-color:var(--orange);}
+
+  /* RESPONSIVE */
+  @media (max-width: 820px){
+    .page{padding:36px 24px 64px;}
+    .hero h1{font-size:42px;}
+    .hero-sub{font-size:19px;}
+    .metrics, .phases{grid-template-columns:repeat(2,1fr);}
+    .caps, .cats{grid-template-columns:1fr;}
+    .arch .row{flex-direction:column;}
+    .arch .arrow{transform:rotate(90deg);padding:4px 0;}
+    .sec-title{font-size:30px;}
+    .trans .tr{grid-template-columns:1fr;}
+    .setting-row{grid-template-columns:1fr;gap:6px;}
+  }
+
+  @media print{
+    html,body{background:#fff;color:#111;}
+    .page{padding:24px;}
+    .hero h1,.sec-title,.close h3{color:#111;}
+    .metric .n,.close h3 em{color:#3B1A6B;}
+    .arch .node,.metric,.close{background:#fafafa;color:#111;}
+    .site-nav, .draft-banner{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- SITE NAV -->
+  <div class="site-nav"><a href="index.html">&larr; daniellepel.com</a></div>
+
+  <!-- DRAFT BANNER -->
+  <div class="draft-banner">
+    <b>Draft scope study.</b> The system described below is in design and planning. Phase 1 build starts the week of April 27, 2026, with a target Phase 1 ship by mid-May. The Agent Architecture case study is the live production system this design generalizes from.
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="brand-mark">Daniel Lepel | M365 &amp; Azure Architect</div>
+    <h1>Copilot Concierge: <em>A Scope Study</em></h1>
+    <div class="hero-sub">A generalized M365 triage agent for any Outlook user, on Copilot Studio and Azure AI Foundry.</div>
+    <div class="hero-dek">
+      The Agent Architecture case study describes a production system I built and operate against my own job search. Inside that system is one capability worth generalizing: triage and draft generation across Outlook and Teams, with a brand voice that writes like the user. Copilot Concierge is that slice, redesigned for the Microsoft agent stack so any M365 tenant can deploy it. This document is the scope, the architecture, and the build plan. The product does not exist yet. The design is locked.
+    </div>
+    <div class="hero-meta">
+      <span><b>Planned product</b></span>
+      <span>Runtime: Azure AI Foundry &middot; Copilot Studio</span>
+      <span>Reasoning model: Anthropic Claude via Foundry</span>
+      <span>Companion to the Agent Architecture case study</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: POSITIONING -->
+  <section>
+    <div class="sec-label">Section 1 | Positioning</div>
+    <h2 class="sec-title">One slice of my pipeline, generalized to every Outlook user.</h2>
+    <div class="sec-rule"></div>
+    <p class="sec-body">
+      The Agent Architecture case study is the production system. Sixteen specialist skills, four-tier architecture, continuous operation since February 6, 2026, and a hundred and forty-five opportunities tracked end to end. The system works because it is built for one operator and one operating problem. That is also why it does not generalize on its own. Most Microsoft customers will not deploy a Claude Agent SDK pipeline and a Python service mesh into their tenant.
+    </p>
+    <p class="sec-body">
+      Inside that system is one capability that does generalize: <b>inbox and message triage with grounded draft generation</b>. Every knowledge worker who lives in Outlook and Teams faces the same operating problem I solved for myself. Too many messages. Unclear priorities. Drafts that should be ready before they sit down. Action items that need to land somewhere durable instead of pinging a fourth notification surface. The pattern transfers cleanly. The packaging has to change.
+    </p>
+    <p class="sec-body">
+      Copilot Concierge is that capability rebuilt on the Microsoft agent stack. <b>Azure AI Foundry</b> for the orchestration, <b>Copilot Studio</b> for the surface, <b>Anthropic Claude via Foundry</b> for the reasoning model, <b>Microsoft Graph</b> as the tool layer. Same architectural discipline as my live system. Different runtime, different reach. One operator becomes any operator with an M365 license.
+    </p>
+    <p class="sec-body">
+      This document is forward-looking. It is the scope study and architecture for a build that starts the week of April 27, 2026. The design is locked enough to share. The build plan is sized against my active interview calendar so it ships without competing for the time the pipeline still needs.
+    </p>
+  </section>
+
+  <!-- SECTION 2: BY THE DESIGN -->
+  <section>
+    <div class="sec-label">Section 2 | By the design</div>
+    <h2 class="sec-title">The shape of the build, in numbers.</h2>
+    <div class="sec-rule"></div>
+    <p class="sec-body">
+      The figures below are design commitments, not run metrics. The Agent Architecture case study has the live counts. This section is the target the Copilot Concierge build is sized against.
+    </p>
+
+    <div class="metrics">
+      <div class="metric"><div class="n">4</div><div class="l">Surfaces unified</div><div class="h">Outlook | Teams 1:1 | @mentions | channels</div></div>
+      <div class="metric"><div class="n">6</div><div class="l">Priority categories</div><div class="h">Critical to Noise, action-oriented</div></div>
+      <div class="metric"><div class="n">2</div><div class="l">Delivery modes</div><div class="h">Auto-reply or draft, per category, user toggled</div></div>
+      <div class="metric"><div class="n">2</div><div class="l">Voice layers</div><div class="h">Universal AI-tell detector + per-user profile</div></div>
+      <div class="metric"><div class="n">4</div><div class="l">Build phases</div><div class="h">Outlook, Teams, summaries, To-Do</div></div>
+      <div class="metric"><div class="n">15</div><div class="l">Sent Items sampled</div><div class="h">Per-user voice profile training set</div></div>
+      <div class="metric"><div class="n">80-115</div><div class="l">Hours to Phase 4</div><div class="h">Single-tenant demo, evening cadence</div></div>
+      <div class="metric"><div class="n">1</div><div class="l">Copilot Studio agent</div><div class="h">Surface for the Foundry runtime</div></div>
+    </div>
+    <p class="metrics-note">
+      Hours estimate is for a working single-tenant demo on the operator's own M365 tenant. Multi-tenant commercial-grade packaging adds another two hundred hours and is out of scope for this document.
+    </p>
+  </section>
+
+  <!-- SECTION 3: CAPABILITIES -->
+  <section>
+    <div class="sec-label">Section 3 | Capabilities</div>
+    <h2 class="sec-title">What it will do, in user terms.</h2>
+    <div class="sec-rule"></div>
+
+    <div class="caps">
+      <div class="cap"><div class="t">Unified conversation triage</div><div class="d">One pipeline reads Outlook mail, Teams one-on-one chats, and Teams @mentions on a single classification model. Channel posts feed a separate read-only summary stream. The user sees one queue of conversations needing attention, not three apps to scan.</div></div>
+      <div class="cap"><div class="t">Six-category priority classifier</div><div class="d">Critical, Urgent, Important, Normal, FYI, Noise. Each category maps to a default action the agent recommends or executes. Categories are tunable per user. The classifier reads sender importance, semantic urgency, thread position, and calendar adjacency. Subject line is one feature among several.</div></div>
+      <div class="cap"><div class="t">Auto-reply and draft toggle</div><div class="d">Per-category switch decides whether the agent stages a draft or sends it. Default is draft-only. Users graduate to auto-reply on the categories they trust first. Confidence threshold per category prevents low-confidence auto-replies even when the toggle is on.</div></div>
+      <div class="cap"><div class="t">Sender whitelist and blacklist</div><div class="d">Override the per-category settings on individual senders or domains. Never auto-reply to anyone in the C-suite list. Always draft only for external senders. The override is per-user and edited from the settings page.</div></div>
+      <div class="cap"><div class="t">Two-layer brand voice system</div><div class="d">Universal AI-tell detector ships as the default and catches the phrases every AI product generates by default. Per-user voice profile layers on top, trained from fifteen recent Sent Items the user approves once. The output reads like the user, not like a chatbot.</div></div>
+      <div class="cap"><div class="t">Teams channel summaries</div><div class="d">Read-only scan across followed channels. Morning digest at a fixed time, plus on-demand via natural-language trigger in M365 Copilot chat. Topic clustering inside each channel so the user sees what was discussed, not a flat reverse-chronological dump.</div></div>
+      <div class="cap"><div class="t">Microsoft To-Do integration</div><div class="d">Action items extracted from Outlook, Teams chats, and @mentions land in the user's To-Do list with a back-link to the source message. Priority maps from the classifier output. Notifications stop competing with another inbox.</div></div>
+      <div class="cap"><div class="t">Audit log with one-click revoke</div><div class="d">Every auto-action writes a row to an audit view. The user can review what the agent did, surface the original message, and revoke or correct any action. Trust scales when the user can see exactly what happened and when.</div></div>
+    </div>
+  </section>
+
+  <!-- SECTION 3.5: CATEGORIES IN DETAIL -->
+  <section>
+    <div class="sec-label">Section 3.5 | The six categories</div>
+    <h2 class="sec-title">Priority labels mapped to default actions.</h2>
+    <div class="sec-sub">Action-oriented, not abstract.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      Most priority inbox tools use abstract labels: high, medium, low. That maps poorly to what the user actually does next. Copilot Concierge uses six categories, each tied to a specific recommended action. The categories are the surface the user interacts with. The classifier underneath is the work.
+    </p>
+
+    <div class="cats">
+      <div class="cat c1">
+        <div class="ct">Critical</div>
+        <div class="cl">Act now</div>
+        <div class="cd">Explicit deadline today, escalation language, blocking someone else, or named in a meeting starting within two hours.</div>
+        <div class="ca">Default action: surface in the user's home view with audible alert; draft reply staged.</div>
+      </div>
+      <div class="cat c2">
+        <div class="ct">Urgent</div>
+        <div class="cl">Act this week</div>
+        <div class="cd">Deadline this week, repeated follow-ups from sender, or strong priority signals from the sender's role.</div>
+        <div class="ca">Default action: stage at top of the conversations queue; draft reply ready.</div>
+      </div>
+      <div class="cat c3">
+        <div class="ct">Important</div>
+        <div class="cl">Schedule</div>
+        <div class="cd">Substantive request that needs thought, no immediate timing pressure, but worth blocking time for.</div>
+        <div class="ca">Default action: draft reply staged; suggested calendar block on the user's next free slot.</div>
+      </div>
+      <div class="cat c4">
+        <div class="ct">Normal</div>
+        <div class="cl">Handle in flow</div>
+        <div class="cd">Standard business correspondence. Answer when the user gets to it. Most internal traffic lands here.</div>
+        <div class="ca">Default action: draft reply staged; queued behind higher-priority items.</div>
+      </div>
+      <div class="cat c5">
+        <div class="ct">FYI</div>
+        <div class="cl">Read later</div>
+        <div class="cd">Informational. Status updates, project reports, no response expected. Worth knowing about but not worth stopping for.</div>
+        <div class="ca">Default action: marked read; summary line in morning digest; no draft generated.</div>
+      </div>
+      <div class="cat c6">
+        <div class="ct">Noise</div>
+        <div class="cl">Ignore</div>
+        <div class="cd">Newsletters, promotional, automated notifications with no action required. The signal-free tail of the inbox.</div>
+        <div class="ca">Default action: auto-archive to a Noise folder; suppressed from triage queue and digest.</div>
+      </div>
+    </div>
+
+    <p class="sec-body" style="margin-top:18px;">
+      The category labels are tunable. A user who prefers three buckets can collapse Important and Normal into one and rename the result. The default six is the recommended starting point because it maps cleanly to the four actions a knowledge worker actually takes: do now, schedule, read later, ignore.
+    </p>
+  </section>
+
+  <!-- SECTION 4: ARCHITECTURE -->
+  <section>
+    <div class="sec-label">Section 4 | Architecture</div>
+    <h2 class="sec-title">How the pieces fit on the Microsoft stack.</h2>
+    <div class="sec-sub">Surface in Studio. Engineering in Foundry. Tools in Graph. State in M365.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      Same architectural discipline as the production Agent Architecture system. Probabilistic work stays in the model. Deterministic work stays in code. The two halves never pretend to be each other. The runtime moves from Claude Agent SDK and Python services to Azure AI Foundry and Copilot Studio. The patterns transfer. The tools change to match where Microsoft customers already are.
+    </p>
+
+    <div class="arch">
+      <div class="row">
+        <div class="node primary prob" style="flex:1;">
+          <div class="lbl">Tier 1 | Surface</div>
+          <div class="ttl">Microsoft 365 Copilot chat &amp; Copilot Studio agent</div>
+          <div class="d">User interaction lives where the user already is. Triage happens in the background; on-demand questions ("What did I miss in Teams today?") run through M365 Copilot chat. The Copilot Studio agent is the named entry point published to the tenant.</div>
+        </div>
+      </div>
+
+      <div class="row"><div class="arrow prob" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
+
+      <div class="row">
+        <div class="node primary prob" style="flex:1;">
+          <div class="lbl">Tier 2 | Orchestrator</div>
+          <div class="ttl">Azure AI Foundry agent service, Claude as reasoning model</div>
+          <div class="d">The real engineering. Python orchestration code, Claude via Foundry as the reasoning engine, agent tools defined in code. Studio invokes Foundry; Foundry runs the classification, drafting, and decision logic. This split is what lets a Principal Architect ship something that looks like a Studio agent at the surface and reads like real engineering underneath.</div>
+        </div>
+      </div>
+
+      <div class="row"><div class="arrow" style="flex:none;width:100%;text-align:center;">&#9660;</div></div>
+
+      <div class="row">
+        <div class="col">
+          <div class="node">
+            <div class="lbl">Tier 3a | Graph API tools</div>
+            <div class="ttl">Mail | Teams chat | calendar | To-Do</div>
+            <div class="d">Microsoft Graph endpoints for every action: list mail messages, paginate Teams chats, read calendar adjacency, write To-Do tasks, stage and send Outlook drafts. OAuth scopes scoped to least privilege. The full mapping is in the technical appendix.</div>
+          </div>
+          <div class="node">
+            <div class="lbl">Tier 3b | Deterministic services</div>
+            <div class="ttl">Python functions inside the Foundry agent</div>
+            <div class="d">Anything that must be the same every time: rule evaluation for the auto-reply toggle, sender whitelist matching, confidence threshold gating, audit log writes, voice profile fingerprint matching. Same pattern as the Python service mesh in the live system.</div>
+          </div>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="col">
+          <div class="node">
+            <div class="lbl">Tier 4 | State</div>
+            <div class="ttl">M365-native, no external store</div>
+            <div class="d">Per-user settings in Dataverse (the Power Platform store backing Copilot Studio). Audit log in Application Insights for queryability. Voice profile cached as a JSON document in user OneDrive so the user can see and edit it. No external database, no data exfiltration risk.</div>
+          </div>
+          <div class="node">
+            <div class="lbl">Ground truth</div>
+            <div class="ttl">User-owned configuration</div>
+            <div class="d">The user owns every tunable: category labels, auto-reply toggles, sender lists, voice profile, channel subscriptions. The agent reads these on every run and never overrides them silently. Same discipline as the CLAUDE.md file in the live system, applied at user scope.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-legend">
+        <span><span class="dot det"></span>Deterministic | Code</span>
+        <span><span class="dot prob"></span>Probabilistic | Model</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4.5: FLOW MAPS -->
+  <section>
+    <div class="sec-label">Section 4.5 | The flow</div>
+    <h2 class="sec-title">A new message, end to end.</h2>
+    <div class="sec-sub">Six steps. Arrival, context pull, classify, action decide, draft, stage or send.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The four-tier diagram is the structure. The swim lane below is the runtime. One inbound message flows left to right through the agent. Every step is a discrete tool call or a model invocation. The audit log captures the trace.
+    </p>
+
+    <div class="maps">
+
+      <div class="map-block">
+        <div class="map-header">
+          <div class="map-title">Map 1. Triage Flow</div>
+          <div class="map-tag">Sequence</div>
+        </div>
+        <p class="map-intro">
+          One inbound conversation, traced end to end. Steps 1 through 4 always run. Step 5 generates the draft. Step 6 either stages or sends, depending on the per-category toggle plus sender override plus confidence score.
+        </p>
+
+        <div class="swim-wrap">
+          <div class="swim">
+            <div class="step">
+              <div class="step-num">01</div>
+              <div class="step-ttl">Arrival</div>
+              <div class="step-skill">graph.subscribeToChange</div>
+              <div class="step-desc">Graph webhook fires on new mail or Teams chat. Foundry agent picks up the event. Trace ID issued.</div>
+              <div class="step-tool"><b>Tool</b>Graph change notifications</div>
+            </div>
+            <div class="step">
+              <div class="step-num">02</div>
+              <div class="step-ttl">Context Pull</div>
+              <div class="step-skill">graph.getThread + getCalendar</div>
+              <div class="step-desc">Pull the thread, the sender history, recent calendar adjacency, and the user's VIP and blacklist rules.</div>
+              <div class="step-tool"><b>Tool</b>Graph mail | calendar | Dataverse</div>
+            </div>
+            <div class="step">
+              <div class="step-num">03</div>
+              <div class="step-ttl">Classify</div>
+              <div class="step-skill">claude.classify</div>
+              <div class="step-desc">Six-category classifier runs on full thread context. Returns category plus confidence score plus a one-line reason for the audit log.</div>
+              <div class="step-tool"><b>Tool</b>Claude via Foundry</div>
+            </div>
+            <div class="step">
+              <div class="step-num">04</div>
+              <div class="step-ttl">Action Decide</div>
+              <div class="step-skill">rules.evaluateAction</div>
+              <div class="step-desc">Deterministic Python: per-category toggle plus sender override plus confidence threshold. Output: stage draft, auto-send, or do nothing.</div>
+              <div class="step-tool"><b>Tool</b>Python rule engine</div>
+            </div>
+            <div class="step">
+              <div class="step-num">05</div>
+              <div class="step-ttl">Draft</div>
+              <div class="step-skill">claude.draft + voice.lint</div>
+              <div class="step-desc">Generate the reply against the user's voice profile. Universal AI-tell linter strips banned phrases. Per-user profile shapes tone, sentence length, and sign-off.</div>
+              <div class="step-tool"><b>Tool</b>Claude via Foundry | voice profile</div>
+            </div>
+            <div class="step">
+              <div class="step-num">06</div>
+              <div class="step-ttl">Stage or Send</div>
+              <div class="step-skill">graph.createDraft or graph.sendMail</div>
+              <div class="step-desc">Stage the draft in Outlook or Teams, or auto-send if the rule engine cleared it. Write the audit log row regardless. Notify the user via the configured channel.</div>
+              <div class="step-tool"><b>Tool</b>Graph mail | App Insights</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-block">
+        <div class="map-header">
+          <div class="map-title">Map 2. Layered System Stack</div>
+          <div class="map-tag">System</div>
+        </div>
+        <p class="map-intro">
+          Every named component in one place. User on top, M365 surfaces in the next layer, the Foundry orchestrator in the middle, Graph and Python services as the tool layer, M365-native state on the bottom. Orange outlines are MCP-style connectors. Gold fills are agent capabilities.
+        </p>
+
+        <div class="layers">
+          <div class="layer">
+            <div class="layer-lbl">Layer 1 | User</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-chips">
+                  <span class="chip skill">Any M365 user with a Copilot license</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 2 | Surface</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">M365 Surfaces</div>
+                <div class="layer-chips">
+                  <span class="chip mcp">Outlook</span>
+                  <span class="chip mcp">Teams</span>
+                  <span class="chip mcp">M365 Copilot chat</span>
+                  <span class="chip mcp">Microsoft To-Do</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Agent Front Door</div>
+                <div class="layer-chips">
+                  <span class="chip skill">Copilot Concierge (Studio agent)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 3 | Orchestrator</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">Runtime</div>
+                <div class="layer-chips">
+                  <span class="chip skill">Azure AI Foundry agent service</span>
+                  <span class="chip skill">Anthropic Claude (Foundry)</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Agent Capabilities</div>
+                <div class="layer-chips">
+                  <span class="chip skill">classify</span>
+                  <span class="chip skill">draft</span>
+                  <span class="chip skill">summarize-channel</span>
+                  <span class="chip skill">extract-action-items</span>
+                  <span class="chip skill">build-voice-profile</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 4 | Tool layer</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">Graph endpoints</div>
+                <div class="layer-chips">
+                  <span class="chip mcp">/me/messages</span>
+                  <span class="chip mcp">/me/chats</span>
+                  <span class="chip mcp">/me/calendar</span>
+                  <span class="chip mcp">/me/todo/lists</span>
+                  <span class="chip mcp">/teams/channels</span>
+                  <span class="chip mcp">/subscriptions</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Deterministic services</div>
+                <div class="layer-chips">
+                  <span class="chip">rule_engine.py</span>
+                  <span class="chip">voice_lint.py</span>
+                  <span class="chip">audit_writer.py</span>
+                  <span class="chip">profile_trainer.py</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer">
+            <div class="layer-lbl">Layer 5 | State (M365-native)</div>
+            <div class="layer-body">
+              <div class="layer-group">
+                <div class="layer-group-hdr">Configuration</div>
+                <div class="layer-chips">
+                  <span class="chip state">Dataverse: settings</span>
+                  <span class="chip state">Dataverse: VIP / blacklist</span>
+                  <span class="chip state">Dataverse: channel subscriptions</span>
+                </div>
+              </div>
+              <div class="layer-group">
+                <div class="layer-group-hdr">Audit + voice</div>
+                <div class="layer-chips">
+                  <span class="chip state">Application Insights: audit log</span>
+                  <span class="chip state">OneDrive: voice_profile.json</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 4.6: SETTINGS PREVIEW -->
+  <section>
+    <div class="sec-label">Section 4.6 | Settings preview</div>
+    <h2 class="sec-title">What the user controls.</h2>
+    <div class="sec-sub">Every behavior the agent takes is owned by the user.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      The settings page is where the agent earns trust. Every auto-action is a toggle, every override is editable, every category default is tunable. The view below is rendered against <b>placeholder defaults</b>, not a live tenant. The structure and the field model are exactly what ships in Phase 1.
+    </p>
+
+    <div class="settings">
+      <div class="settings-header">
+        <div class="settings-title">Copilot Concierge | Settings</div>
+        <div class="settings-meta">user: jane.doe@contoso.example | tenant: contoso</div>
+      </div>
+      <div class="settings-body">
+
+        <div class="setting-section">Auto-reply per category</div>
+
+        <div class="setting-row">
+          <div class="setting-cat">Critical</div>
+          <div class="setting-desc">Surface and stage draft, do not auto-send.</div>
+          <div><span class="setting-toggle off">Draft only</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Urgent</div>
+          <div class="setting-desc">Stage draft for review.</div>
+          <div><span class="setting-toggle off">Draft only</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Important</div>
+          <div class="setting-desc">Stage draft, suggest calendar block.</div>
+          <div><span class="setting-toggle off">Draft only</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Normal</div>
+          <div class="setting-desc">Auto-reply for known patterns (meeting confirmations, simple acknowledgments) over confidence threshold.</div>
+          <div><span class="setting-toggle on">Auto on</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">FYI</div>
+          <div class="setting-desc">Mark read, summarize in digest.</div>
+          <div><span class="setting-toggle on">Auto on</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Noise</div>
+          <div class="setting-desc">Auto-archive to the Noise folder.</div>
+          <div><span class="setting-toggle on">Auto on</span></div>
+        </div>
+
+        <div class="setting-section">Sender overrides</div>
+
+        <div class="setting-row">
+          <div class="setting-cat">VIP list</div>
+          <div class="setting-desc">Always classify at minimum Urgent. Always draft only, never auto-reply. Currently 4 senders.</div>
+          <div><span class="setting-toggle on">Active</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Blacklist</div>
+          <div class="setting-desc">Suppress notifications. Auto-archive without classification. Currently 12 senders.</div>
+          <div><span class="setting-toggle on">Active</span></div>
+        </div>
+
+        <div class="setting-section">Brand voice</div>
+
+        <div class="setting-row">
+          <div class="setting-cat">Universal AI-tell filter</div>
+          <div class="setting-desc">Strips known AI giveaways from every draft. Always on; not user-disableable.</div>
+          <div><span class="setting-toggle on">Always on</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Voice profile</div>
+          <div class="setting-desc">Built from your last 15 sent items. Last refreshed 4 days ago. Edit profile to override inferred tone.</div>
+          <div><span class="setting-toggle on">Active</span></div>
+        </div>
+
+        <div class="setting-section">Teams &amp; To-Do</div>
+
+        <div class="setting-row">
+          <div class="setting-cat">Teams 1:1 + @mentions</div>
+          <div class="setting-desc">Treated as conversations. Same classification and draft pipeline as Outlook.</div>
+          <div><span class="setting-toggle on">On</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Teams channel digest</div>
+          <div class="setting-desc">Morning summary at 7:00 AM ET across followed channels. Plus on-demand via Copilot chat.</div>
+          <div><span class="setting-toggle on">On</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-cat">Microsoft To-Do</div>
+          <div class="setting-desc">Action items extracted from messages land in your To-Do list with source links.</div>
+          <div><span class="setting-toggle on">On</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: PHASES -->
+  <section>
+    <div class="sec-label">Section 5 | Phased build plan</div>
+    <h2 class="sec-title">Four phases to a single-tenant demo.</h2>
+    <div class="sec-sub">Sequenced against the active interview calendar.</div>
+    <div class="sec-rule"></div>
+
+    <p class="sec-body">
+      Each phase is independently shippable. Phase 1 alone is a complete product on the operator's own tenant. Phases 2 through 4 are layered additions, not rewrites. Total estimate is 80 to 115 hours across three to four weeks of evening cadence at 8 to 10 hours per week. Build start is the week of April 27 to allow the current interview calendar (Genesys, C2Q Round 2, NY Creates Round 2) to land first.
+    </p>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="ph-lbl">Phase 1</div>
+        <div class="ph-num">01</div>
+        <div class="ph-ttl">Outlook triage + drafts</div>
+        <div class="ph-d">Classification, draft generation, auto-reply toggle, audit log, voice profile, settings page. Single user, single inbox. Ships as a working demo on the operator's tenant.</div>
+        <div class="ph-eta">40 to 60 hours | target ship mid-May</div>
+      </div>
+      <div class="phase">
+        <div class="ph-lbl">Phase 2</div>
+        <div class="ph-num">02</div>
+        <div class="ph-ttl">Teams 1:1 + @mentions</div>
+        <div class="ph-d">Same triage pipeline applied to Teams chat. Unified conversations queue across Outlook and Teams. Re-uses every component shipped in Phase 1.</div>
+        <div class="ph-eta">15 to 20 hours | target ship late May</div>
+      </div>
+      <div class="phase">
+        <div class="ph-lbl">Phase 3</div>
+        <div class="ph-num">03</div>
+        <div class="ph-ttl">Teams channel summaries</div>
+        <div class="ph-d">Read-only scan of followed channels. Morning digest plus on-demand via M365 Copilot chat. Topic clustering inside each channel.</div>
+        <div class="ph-eta">10 to 15 hours | target ship early June</div>
+      </div>
+      <div class="phase">
+        <div class="ph-lbl">Phase 4</div>
+        <div class="ph-num">04</div>
+        <div class="ph-ttl">Microsoft To-Do</div>
+        <div class="ph-d">Action item extraction across Outlook, Teams chats, and @mentions. Auto-staged To-Do tasks with priority mapping and back-links to source messages.</div>
+        <div class="ph-eta">15 to 20 hours | target ship mid-June</div>
+      </div>
+    </div>
+
+    <p class="sec-body" style="margin-top:8px;">
+      If a job offer lands before Phase 1 ships, the project plan flips. Phase 1 becomes an onboarding-week proof-of-concept at the new role. Phases 2 through 4 stay on the post-hire track. The work isn't wasted in either path.
+    </p>
+  </section>
+
+  <!-- SECTION 6: DECISIONS -->
+  <section>
+    <div class="sec-label">Section 6 | Decisions that shape the build</div>
+    <h2 class="sec-title">Five choices made before a single line of code.</h2>
+    <div class="sec-rule"></div>
+
+    <div class="decisions">
+      <div class="dec">
+        <div class="num">01</div>
+        <div>
+          <div class="t">Foundry runs the orchestration; Studio is the surface.</div>
+          <div class="p">Azure AI Foundry runs the agent code in Python with Claude as the reasoning model. Copilot Studio publishes the named agent into M365 Copilot chat as the front door. The split keeps real engineering in code where a Principal Architect would put it, and the low-code piece serves only as the surface the user sees.</div>
+          <div class="w"><b>Why it matters</b>Customers asking "is this just a Studio agent" need to hear that the orchestration is real engineering, not a topic tree. The split answers that question architecturally instead of in conversation.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">02</div>
+        <div>
+          <div class="t">Draft-only by default; auto-reply is a per-category opt-in.</div>
+          <div class="p">Every category ships in draft-only mode at first run. Users graduate to auto-reply on the categories they trust first, with a confidence threshold per category that prevents low-confidence auto-actions even when the toggle is on. Sender whitelist and blacklist override the per-category settings.</div>
+          <div class="w"><b>Why it matters</b>Trust scales when the user controls every auto-action and can audit and revoke any of them. The opposite is the fastest way to lose enterprise adoption.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">03</div>
+        <div>
+          <div class="t">Two-layer brand voice: universal filter plus per-user profile.</div>
+          <div class="p">The universal AI-tell detector ships as the default and catches the phrases every AI product generates by default. Per-user voice profile layers on top, trained from fifteen recent Sent Items. The output reads like the user, not like a chatbot. The profile is editable; the universal filter is not.</div>
+          <div class="w"><b>Why it matters</b>Every AI draft tool today produces the same generic voice. A tool that writes like the user is a category unto itself. The universal filter is the floor; the profile is the ceiling.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">04</div>
+        <div>
+          <div class="t">Teams channels stay read-only.</div>
+          <div class="p">Channel posts feed the summary stream and the To-Do extraction pipeline. The agent does not draft channel replies and does not auto-post. One-on-one chats and @mentions are treated like email because the blast radius is the same as a private message. Channels are public, and channel auto-reply is a fast way to embarrass someone.</div>
+          <div class="w"><b>Why it matters</b>The hardest part of any agent rollout is bounding the blast radius. Read-only on channels is a clear, defensible boundary that customers understand without needing the architecture explained.</div>
+        </div>
+      </div>
+      <div class="dec">
+        <div class="num">05</div>
+        <div>
+          <div class="t">Microsoft To-Do is the action sink.</div>
+          <div class="p">Extracted action items land in Microsoft To-Do with back-links to the source message. Priority maps from the classifier output. The user opens one app to see what they need to do, instead of a fourth notification surface competing with the inbox.</div>
+          <div class="w"><b>Why it matters</b>Most agents add notifications. Copilot Concierge subtracts them by routing extracted work into the user's existing task system. The agent makes To-Do better, not the inbox louder.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: TRANSLATION -->
+  <section>
+    <div class="sec-label">Section 7 | Translation</div>
+    <h2 class="sec-title">From one user to a Microsoft cloud practice.</h2>
+    <div class="sec-sub">Same architecture, bigger surface area.</div>
+    <div class="sec-rule"></div>
+
+    <div class="trans">
+      <div class="tr">
+        <div class="th">What Copilot Concierge does for one M365 user</div>
+        <div class="th">What it positions for a Microsoft cloud practice</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Unified triage across mail, Teams chats, and @mentions.</b> One classifier, one settings surface, one audit log. Six categories, action-oriented, user-tunable.</div>
+        <div class="td"><b>Reference architecture for any M365 agent rollout.</b> Tenant assessment agents, license optimization agents, governance agents, security operations agents all share the same shape: paginate a Graph source, classify each record, decide an action, audit the result. Copilot Concierge proves the pattern at user scale. Customer engagements scale the same pattern up.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Per-category auto-reply with confidence threshold and sender overrides.</b> Every auto-action is opt-in, gated, audited, and revocable.</div>
+        <div class="td"><b>Governance template for agent write actions.</b> The same opt-in, threshold, override, audit pattern is what enterprise legal and IT will require before any production agent gets a write scope. Copilot Concierge ships it on day one.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Two-layer brand voice with universal filter plus per-user profile.</b> Drafts read like the user, not like a chatbot.</div>
+        <div class="td"><b>Branded agent experience pattern.</b> Customer agents face the same problem at company scale: they cannot all sound like the same generic AI. The two-layer model (corporate voice plus per-user profile) generalizes cleanly to customer-facing agents that need to sound like the brand.</div>
+      </div>
+      <div class="tr">
+        <div class="td"><b>Teams channel summaries with topic clustering. Microsoft To-Do as the action sink.</b> Summaries instead of more notifications. Action items land in the existing task system.</div>
+        <div class="td"><b>End-to-end M365 fluency on display.</b> Mail, Teams, calendar, and To-Do woven into a single agent demonstrates the breadth Microsoft customers expect from a Principal Architect. The case study answers the "can you build on our stack" question with a working artifact.</div>
+      </div>
+    </div>
+
+    <p class="sec-body" style="margin-top:20px;">
+      The Agent Architecture case study is the production credential: a multi-skill agent system, ten weeks of continuous operation, one operator. Copilot Concierge is the Microsoft-platform companion: same architectural discipline, rebuilt on the stack customers actually deploy, designed to ship on a single tenant in four to six weeks of evening work. Two case studies, two runtimes, one operator who shipped both.
+    </p>
+  </section>
+
+  <!-- CLOSE CARD -->
+  <div class="close">
+    <h3>The short version.</h3>
+    <p>
+      The Agent Architecture case study is the live production system on Claude Agent SDK. Copilot Concierge is the Microsoft-native generalization of one slice of that system: triage, draft generation, brand voice, Teams integration, and Microsoft To-Do as the action sink. Build starts the week of April 27, 2026. Phase 1 ships mid-May.
+    </p>
+    <p>
+      If you're building a Microsoft cloud practice, running a Copilot Studio or Agent 365 customer-zero program, or staffing a Principal Architect role where this pattern is part of the job, the architecture above is the working draft. Happy to walk through any of it live.
+    </p>
+    <div class="sig">
+      <div>
+        <div class="name">Daniel Lepel</div>
+        <div class="title">Principal Microsoft Cloud Architect</div>
+      </div>
+      <div class="contact">
+        <b>daniel@lepel.us</b><br>
+        518-838-1600<br>
+        Albany, NY Capital District
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Copilot Concierge Case Study (Draft) | <a href="index.html">daniellepel.com</a> | Drafted April 2026 | Companion: <a href="Agent_Architecture_Case_Study_DanielLepel.html">Agent Architecture</a></div>
+
+</div>
+</body>
+</html>
