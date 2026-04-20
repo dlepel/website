@@ -194,6 +194,155 @@
             margin-top: 2px;
         }
 
+        /* Hero flow embed (added 2026-04-20) */
+        .hero-flow-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            max-height: 480px;
+            margin: 2rem auto 1.75rem;
+            background: #0f0f0f;
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--primary);
+            overflow: hidden;
+        }
+
+        .hero-flow-iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .hero-flow-poster {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
+            border: 0;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            color: inherit;
+            font: inherit;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .hero-flow-poster:hover {
+            background: radial-gradient(ellipse at center, #242424 0%, #0f0f0f 100%);
+        }
+
+        .hero-flow-poster:hover .hero-flow-play {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(200, 145, 74, 0.4);
+        }
+
+        .hero-flow-poster:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: -4px;
+        }
+
+        .hero-flow-poster-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(200, 145, 74, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200, 145, 74, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .hero-flow-poster-content {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 80%;
+        }
+
+        .hero-flow-eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .hero-flow-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 500;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 0.9rem;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-flow-dek {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+            margin: 0 auto 1.5rem;
+            max-width: 560px;
+        }
+
+        .hero-flow-play {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1.75rem;
+            background: var(--primary);
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.05em;
+            border-radius: 4px;
+            transition: transform 0.25s, box-shadow 0.25s;
+            box-shadow: 0 4px 12px rgba(200, 145, 74, 0.25);
+        }
+
+        .hero-flow-play-icon {
+            font-size: 0.8rem;
+            margin-left: -0.15rem;
+        }
+
+        .hero-flow-size {
+            margin-top: 1.15rem;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .hero-flow-noscript {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1rem;
+            z-index: 2;
+            padding: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .hero-flow-frame {
+                aspect-ratio: auto;
+                max-height: none;
+                min-height: 320px;
+            }
+            .hero-flow-title { font-size: 1.7rem; }
+            .hero-flow-dek { font-size: 0.9rem; }
+            .hero-flow-poster-content { padding: 1.25rem; max-width: 94%; }
+        }
+
         section {
             margin-bottom: 3rem;
         }
