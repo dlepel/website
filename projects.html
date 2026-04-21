@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E563220FPH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-E563220FPH');
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current & Ongoing Projects | Daniel Lepel</title>
+    <meta name="description" content="Featured case studies from Daniel Lepel: Copilot Concierge production M365 triage agent, and the agentic AI system that runs his job search.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c8914a;
+            --dark: #1a1a1a;
+            --medium: #2d2d2d;
+            --light: #f5f5f5;
+            --border: #404040;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.7;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem;
+        }
+
+        .topnav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .topnav-home {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .topnav-home:hover { color: var(--primary); }
+
+        .topnav-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            letter-spacing: 0.02em;
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .page-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .page-rule {
+            width: 60px;
+            height: 1px;
+            background: var(--primary);
+            opacity: 0.7;
+            margin-bottom: 1.25rem;
+        }
+
+        .page-dek {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            line-height: 1.7;
+        }
+
+        /* Featured case study cards (matches homepage pattern) */
+        .featured-case-study {
+            position: relative;
+            background: linear-gradient(135deg, rgba(45,45,45,0.95) 0%, rgba(28,28,28,0.95) 100%);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--primary);
+            padding: 2.25rem 2rem 2rem;
+            margin-top: 2.5rem;
+            overflow: hidden;
+        }
+
+        .featured-case-study:first-of-type {
+            margin-top: 0;
+        }
+
+        .featured-case-study::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle at top right, rgba(200,145,74,0.08), transparent 65%);
+            pointer-events: none;
+        }
+
+        .featured-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .featured-headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.95rem;
+            font-weight: 500;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 0.95rem;
+            letter-spacing: 0.01em;
+            max-width: 760px;
+            position: relative;
+        }
+
+        .featured-dek {
+            font-size: 0.98rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 780px;
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-metric {
+            background: #1f1f1f;
+            padding: 1.1rem 1.1rem 1rem;
+        }
+
+        .featured-metric-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 500;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.01em;
+        }
+
+        .featured-metric-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .featured-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.6rem;
+            position: relative;
+        }
+
+        .featured-tag {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            padding: 0.3rem 0.7rem;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.25);
+        }
+
+        .featured-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: #fff;
+            text-decoration: none;
+            background: var(--primary);
+            padding: 0.75rem 1.4rem;
+            border: 1px solid var(--primary);
+            transition: background 0.2s, letter-spacing 0.2s, transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .featured-cta:hover {
+            background: #d9a25f;
+            letter-spacing: 0.09em;
+            transform: translateX(2px);
+            box-shadow: 0 4px 14px rgba(200,145,74,0.25);
+        }
+
+        .featured-cta-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .featured-cta-secondary:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .featured-cta-arrow {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .featured-metrics { grid-template-columns: repeat(2, 1fr); }
+            .featured-headline { font-size: 1.55rem; }
+            .featured-case-study { padding: 1.75rem 1.25rem; }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1.25rem 1.25rem 3rem; }
+            .page-title { font-size: 2.4rem; }
+            .topnav { padding-top: 0; margin-bottom: 2rem; }
+            .topnav-name { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="topnav">
+            <a href="index.html" class="topnav-home">&larr; Home</a>
+            <span class="topnav-name">Daniel Lepel</span>
+        </nav>
+
+        <header class="page-header">
+            <div class="page-eyebrow">Featured Work</div>
+            <h1 class="page-title">Current &amp; Ongoing Projects</h1>
+            <div class="page-rule"></div>
+            <p class="page-dek">In-depth case studies from work currently in production. Each write-up covers the architecture, the design decisions, and the operational results. Each links to a detailed technical appendix where applicable.</p>
+        </header>
+
+        <section class="featured-case-study">
+            <div class="featured-label">Featured Work &middot; Microsoft 365 Agent Delivery</div>
+            <h2 class="featured-headline">Copilot Concierge: a production M365 triage agent built on Copilot Studio, Azure AI Foundry, and Claude.</h2>
+            <p class="featured-dek">A scoped, shippable agent that triages inbound Outlook messages against a six-category classifier, drafts replies in the user's voice, and writes every decision to an audit log. Built on Copilot Studio fronting Azure AI Foundry, with Claude Sonnet via Foundry handling classification and drafting, Microsoft Graph for inbox, calendar, Teams, and Planner context, and Application Insights for the audit trail. The case study covers the tool catalog, the classifier, the voice profile, the data model, and the security posture. A technical appendix documents the Graph scopes, typed tool signatures, Dataverse schema, and Kusto audit queries.</p>
+
+            <div class="featured-metrics">
+                <div class="featured-metric">
+                    <div class="featured-metric-num">6</div>
+                    <div class="featured-metric-label">Classification tiers</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">14</div>
+                    <div class="featured-metric-label">Typed agent tools</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">9</div>
+                    <div class="featured-metric-label">Graph delegated scopes</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">4</div>
+                    <div class="featured-metric-label">Week build to ship</div>
+                </div>
+            </div>
+
+            <div class="featured-tags">
+                <span class="featured-tag">Copilot Studio</span>
+                <span class="featured-tag">Azure AI Foundry</span>
+                <span class="featured-tag">Claude Sonnet</span>
+                <span class="featured-tag">Microsoft Graph</span>
+                <span class="featured-tag">Dataverse</span>
+                <span class="featured-tag">Application Insights</span>
+            </div>
+
+            <a href="Copilot_Concierge_Case_Study_DanielLepel.html" class="featured-cta" target="_blank">
+                Read the case study
+                <span class="featured-cta-arrow">&rarr;</span>
+            </a>
+            <a href="Copilot_Concierge_Technical_Appendix_DanielLepel.html" class="featured-cta featured-cta-secondary" target="_blank" style="margin-left: 0.75rem;">
+                Technical appendix
+                <span class="featured-cta-arrow">&rarr;</span>
+            </a>
+        </section>
+
+        <section class="featured-case-study">
+            <div class="featured-label">Featured Work &middot; Agentic AI Architecture</div>
+            <h2 class="featured-headline">A production agentic AI system, designed and operated by one person.</h2>
+            <p class="featured-dek">Over the past ten weeks I designed, deployed, and have continuously operated an agentic AI system on Anthropic's Claude Agent SDK. It orchestrates Microsoft Graph, scheduled automation, analytics, and document generation across an end-to-end workflow. The case study walks through the architecture, the design decisions, the guardrails, and what it means for Microsoft cloud customers rolling out Copilot Studio and Agent 365.</p>
+
+            <div class="featured-metrics">
+                <div class="featured-metric">
+                    <div class="featured-metric-num">145</div>
+                    <div class="featured-metric-label">Opportunities managed</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">16</div>
+                    <div class="featured-metric-label">Specialist skills</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">10</div>
+                    <div class="featured-metric-label">Scheduled and startup jobs</div>
+                </div>
+                <div class="featured-metric">
+                    <div class="featured-metric-num">71</div>
+                    <div class="featured-metric-label">Days continuous run</div>
+                </div>
+            </div>
+
+            <div class="featured-tags">
+                <span class="featured-tag">Claude Agent SDK</span>
+                <span class="featured-tag">Microsoft Graph</span>
+                <span class="featured-tag">Python</span>
+                <span class="featured-tag">PowerShell</span>
+                <span class="featured-tag">MCP</span>
+                <span class="featured-tag">Customer Zero</span>
+            </div>
+
+            <a href="Agent_Architecture_Case_Study_DanielLepel.html" class="featured-cta" target="_blank">
+                Read the case study
+                <span class="featured-cta-arrow">&rarr;</span>
+            </a>
+        </section>
+
+        <div class="footer">
+            <p>&copy; 2026 Daniel Lepel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

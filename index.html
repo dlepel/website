@@ -819,6 +819,26 @@
                 <a href="https://www.linkedin.com/in/daniellepel" target="_blank">LinkedIn</a>
                 <span>Albany, NY Capital District (Remote)</span>
             </div>
+
+            <div class="hero-flow-frame">
+                <button type="button" class="hero-flow-poster" id="flowPoster" onclick="loadFlowEmbed();return false;" aria-label="Play the JobSearch system flow">
+                    <div class="hero-flow-poster-grid" aria-hidden="true"></div>
+                    <div class="hero-flow-poster-content">
+                        <div class="hero-flow-eyebrow">Featured &middot; Production Agent System</div>
+                        <div class="hero-flow-title">The JobSearch System</div>
+                        <p class="hero-flow-dek">An animated walkthrough of the agentic system that runs my job search: 16 specialist skills, scheduled jobs, Microsoft Graph wiring, and the data pipeline that keeps the tracker, dashboard, and digest in sync.</p>
+                        <span class="hero-flow-play">
+                            <span class="hero-flow-play-icon">&#9654;</span>
+                            <span class="hero-flow-play-label">Play the system flow</span>
+                        </span>
+                        <div class="hero-flow-size">Interactive diagram &middot; 5.9 MB &middot; loads on click</div>
+                    </div>
+                </button>
+                <noscript>
+                    <a href="JobSearch_Flow_DanielLepel.html" class="hero-flow-noscript" target="_blank">Open the JobSearch system flow in a new tab &rarr;</a>
+                </noscript>
+            </div>
+
             <div class="cta-buttons">
                 <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
                 <div class="resume-dropdown" id="resumeDropdown">
@@ -831,6 +851,7 @@
                     </div>
                 </div>
                 <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
+                <a href="projects.html" class="btn btn-secondary" target="_blank">Current &amp; Ongoing Projects</a>
                 <a href="whats-new.html" class="btn btn-secondary btn-whatsnew">What's New<span class="new-badge">New</span></a>
             </div>
         </header>
@@ -842,88 +863,6 @@
             <p>My work centers on foundational elements that enable broader success: identity architecture with Entra ID, Zero Trust security frameworks, reliable endpoint platforms, and governance standards that simplify complexity. I have built multi-tenant environments, modernized legacy platforms, and developed architectural patterns that support operational teams.</p>
 
             <p>I am seeking a new role focused on architecture and strategy, distinct from daily operations. My expertise includes platform vision, security design, and technical standards. If your organization needs a strategic architect to guide technology direction, I welcome the opportunity to discuss how I can contribute to your goals.</p>
-        </section>
-
-                <section class="featured-case-study">
-            <div class="featured-label">Featured Work &middot; Microsoft 365 Agent Delivery</div>
-            <h2 class="featured-headline">Copilot Concierge: a production M365 triage agent built on Copilot Studio, Azure AI Foundry, and Claude.</h2>
-            <p class="featured-dek">A scoped, shippable agent that triages inbound Outlook messages against a six-category classifier, drafts replies in the user's voice, and writes every decision to an audit log. Built on Copilot Studio fronting Azure AI Foundry, with Claude Sonnet via Foundry handling classification and drafting, Microsoft Graph for inbox, calendar, Teams, and Planner context, and Application Insights for the audit trail. The case study covers the tool catalog, the classifier, the voice profile, the data model, and the security posture. A technical appendix documents the Graph scopes, typed tool signatures, Dataverse schema, and Kusto audit queries.</p>
-
-            <div class="featured-metrics">
-                <div class="featured-metric">
-                    <div class="featured-metric-num">6</div>
-                    <div class="featured-metric-label">Classification tiers</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">14</div>
-                    <div class="featured-metric-label">Typed agent tools</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">9</div>
-                    <div class="featured-metric-label">Graph delegated scopes</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">4</div>
-                    <div class="featured-metric-label">Week build to ship</div>
-                </div>
-            </div>
-
-            <div class="featured-tags">
-                <span class="featured-tag">Copilot Studio</span>
-                <span class="featured-tag">Azure AI Foundry</span>
-                <span class="featured-tag">Claude Sonnet</span>
-                <span class="featured-tag">Microsoft Graph</span>
-                <span class="featured-tag">Dataverse</span>
-                <span class="featured-tag">Application Insights</span>
-            </div>
-
-            <a href="Copilot_Concierge_Case_Study_DanielLepel.html" class="featured-cta" target="_blank">
-                Read the case study
-                <span class="featured-cta-arrow">&rarr;</span>
-            </a>
-            <a href="Copilot_Concierge_Technical_Appendix_DanielLepel.html" class="featured-cta featured-cta-secondary" target="_blank" style="margin-left: 0.75rem;">
-                Technical appendix
-                <span class="featured-cta-arrow">&rarr;</span>
-            </a>
-        </section>
-
-<section class="featured-case-study">
-            <div class="featured-label">Featured Work · Agentic AI Architecture</div>
-            <h2 class="featured-headline">A production agentic AI system, designed and operated by one person.</h2>
-            <p class="featured-dek">Over the past ten weeks I designed, deployed, and have continuously operated an agentic AI system on Anthropic's Claude Agent SDK. It orchestrates Microsoft Graph, scheduled automation, analytics, and document generation across an end-to-end workflow. The case study walks through the architecture, the design decisions, the guardrails, and what it means for Microsoft cloud customers rolling out Copilot Studio and Agent 365.</p>
-
-            <div class="featured-metrics">
-                <div class="featured-metric">
-                    <div class="featured-metric-num">145</div>
-                    <div class="featured-metric-label">Opportunities managed</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">16</div>
-                    <div class="featured-metric-label">Specialist skills</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">10</div>
-                    <div class="featured-metric-label">Scheduled and startup jobs</div>
-                </div>
-                <div class="featured-metric">
-                    <div class="featured-metric-num">71</div>
-                    <div class="featured-metric-label">Days continuous run</div>
-                </div>
-            </div>
-
-            <div class="featured-tags">
-                <span class="featured-tag">Claude Agent SDK</span>
-                <span class="featured-tag">Microsoft Graph</span>
-                <span class="featured-tag">Python</span>
-                <span class="featured-tag">PowerShell</span>
-                <span class="featured-tag">MCP</span>
-                <span class="featured-tag">Customer Zero</span>
-            </div>
-
-            <a href="Agent_Architecture_Case_Study_DanielLepel.html" class="featured-cta" target="_blank">
-                Read the case study
-                <span class="featured-cta-arrow">→</span>
-            </a>
         </section>
 
         <section class="expertise">
@@ -1112,7 +1051,7 @@
                     <div class="doc-card-peek">
                         <ul>
                             <li>Role-by-role detail with platform context</li>
-                            <li>Key work at NBT, Latham Pool Products, FIS, and MetLife</li>
+                            <li>Key work at National Business Technologies, Latham Pool Products, FIS, and MetLife</li>
                             <li>Skills, education, and PDF download</li>
                         </ul>
                     </div>
@@ -1433,6 +1372,26 @@ document.addEventListener('click',function(e){
   var dd=document.getElementById('resumeDropdown');
   if(dd && !dd.contains(e.target)) dd.classList.remove('open');
 });
+</script>
+
+<script>
+/* Hero flow embed: click-to-play iframe loader (added 2026-04-20) */
+function loadFlowEmbed(){
+  var frame=document.querySelector('.hero-flow-frame');
+  if(!frame) return;
+  var poster=document.getElementById('flowPoster');
+  if(poster) poster.remove();
+  var iframe=document.createElement('iframe');
+  iframe.src='JobSearch_Flow_DanielLepel.html';
+  iframe.className='hero-flow-iframe';
+  iframe.title='JobSearch System Flow by Daniel Lepel';
+  iframe.loading='lazy';
+  iframe.setAttribute('allowfullscreen','');
+  frame.insertBefore(iframe, frame.firstChild);
+  if(typeof gtag==='function'){
+    gtag('event','flow_play',{event_category:'engagement',event_label:'hero_flow'});
+  }
+}
 </script>
 </body>
 </html>
