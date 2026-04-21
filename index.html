@@ -194,155 +194,6 @@
             margin-top: 2px;
         }
 
-        /* Hero flow embed (added 2026-04-20) */
-        .hero-flow-frame {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            max-height: 480px;
-            margin: 2rem auto 1.75rem;
-            background: #0f0f0f;
-            border: 1px solid var(--border);
-            border-top: 3px solid var(--primary);
-            overflow: hidden;
-        }
-
-        .hero-flow-iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            display: block;
-        }
-
-        .hero-flow-poster {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
-            border: 0;
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
-            color: inherit;
-            font: inherit;
-            text-align: center;
-            transition: background 0.3s;
-        }
-
-        .hero-flow-poster:hover {
-            background: radial-gradient(ellipse at center, #242424 0%, #0f0f0f 100%);
-        }
-
-        .hero-flow-poster:hover .hero-flow-play {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(200, 145, 74, 0.4);
-        }
-
-        .hero-flow-poster:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: -4px;
-        }
-
-        .hero-flow-poster-grid {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(200, 145, 74, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200, 145, 74, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-        }
-
-        .hero-flow-poster-content {
-            position: relative;
-            z-index: 1;
-            padding: 2rem;
-            max-width: 80%;
-        }
-
-        .hero-flow-eyebrow {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .hero-flow-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.4rem;
-            font-weight: 500;
-            color: #fff;
-            line-height: 1.15;
-            margin-bottom: 0.9rem;
-            letter-spacing: 0.01em;
-        }
-
-        .hero-flow-dek {
-            font-size: 1rem;
-            color: var(--text-dim);
-            line-height: 1.55;
-            margin: 0 auto 1.5rem;
-            max-width: 560px;
-        }
-
-        .hero-flow-play {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.7rem;
-            padding: 0.75rem 1.75rem;
-            background: var(--primary);
-            color: #1a1a1a;
-            font-weight: 600;
-            font-size: 0.92rem;
-            letter-spacing: 0.05em;
-            border-radius: 4px;
-            transition: transform 0.25s, box-shadow 0.25s;
-            box-shadow: 0 4px 12px rgba(200, 145, 74, 0.25);
-        }
-
-        .hero-flow-play-icon {
-            font-size: 0.8rem;
-            margin-left: -0.15rem;
-        }
-
-        .hero-flow-size {
-            margin-top: 1.15rem;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .hero-flow-noscript {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 1rem;
-            z-index: 2;
-            padding: 1rem;
-        }
-
-        @media (max-width: 640px) {
-            .hero-flow-frame {
-                aspect-ratio: auto;
-                max-height: none;
-                min-height: 320px;
-            }
-            .hero-flow-title { font-size: 1.7rem; }
-            .hero-flow-dek { font-size: 0.9rem; }
-            .hero-flow-poster-content { padding: 1.25rem; max-width: 94%; }
-        }
-
         section {
             margin-bottom: 3rem;
         }
@@ -820,25 +671,6 @@
                 <span>Albany, NY Capital District (Remote)</span>
             </div>
 
-            <div class="hero-flow-frame">
-                <button type="button" class="hero-flow-poster" id="flowPoster" onclick="loadFlowEmbed();return false;" aria-label="Play the JobSearch system flow">
-                    <div class="hero-flow-poster-grid" aria-hidden="true"></div>
-                    <div class="hero-flow-poster-content">
-                        <div class="hero-flow-eyebrow">Featured &middot; Production Agent System</div>
-                        <div class="hero-flow-title">The JobSearch System</div>
-                        <p class="hero-flow-dek">An animated walkthrough of the agentic system that runs my job search: 16 specialist skills, scheduled jobs, Microsoft Graph wiring, and the data pipeline that keeps the tracker, dashboard, and digest in sync.</p>
-                        <span class="hero-flow-play">
-                            <span class="hero-flow-play-icon">&#9654;</span>
-                            <span class="hero-flow-play-label">Play the system flow</span>
-                        </span>
-                        <div class="hero-flow-size">Interactive diagram &middot; 5.9 MB &middot; loads on click</div>
-                    </div>
-                </button>
-                <noscript>
-                    <a href="JobSearch_Flow_DanielLepel.html" class="hero-flow-noscript" target="_blank">Open the JobSearch system flow in a new tab &rarr;</a>
-                </noscript>
-            </div>
-
             <div class="cta-buttons">
                 <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
                 <div class="resume-dropdown" id="resumeDropdown">
@@ -851,7 +683,7 @@
                     </div>
                 </div>
                 <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
-                <a href="projects.html" class="btn btn-secondary" target="_blank">Current &amp; Ongoing Projects</a>
+                <a href="projects.html" class="btn btn-secondary" target="_blank">Projects</a>
                 <a href="whats-new.html" class="btn btn-secondary btn-whatsnew">What's New<span class="new-badge">New</span></a>
             </div>
         </header>
@@ -863,6 +695,16 @@
             <p>My work centers on foundational elements that enable broader success: identity architecture with Entra ID, Zero Trust security frameworks, reliable endpoint platforms, and governance standards that simplify complexity. I have built multi-tenant environments, modernized legacy platforms, and developed architectural patterns that support operational teams.</p>
 
             <p>I am seeking a new role focused on architecture and strategy, distinct from daily operations. My expertise includes platform vision, security design, and technical standards. If your organization needs a strategic architect to guide technology direction, I welcome the opportunity to discuss how I can contribute to your goals.</p>
+        </section>
+
+        <section class="featured-case-study" style="margin-top: 2.5rem; padding: 1.75rem 1.75rem 1.6rem;">
+            <div class="featured-label">Featured Project</div>
+            <h3 class="featured-headline" style="font-size: 1.5rem; margin-bottom: 0.7rem;">The JobSearch System: an agentic AI platform I designed and operate.</h3>
+            <p class="featured-dek" style="margin-bottom: 1.25rem;">A production agent system built on Anthropic's Claude Agent SDK. 16 specialist skills, scheduled jobs, Microsoft Graph wiring, and an interactive system-flow walkthrough. Full case study and the animated flow live on the Projects page.</p>
+            <a href="projects.html" class="featured-cta">
+                See the project
+                <span class="featured-cta-arrow">&rarr;</span>
+            </a>
         </section>
 
         <section class="expertise">
@@ -1374,24 +1216,5 @@ document.addEventListener('click',function(e){
 });
 </script>
 
-<script>
-/* Hero flow embed: click-to-play iframe loader (added 2026-04-20) */
-function loadFlowEmbed(){
-  var frame=document.querySelector('.hero-flow-frame');
-  if(!frame) return;
-  var poster=document.getElementById('flowPoster');
-  if(poster) poster.remove();
-  var iframe=document.createElement('iframe');
-  iframe.src='JobSearch_Flow_DanielLepel.html';
-  iframe.className='hero-flow-iframe';
-  iframe.title='JobSearch System Flow by Daniel Lepel';
-  iframe.loading='lazy';
-  iframe.setAttribute('allowfullscreen','');
-  frame.insertBefore(iframe, frame.firstChild);
-  if(typeof gtag==='function'){
-    gtag('event','flow_play',{event_category:'engagement',event_label:'hero_flow'});
-  }
-}
-</script>
 </body>
 </html>
