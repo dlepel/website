@@ -51,8 +51,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Ignore resource-load errors on <link> elements (preconnect, stylesheet).
     // Fonts are served from blob URLs; external CDN failures are non-fatal.
     if (e.target && e.target.tagName === 'LINK') return;
-    // Debug: log exact error source
-    console.error('[bundle-debug]', e.type, e.message || '(no msg)', e.filename || '(no file)', e.lineno, e.target ? e.target.tagName + (e.target.src ? ' src=' + String(e.target.src).slice(0,60) : '') : 'no-target');
+    // Ignore blob-URL load failures from scripts not created by this bundler
+    // (e.g. browser extension injections whose blobs live in a different context).
+    if (e.target && e.target.tagName === 'SCRIPT' && e.target.src &&
+        e.target.src.startsWith('blob:') && window.__bundlerBlobUrls &&
+        !window.__bundlerBlobUrls.has(e.target.src)) return;
     var p = document.body || document.documentElement;
     var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
     d.id = '__bundler_err';
@@ -159,6 +162,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Extension-injected scripts have blob URLs that return 503 when re-created
     // from page context, which triggers the error overlay.
     const blobUrlSet = new Set(Object.values(blobUrls));
+    // Expose so the error handler can identify non-bundler blob URLs.
+    window.__bundlerBlobUrls = blobUrlSet;
     const dead = Array.from(document.scripts);
     for (const old of dead) {
       if (old.src && old.src.startsWith('blob:') && !blobUrlSet.has(old.src)) continue;
