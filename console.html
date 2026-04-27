@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Ignore resource-load errors on <link> elements (preconnect, stylesheet).
     // Fonts are served from blob URLs; external CDN failures are non-fatal.
     if (e.target && e.target.tagName === 'LINK') return;
+    // Debug: log exact error source
+    console.error('[bundle-debug]', e.type, e.message || '(no msg)', e.filename || '(no file)', e.lineno, e.target ? e.target.tagName + (e.target.src ? ' src=' + String(e.target.src).slice(0,60) : '') : 'no-target');
     var p = document.body || document.documentElement;
     var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
     d.id = '__bundler_err';
