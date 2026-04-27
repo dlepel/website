@@ -154,8 +154,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
     document.documentElement.replaceWith(doc.documentElement);
+    // Build a set of blob URLs this bundler created so we can skip any script
+    // whose blob src belongs to a different context (e.g. a browser extension).
+    // Extension-injected scripts have blob URLs that return 503 when re-created
+    // from page context, which triggers the error overlay.
+    const blobUrlSet = new Set(Object.values(blobUrls));
     const dead = Array.from(document.scripts);
     for (const old of dead) {
+      if (old.src && old.src.startsWith('blob:') && !blobUrlSet.has(old.src)) continue;
       const s = document.createElement('script');
       for (const a of old.attributes) s.setAttribute(a.name, a.value);
       s.textContent = old.textContent;
