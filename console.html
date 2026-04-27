@@ -48,6 +48,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Error sink persists across replaceWith since it's on window, not the DOM.
   window.addEventListener('error', function(e) {
+    // Ignore resource-load errors on <link> elements (preconnect, stylesheet).
+    // Fonts are served from blob URLs; external CDN failures are non-fatal.
+    if (e.target && e.target.tagName === 'LINK') return;
     var p = document.body || document.documentElement;
     var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
     d.id = '__bundler_err';
@@ -125,6 +128,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
     // The manifest bytes are ours; SRI protects against CDN compromise, not this.
     template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
+    // Preconnect hints for Google Fonts CDN are dead code — fonts are inlined as
+    // blob URLs. Remove them so a CDN connectivity failure can't trigger the error overlay.
+    template = template.replace(/<link[^>]*\srel="preconnect"[^>]*>/gi, '').replace(/<link[^>]*rel="preconnect"[^>]*>/gi, '');
 
     const resourceScript = '<script>window.__resources = ' +
       JSON.stringify(resourceMap).split('</' + 'script>').join('<\\/' + 'script>') +
