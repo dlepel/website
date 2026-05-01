@@ -19,6 +19,26 @@
     <title>Daniel Lepel | Senior Microsoft Cloud Engineer & Architect</title>
     <meta name="description" content="Senior Microsoft Cloud Engineer & Architect with 20+ years across Microsoft 365, Azure, identity, and endpoint management. Currently looking for Senior Engineer, M365 Engineer, Cloud Engineer, Identity Engineer, Endpoint Engineer, or Director of IT roles centered on Microsoft cloud.">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<script>
+(function(){
+    var defaultMode = 'unemployed';
+    var allowed = ['unemployed', 'employed-active', 'paused'];
+    function applyMode(mode) {
+        if (allowed.indexOf(mode) === -1) mode = defaultMode;
+        function set(){
+            var b = document.body;
+            if (!b) return;
+            b.className = ((b.className || '').replace(/\bmode-\S+/g, '').trim() + ' mode-' + mode).trim();
+        }
+        if (document.body) { set(); }
+        else { document.addEventListener('DOMContentLoaded', set); }
+    }
+    fetch('/mode.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ applyMode(d && d.mode ? d.mode : defaultMode); })
+        .catch(function(){ applyMode(defaultMode); });
+})();
+</script>
     <style>
         * {
             margin: 0;
@@ -648,6 +668,37 @@
             .featured-headline { font-size: 1.55rem; }
             .featured-case-study { padding: 1.75rem 1.25rem; }
         }
+
+        /* Mode-aware visibility */
+        .status-banner {
+            display: none;
+            background: rgba(200, 145, 74, 0.08);
+            border: 1px solid rgba(200, 145, 74, 0.3);
+            border-left: 3px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin: 0 auto 1.5rem;
+            max-width: 720px;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .status-banner p {
+            color: var(--text);
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .contact-cta {
+            display: none;
+        }
+        body.mode-unemployed .resume-actions { display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        body.mode-unemployed .status-banner { display: none; }
+        body.mode-unemployed .contact-cta { display: none; }
+        body.mode-employed-active .resume-actions { display: none; }
+        body.mode-employed-active .status-banner { display: block; }
+        body.mode-employed-active .contact-cta { display: inline-block; }
+        body.mode-paused .resume-actions { display: none; }
+        body.mode-paused .status-banner { display: block; }
+        body.mode-paused .contact-cta { display: none; }
     </style>
 </head>
 <body>
@@ -671,18 +722,25 @@
                 <span>Albany, NY Capital District (Remote)</span>
             </div>
 
-            <div class="cta-buttons">
-                <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
-                <div class="resume-dropdown" id="resumeDropdown">
-                    <button class="btn btn-secondary" onclick="document.getElementById('resumeDropdown').classList.toggle('open')">Download Resume ▾</button>
-                    <div class="resume-dropdown-menu">
-                        <a href="Daniel_Lepel_Resume_Branded_Engineer_v1.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Engineer_CrossStack'});">Senior Microsoft Cloud Engineer &amp; Architect<span class="variant-sub">M365 / Azure / Identity</span></a>
-                        <a href="Daniel_Lepel_Resume_Principal_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_M365'});">Principal Architect<span class="variant-sub">Microsoft 365 Focus</span></a>
-                        <a href="Daniel_Lepel_Resume_Principal_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_Azure'});">Principal Architect<span class="variant-sub">Azure Infrastructure Focus</span></a>
-                        <a href="Daniel_Lepel_Resume_SrEngineer_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_M365'});">Senior Engineer / Technical Lead<span class="variant-sub">Microsoft 365 Focus</span></a>
-                        <a href="Daniel_Lepel_Resume_SrEngineer_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_Azure'});">Senior Engineer / Technical Lead<span class="variant-sub">Azure Infrastructure Focus</span></a>
+            <div class="status-banner">
+                <p>Currently engaged with another company. Selectively considering exceptional fits with significant scope advancement.</p>
+            </div>
+
+                        <div class="cta-buttons">
+                <div class="resume-actions">
+                    <a href="resume.html" class="btn btn-primary" target="_blank">View Resume</a>
+                    <div class="resume-dropdown" id="resumeDropdown">
+                        <button class="btn btn-secondary" onclick="document.getElementById('resumeDropdown').classList.toggle('open')">Download Resume ▾</button>
+                        <div class="resume-dropdown-menu">
+                            <a href="Daniel_Lepel_Resume_Branded_Engineer_v1.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Engineer_CrossStack'});">Senior Microsoft Cloud Engineer &amp; Architect<span class="variant-sub">M365 / Azure / Identity</span></a>
+                            <a href="Daniel_Lepel_Resume_Principal_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_M365'});">Principal Architect<span class="variant-sub">Microsoft 365 Focus</span></a>
+                            <a href="Daniel_Lepel_Resume_Principal_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'Principal_Azure'});">Principal Architect<span class="variant-sub">Azure Infrastructure Focus</span></a>
+                            <a href="Daniel_Lepel_Resume_SrEngineer_M365.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_M365'});">Senior Engineer / Technical Lead<span class="variant-sub">Microsoft 365 Focus</span></a>
+                            <a href="Daniel_Lepel_Resume_SrEngineer_Azure.pdf" download onclick="gtag('event','pdf_download',{event_category:'engagement',event_label:'SrEngineer_Azure'});">Senior Engineer / Technical Lead<span class="variant-sub">Azure Infrastructure Focus</span></a>
+                        </div>
                     </div>
                 </div>
+                <a href="https://forms.cloud.microsoft/r/e88K98T6Kj" class="btn btn-primary contact-cta" target="_blank">Send a Role for Consideration</a>
                 <a href="https://www.linkedin.com/in/daniellepel" class="btn btn-secondary" target="_blank">Connect on LinkedIn</a>
                 <a href="projects.html" class="btn btn-secondary" target="_blank">Projects</a>
                 <a href="whats-new.html" class="btn btn-secondary btn-whatsnew">What's New<span class="new-badge">New</span></a>
