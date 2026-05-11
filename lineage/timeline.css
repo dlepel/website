@@ -37,7 +37,7 @@ html, body {
 .app {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
   height: 100vh;
   width: 100vw;
   background:
@@ -214,50 +214,18 @@ html, body {
    ===================================================================== */
 .left-col {
   position: relative;
-  display: grid;
-  grid-template-columns: 84px 1fr;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
+  min-width: 0;
   border-right: 1px solid var(--line);
   overflow: hidden;
-}
-
-.era-track {
-  position: relative;
-  height: 100%;
-  border-right: 1px solid var(--line-soft);
-  padding: 16px 0;
-  overflow: hidden;
-}
-.era-band {
-  position: absolute;
-  left: 16px; right: 16px;
-  top: var(--top); height: var(--h);
-  background: linear-gradient(180deg, var(--c-band) 0%, color-mix(in srgb, var(--c-band) 40%, transparent) 100%);
-  opacity: 0;
-  transition: opacity 1.4s ease;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-.era-band.on { opacity: 0.55; }
-.era-band.active { opacity: 0.95; box-shadow: 0 0 24px color-mix(in srgb, var(--c-band) 50%, transparent); }
-.era-band-label {
-  font-family: var(--sans);
-  font-size: 9.5px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #1d160e;
-  font-weight: 600;
-  padding: 8px 4px;
-  white-space: nowrap;
 }
 
 /* card rail window — clips overflow, centers focus */
 .rail-window {
   position: relative;
+  flex: 1;
   min-height: 0;
   overflow: hidden;
 }
@@ -444,12 +412,194 @@ html, body {
 }
 
 /* =====================================================================
-   RIGHT COLUMN — persistent atlas + legend
+   HISTORY STRIP — Track 5 (full-width horizontal time axis)
    ===================================================================== */
+.history-strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  height: 124px;
+  background: linear-gradient(180deg, #14100c 0%, #1a1510 100%);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.hs-label {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 18px 0 28px;
+  border-right: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(212,160,74,0.06), transparent);
+}
+.hs-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--gold);
+  line-height: 1.15;
+}
+.hs-sub {
+  font-family: var(--sans);
+  font-size: 9.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  margin-top: 5px;
+}
+.hs-stage {
+  position: relative;
+  overflow: hidden;
+}
+.hs-lanes {
+  position: absolute;
+  inset: 8px 16px 22px 16px;
+}
+.hs-axis {
+  position: absolute;
+  left: 16px; right: 16px;
+  bottom: 0;
+  height: 22px;
+  border-top: 1px solid var(--line);
+}
+.hs-tick {
+  position: absolute;
+  bottom: 13px;
+  width: 1px;
+  height: 5px;
+  background: rgba(212,184,140,0.3);
+}
+.hs-tick.major { height: 9px; background: var(--gold-soft); }
+.hs-tick-label {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  font-family: var(--sans);
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  color: var(--paper-faint);
+  white-space: nowrap;
+}
+.hs-band {
+  position: absolute;
+  left: var(--x);
+  width: var(--w);
+  top: calc(var(--lane) * 30px);
+  height: 26px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--gold) 22%, transparent) 0%,
+    color-mix(in srgb, var(--gold) 10%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-radius: 2px;
+  display: flex; align-items: center;
+  padding: 0 8px;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: color-mix(in srgb, var(--gold) 90%, var(--paper));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.8s ease, transform 0.6s ease;
+  cursor: default;
+}
+.hs-band.tier-1 {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--gold) 42%, transparent) 0%,
+    color-mix(in srgb, var(--gold) 22%, transparent) 100%);
+  border-color: var(--gold);
+  color: #1c1610;
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+}
+.hs-band.active {
+  background: linear-gradient(180deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%);
+  border-color: #fff8e0;
+  color: #1c1610;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--gold) 70%, transparent);
+  transform: translateY(-1px);
+}
+.hs-band.tier-1.pulsing,
+.hs-band.pulsing {
+  animation: hs-pulse 1.6s ease-out;
+}
+@keyframes hs-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 90%, transparent); }
+  60%  { box-shadow: 0 0 0 16px color-mix(in srgb, var(--gold) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 0%, transparent); }
+}
+.hs-marker {
+  position: absolute;
+  left: var(--x);
+  top: calc(var(--lane) * 30px);
+  height: 26px;
+  width: 2px;
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
+  transition: box-shadow 0.6s ease;
+}
+.hs-marker.tier-1 {
+  width: 3px;
+  background: linear-gradient(180deg, #fff4d0, var(--gold));
+}
+.hs-marker::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 6px; top: -1px;
+  font-family: var(--sans);
+  font-size: 9.5px;
+  letter-spacing: 0.4px;
+  color: color-mix(in srgb, var(--gold) 80%, var(--paper));
+  white-space: nowrap;
+  background: rgba(20,16,12,0.65);
+  padding: 1px 5px;
+  border-radius: 1px;
+  pointer-events: none;
+}
+.hs-marker.tier-1::after {
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(20,16,12,0.85);
+}
+.hs-marker.active,
+.hs-marker.pulsing {
+  box-shadow: 0 0 14px var(--gold), 0 0 24px color-mix(in srgb, var(--gold) 50%, transparent);
+}
+.hs-marker.pulsing { animation: hs-marker-pulse 1.6s ease-out; }
+@keyframes hs-marker-pulse {
+  0%   { transform: scaleY(1.0); filter: brightness(2); }
+  100% { transform: scaleY(1.0); filter: brightness(1); }
+}
+.hs-playhead {
+  position: absolute;
+  left: 16px;
+  top: 0; bottom: 22px;
+  width: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.hs-playhead::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 4px; bottom: 4px;
+  width: 2px;
+  background: linear-gradient(180deg, #fff4d0 0%, var(--gold) 60%, rgba(212,160,74,0.2) 100%);
+  box-shadow: 0 0 8px rgba(255,244,208,0.6);
+}
+.hs-playhead::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: -2px;
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #fff4d0;
+  filter: drop-shadow(0 0 4px rgba(255,244,208,0.5));
+}
 .right-col {
   position: relative;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
 }
 .map-shell {
@@ -552,7 +702,7 @@ html, body {
   background: var(--bg-1);
   border-top: 1px solid var(--line);
   padding: 10px 16px 12px;
-  max-height: 32%;
+  max-height: 200px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -836,7 +986,6 @@ html, body {
    ===================================================================== */
 @media (max-width: 1100px) {
   .atlas { grid-template-columns: 48fr 52fr; }
-  .left-col { grid-template-columns: 64px 1fr; }
   .card-title { font-size: 15px; }
   .card-desc  { font-size: 12px; }
 }

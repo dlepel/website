@@ -388,7 +388,60 @@ const CAPTIONS = [
   { t: 1199, text: 'Hermenegilde · Hermanise — the same Catholic saint name, in two unrelated families, that converge through marriage.' },
 ];
 
+/* =====================================================================
+   HISTORY_EVENTS — Track 5 (bottom horizontal strip)
+   Each entry: { start, end?, label, short?, tier (1|2), t? (narration cue) }
+   end omitted → single-date marker. tier 1 → emphasized.
+   ===================================================================== */
+const HISTORY_EVENTS = [
+  // PRE-COLONIAL
+  { start:1608,           label:'Quebec City founded',                         short:'Quebec founded',     tier:2 },
+  { start:1663, end:1673, label:'Filles du Roi program',                       short:'Filles du Roi',      tier:2 },
+  // CARIGNAN-SALIÈRES ERA
+  { start:1665, end:1668, label:'Carignan-Salières Regiment campaigns',        short:'Carignan-Salières',  tier:1, t:240 },
+  { start:1666,           label:'Mohawk villages burned',                      short:'Mohawk campaigns',   tier:2, t:330 },
+  { start:1667,           label:'Iroquois Confederacy sues for peace',         short:'Iroquois peace',     tier:2 },
+  { start:1685,           label:'Edict of Fontainebleau revokes Edict of Nantes', short:'Edict of Nantes revoked', tier:2 },
+  // EARLY 1700s
+  { start:1707,           label:'War of Spanish Succession ongoing',           short:'Spanish Succession', tier:2 },
+  { start:1709, end:1710, label:'Great Palatine migration to colonial New York', short:'Palatine migration', tier:2 },
+  // COLONIAL WARS
+  { start:1754, end:1763, label:'French & Indian War / Seven Years\u2019 War', short:'French & Indian War', tier:2 },
+  { start:1763,           label:'Treaty of Paris ends French rule in N. America', short:'British conquest', tier:1, t:491 },
+  { start:1774,           label:'Quebec Act preserves French law & Catholic rights', short:'Quebec Act', tier:2 },
+  // REVOLUTIONARY
+  { start:1775, end:1783, label:'American Revolution',                         short:'American Revolution', tier:1, t:665 },
+  { start:1776,           label:'Declaration of Independence',                 short:'Declaration',        tier:2 },
+  { start:1783,           label:'Loyalist migrations to British Canada',       short:'Loyalist migrations', tier:2 },
+  { start:1789, end:1799, label:'French Revolution',                           short:'French Revolution',  tier:2 },
+  // 1800s
+  { start:1812, end:1815, label:'War of 1812',                                 short:'War of 1812',        tier:2 },
+  { start:1837, end:1838, label:'Lower Canada Rebellion',                      short:'Lower Canada Rebellion', tier:2 },
+  { start:1840, end:1930, label:'French-Canadian Great Migration to New England', short:'Great Migration to NE', tier:1, t:835 },
+  { start:1861, end:1865, label:'American Civil War',                          short:'Civil War',          tier:2 },
+  { start:1867,           label:'Canadian Confederation',                      short:'Confederation',      tier:2 },
+  { start:1873, end:1879, label:'The Long Depression',                         short:'Long Depression',    tier:2 },
+  // EARLY 1900s
+  { start:1907,           label:'Sprague Electric founded in North Adams',     short:'Sprague founded',    tier:2 },
+  { start:1914, end:1918, label:'World War I',                                 short:'WWI',                tier:1, t:1335 },
+  { start:1918, end:1919, label:'Spanish flu pandemic',                        short:'Spanish flu',        tier:2 },
+  { start:1929, end:1939, label:'Great Depression',                            short:'Great Depression',   tier:2, t:1262 },
+  { start:1939, end:1945, label:'World War II',                                short:'WWII',               tier:1, t:1380 },
+  // LATE 20TH C.
+  { start:1947, end:1965, label:'Berkshires industrial decline',               short:'Mills consolidating', tier:2 },
+  { start:1965, end:1975, label:'Vietnam War',                                 short:'Vietnam',            tier:2 },
+  { start:1980,           label:'First Quebec Sovereignty Referendum',         short:'Quebec Ref. I',      tier:2 },
+  { start:1985,           label:'Sprague Electric closes North Adams',         short:'Sprague closes',     tier:2 },
+  { start:1995,           label:'Second Quebec Sovereignty Referendum',        short:'Quebec Ref. II',     tier:2 },
+  { start:1999,           label:'MASS MoCA opens in North Adams',              short:'MASS MoCA opens',    tier:2 },
+  // 21ST C.
+  { start:2001,           label:'September 11 attacks',                        short:'9/11',               tier:2 },
+  { start:2008, end:2009, label:'Great Recession',                             short:'Great Recession',    tier:2 },
+  { start:2020, end:2021, label:'COVID-19 pandemic',                           short:'COVID-19',           tier:2 },
+  { start:2025.96,        label:'Bill C-3 takes effect (15 Dec 2025)',         short:'Bill C-3',           tier:1, t:1487 },
+];
+
 window.TIMELINE = {
   TRACKS, YEAR_MIN, YEAR_MAX, ACTS, audioCues,
-  PLACES, ERAS, CARDS, MAP_MIGRATIONS, MAP_FOCUS, CAPTIONS,
+  PLACES, ERAS, CARDS, MAP_MIGRATIONS, MAP_FOCUS, CAPTIONS, HISTORY_EVENTS,
 };

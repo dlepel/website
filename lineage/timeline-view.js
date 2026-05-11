@@ -6,7 +6,9 @@
 (function () {
   'use strict';
   const T = window.TIMELINE;
-  const { TRACKS, ACTS, audioCues, PLACES, ERAS, CARDS, MAP_MIGRATIONS, MAP_FOCUS, CAPTIONS } = T;
+  const { TRACKS, ACTS, audioCues, PLACES, ERAS, CARDS, MAP_MIGRATIONS, MAP_FOCUS, CAPTIONS, HISTORY_EVENTS } = T;
+  const HS_YEAR_MIN = 1600;
+  const HS_YEAR_MAX = 2030;
 
   /* ---------- elements ---------- */
   const $ = id => document.getElementById(id);
@@ -30,8 +32,10 @@
   const arRange    = document.querySelector('.act-range');
   const legendHost = $('legend');
   const actsNav    = $('acts-nav');
-  const eraTrack   = $('era-track');
   const cardRail   = $('card-rail');
+  const hsLanes    = $('hs-lanes');
+  const hsAxis     = $('hs-axis');
+  const hsPlayhead = $('hs-playhead');
   const railWindow = document.querySelector('.rail-window');
   const mtCoord    = $('mt-coord');
   const mlList     = $('ml-list');
@@ -114,40 +118,100 @@
   }
 
   /* =====================================================================
-     ERA BANDS  (vertical column alongside cards)
+     HISTORY STRIP — Track 5 (horizontal, full width)
+     Each event is placed by year along [HS_YEAR_MIN, HS_YEAR_MAX].
+     Lane assignment is greedy: a 2-tier system (tier-1 / tier-2) plus
+     simple overlap packing within each tier.
      ===================================================================== */
-  // Total audio span maps to a virtual pixel column derived from rail height.
-  // We compute each era's top/height based on its tStart/tEnd as a fraction.
-  let eraNodes = [];
-  function buildEras() {
-    eraTrack.innerHTML = '';
-    eraNodes = ERAS.map(era => {
+  const hsNodes = [];     // { ev, node, x, w, lane }
+  let hsStageW = 0;
+  function yearToHSx(year) {
+    return ((year - HS_YEAR_MIN) / (HS_YEAR_MAX - HS_YEAR_MIN)) * hsStageW;
+  }
+  function buildHistoryStrip() {
+    hsLanes.innerHTML = '';
+    hsAxis.innerHTML  = '';
+    // sort by start
+    const evs = HISTORY_EVENTS.slice().sort((a, b) => a.start - b.start);
+    // greedy lane packing per tier
+    const laneEnds = [[],[]];   // tier1 lanes, tier2 lanes -> end-year of last event
+    evs.forEach(ev => {
+      const tier = ev.tier === 1 ? 0 : 1;
+      const end = (ev.end != null) ? ev.end : ev.start + 1;
+      const lanes = laneEnds[tier];
+      let lane = -1;
+      for (let i = 0; i < lanes.length; i++) {
+        if (lanes[i] + 2 <= ev.start) { lane = i; break; }
+      }
+      if (lane === -1) { lane = lanes.length; lanes.push(0); }
+      lanes[lane] = end;
+      // base lane offset: tier-1 at lanes 0..1; tier-2 below
+      const laneIdx = tier === 0 ? lane : (lane + 2);
+
       const node = document.createElement('div');
-      node.className = 'era-band';
-      node.dataset.id = era.id;
-      node.style.setProperty('--c-band', era.color);
-      node.innerHTML = `<span class="era-band-label">${era.label}</span>`;
-      eraTrack.appendChild(node);
-      return { era, node };
-    });
-    layoutEras();
-  }
-  function layoutEras() {
-    const total = 1585;
-    const H = eraTrack.clientHeight;
-    eraNodes.forEach(({ era, node }) => {
-      const top = (era.tStart / total) * H;
-      const h   = Math.max(28, ((era.tEnd - era.tStart) / total) * H);
-      node.style.setProperty('--top', top + 'px');
-      node.style.setProperty('--h', h + 'px');
+      const isBand = ev.end != null;
+      node.className = isBand ? 'hs-band' : 'hs-marker';
+      if (ev.tier === 1) node.classList.add('tier-1');
+      node.style.setProperty('--lane', laneIdx);
+      node.dataset.label = ev.short || ev.label;
+      if (isBand) node.textContent = ev.short || ev.label;
+      else        node.setAttribute('data-label', ev.short || ev.label);
+      node.title = ev.label + (ev.end != null ? ` (${ev.start}\u2013${ev.end})` : ` (${ev.start})`);
+      hsLanes.appendChild(node);
+      hsNodes.push({ ev, node, isBand });
     });
   }
-  function updateEras(t) {
-    eraNodes.forEach(({ era, node }) => {
-      const visible = t >= era.tStart - 4;
-      const active  = t >= era.tStart && t <= era.tEnd;
-      node.classList.toggle('on', visible);
-      node.classList.toggle('active', active);
+  function layoutHistoryStrip() {
+    hsStageW = hsLanes.clientWidth || 1;
+    // ticks every 50 yr; labels every 50; minor ticks every 10
+    hsAxis.innerHTML = '';
+    for (let y = 1600; y <= 2030; y += 10) {
+      const tick = document.createElement('div');
+      tick.className = 'hs-tick' + (y % 50 === 0 ? ' major' : '');
+      tick.style.left = yearToHSx(y) + 'px';
+      hsAxis.appendChild(tick);
+      if (y % 50 === 0) {
+        const lab = document.createElement('div');
+        lab.className = 'hs-tick-label';
+        lab.style.left = yearToHSx(y) + 'px';
+        lab.textContent = y;
+        hsAxis.appendChild(lab);
+      }
+    }
+    hsNodes.forEach(({ ev, node, isBand }) => {
+      const x = yearToHSx(ev.start);
+      if (isBand) {
+        const x2 = yearToHSx(ev.end);
+        node.style.setProperty('--x', x + 'px');
+        node.style.setProperty('--w', Math.max(8, x2 - x) + 'px');
+      } else {
+        node.style.setProperty('--x', x + 'px');
+      }
+    });
+  }
+  // active year derives from audioCues piecewise-linear map (audio → year)
+  function timeToYear(t) {
+    if (!audioCues || !audioCues.length) return HS_YEAR_MIN;
+    if (t <= audioCues[0].t) return audioCues[0].year;
+    if (t >= audioCues[audioCues.length - 1].t) return audioCues[audioCues.length - 1].year;
+    for (let i = 0; i < audioCues.length - 1; i++) {
+      const a = audioCues[i], b = audioCues[i + 1];
+      if (t >= a.t && t <= b.t) {
+        const k = (t - a.t) / (b.t - a.t);
+        return a.year + k * (b.year - a.year);
+      }
+    }
+    return audioCues[0].year;
+  }
+  function updateHistoryStrip(t) {
+    const year = timeToYear(t);
+    // playhead position
+    hsPlayhead.style.left = (16 + yearToHSx(year)) + 'px';
+    // band/marker states — fully derived
+    hsNodes.forEach(({ ev, node, isBand }) => {
+      const inside = year >= ev.start - 0.5 && (isBand ? year <= ev.end + 0.5 : year <= ev.start + 0.5);
+      const cued   = ev.t != null && Math.abs(t - ev.t) < 4;
+      node.classList.toggle('active', inside || cued);
     });
   }
 
@@ -330,75 +394,83 @@
     return pts[i];
   }
 
-  function drawMigration(mig) {
-    if (drawnArrows.has(mig.n)) return;
-    drawnArrows.add(mig.n);
+  // Idempotent migration rendering: layers are created once, then their
+  // visual state (stroke-dashoffset, opacity, legend class) is recomputed
+  // every frame as a pure function of audio.currentTime.
+  const migState = new Map();  // n -> { len, pathEl, head, label, row }
+  const MIG_DUR = 2.6;
+  function ensureMigrationLayers(mig) {
+    const cached = migState.get(mig.n);
+    if (cached) return cached;
     const fp = PLACES[mig.from], tp = PLACES[mig.to];
-    if (!fp || !tp) return;
+    if (!fp || !tp) return null;
     const color = trackColor(mig.track);
-
     const pts = curvedPath(fp.lat, fp.lon, tp.lat, tp.lon, 0.22);
-
-    // outer halo
-    L.polyline(pts, {
-      color, weight: 5, opacity: 0.18, lineCap: 'round', interactive: false,
-    }).addTo(map);
-
-    // animated dashed line — draws on by tweening dashOffset
-    const line = L.polyline(pts, {
-      color, weight: 2.2, opacity: 0.95, dashArray: '6 6', lineCap: 'round',
-      className: 'mig-line', interactive: false,
-    }).addTo(map);
-    // CSS-animatable via path element
+    L.polyline(pts, { color, weight: 5, opacity: 0.18, lineCap: 'round', interactive: false }).addTo(map);
+    const line = L.polyline(pts, { color, weight: 2.2, opacity: 0.95, lineCap: 'round', interactive: false }).addTo(map);
     const pathEl = line.getElement();
+    let len = 600;
     if (pathEl) {
-      const len = pathEl.getTotalLength ? pathEl.getTotalLength() : 600;
-      pathEl.style.strokeDasharray = len;
-      pathEl.style.strokeDashoffset = len;
-      pathEl.style.transition = 'stroke-dashoffset 2.6s ease-out';
-      requestAnimationFrame(() => {
-        pathEl.style.strokeDashoffset = '0';
-        setTimeout(() => {
-          pathEl.style.transition = 'none';
-          pathEl.style.strokeDasharray = '6 6';
-          pathEl.style.strokeDashoffset = '0';
-        }, 2700);
-      });
+      try { len = pathEl.getTotalLength(); } catch (e) {}
+      pathEl.style.strokeDasharray = len + 'px';
+      pathEl.style.strokeDashoffset = len + 'px';
+      pathEl.style.transition = 'none';
     }
-
-    // arrowhead at the destination end (small triangle marker)
     const tip = pointOnPath(pts, 1);
     const prev = pointOnPath(pts, 0.97);
     const ang = Math.atan2(tip[0] - prev[0], tip[1] - prev[1]) * 180 / Math.PI;
     const headIcon = L.divIcon({
       className: '',
-      html: `<svg width="16" height="16" viewBox="-8 -8 16 16" style="transform:rotate(${-ang}deg)">
-               <path d="M-5,-4 L5,0 L-5,4 L-2,0 Z" fill="${color}" stroke="${trackDark(mig.track)}" stroke-width="0.8"/>
-             </svg>`,
+      html: `<svg width="16" height="16" viewBox="-8 -8 16 16" style="transform:rotate(${-ang}deg);opacity:0"><path d="M-5,-4 L5,0 L-5,4 L-2,0 Z" fill="${color}" stroke="${trackDark(mig.track)}" stroke-width="0.8"/></svg>`,
       iconSize: [16, 16], iconAnchor: [8, 8],
     });
-    L.marker(tip, { icon: headIcon, interactive: false }).addTo(map);
-
-    // numbered label at midpoint
+    const head = L.marker(tip, { icon: headIcon, interactive: false }).addTo(map);
     const mid = pointOnPath(pts, 0.5);
     const labelIcon = L.divIcon({
       className: '',
-      html: `<div class="map-arrow-label" style="border-color:${color};color:${color};">${mig.n}</div>`,
+      html: `<div class="map-arrow-label" style="border-color:${color};color:${color};opacity:0">${mig.n}</div>`,
       iconSize: [22, 22], iconAnchor: [11, 11],
     });
-    const labelMarker = L.marker(mid, { icon: labelIcon, interactive: true })
-      .addTo(map)
+    const label = L.marker(mid, { icon: labelIcon, interactive: true }).addTo(map)
       .bindTooltip(`<b>${mig.n}.</b> ${mig.label} · ${mig.yearLabel}<br><i style="opacity:.8">${mig.desc}</i>`,
         { direction: 'top', offset: [0, -12], className: 'map-place-tooltip' });
-
-    arrowLayers.set(mig.n, { line, label: labelMarker });
-
-    // mark legend row drawn
     const row = mlList.querySelector(`[data-n="${mig.n}"]`);
-    if (row) {
-      row.classList.add('drawn', 'active');
-      setTimeout(() => row.classList.remove('active'), 6000);
-    }
+    const s = { len, pathEl, head, label, row };
+    migState.set(mig.n, s);
+    return s;
+  }
+  function setOpacity(marker, selector, value) {
+    const el = marker.getElement(); if (!el) return;
+    const target = el.querySelector(selector); if (!target) return;
+    target.style.opacity = value;
+  }
+  function renderMigrations(t) {
+    MAP_MIGRATIONS.forEach(mig => {
+      if (t < mig.t) {
+        // not yet — if layers were materialized, reset to hidden state
+        const cached = migState.get(mig.n);
+        if (cached) {
+          if (cached.pathEl) cached.pathEl.style.strokeDashoffset = cached.len + 'px';
+          setOpacity(cached.head, 'svg', '0');
+          setOpacity(cached.label, '.map-arrow-label', '0');
+          if (cached.row) cached.row.classList.remove('drawn', 'active');
+        }
+        return;
+      }
+      const s = ensureMigrationLayers(mig);
+      if (!s) return;
+      const u = Math.max(0, Math.min(1, (t - mig.t) / MIG_DUR));
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - u, 3);
+      if (s.pathEl) s.pathEl.style.strokeDashoffset = ((1 - eased) * s.len).toFixed(2) + 'px';
+      const reveal = u >= 1 ? 1 : Math.max(0, (u - 0.75) / 0.25);
+      setOpacity(s.head, 'svg', reveal.toFixed(2));
+      setOpacity(s.label, '.map-arrow-label', reveal.toFixed(2));
+      if (s.row) {
+        s.row.classList.toggle('drawn', u > 0);
+        s.row.classList.toggle('active', t >= mig.t && t < mig.t + 6);
+      }
+    });
   }
 
   function buildMapLegend() {
@@ -417,17 +489,19 @@
     });
   }
 
-  /* ---- map focus / auto-pan ---- */
-  let lastFocusT = -Infinity;
+  /* ---- map focus / auto-pan ----
+     Pure function of audio.currentTime: the active focus is whichever
+     MAP_FOCUS entry has the latest tStart <= t. flyTo is only invoked
+     when the active focus changes (forward OR backward), so scrubbing
+     reconciles correctly. */
+  let activeFocusT = NaN;
   function updateMapFocus(t) {
-    // find latest focus whose t <= currentTime
     let focus = null;
     for (let i = 0; i < MAP_FOCUS.length; i++) {
       if (MAP_FOCUS[i].t <= t + 0.1) focus = MAP_FOCUS[i];
-      else break;
     }
-    if (!focus || focus.t === lastFocusT) return;
-    lastFocusT = focus.t;
+    if (!focus || focus.t === activeFocusT) return;
+    activeFocusT = focus.t;
     const p = PLACES[focus.place];
     if (!p || !map) return;
     map.flyTo([p.lat, p.lon], focus.zoom, { duration: 2.4, easeLinearity: 0.4 });
@@ -436,91 +510,93 @@
   }
 
   /* =====================================================================
-     CAPTIONS + DITNAMES
+     CAPTIONS + DITNAMES — pure-state, derived from audio.currentTime.
+     Each entry implicitly owns the visible window [t, t + dur).
+     Each frame we pick the latest active entry and write it to the DOM,
+     only if the chosen text actually changed.
      ===================================================================== */
-  let captionTimer = null, ditTimer = null;
-  function showCaption(text) {
-    captionEl.innerHTML = text;
-    captionEl.classList.add('on');
-    if (captionTimer) clearTimeout(captionTimer);
-    captionTimer = setTimeout(() => captionEl.classList.remove('on'), 8500);
-  }
-  function showDitname(text) {
-    ditEl.textContent = text;
-    ditEl.classList.add('on');
-    if (ditTimer) clearTimeout(ditTimer);
-    ditTimer = setTimeout(() => ditEl.classList.remove('on'), 6500);
-  }
+  const CAP_DUR = 8.0;
+  const DIT_DUR = 6.5;
+  let lastCaptionText = '';
+  let lastDitText = '';
 
-  /* =====================================================================
-     CUE DISPATCHER
-     ===================================================================== */
-  const firedCue = new Set();
-  function fireMigrations(t) {
-    MAP_MIGRATIONS.forEach(mig => {
-      if (mig.t <= t + 0.05 && !firedCue.has('mig-' + mig.n)) {
-        firedCue.add('mig-' + mig.n);
-        drawMigration(mig);
-      }
-    });
-  }
-  function fireCaptions(t) {
-    CAPTIONS.forEach((c, i) => {
-      const key = 'cap-' + i;
-      if (c.t <= t + 0.05 && !firedCue.has(key)) {
-        firedCue.add(key);
-        if (c.kind === 'ditname') showDitname(c.text);
-        else                       showCaption(c.text);
-      }
-    });
-  }
-  function fireCardCaption(t) {
-    // when a "moment" or "convergence" card becomes current, surface its caption
+  function renderCaptions(t) {
+    let active = null;
+    for (let i = 0; i < CAPTIONS.length; i++) {
+      const c = CAPTIONS[i];
+      if (c.kind === 'ditname') continue;
+      const dur = c.dur || CAP_DUR;
+      if (c.t <= t && t < c.t + dur) active = c;
+    }
+    // moment / convergence / final cards also surface a caption while current
     const idx = currentCardIndex(t);
-    const c = CARDS[idx];
-    if (!c) return;
-    const key = 'cardcap-' + idx;
-    if (firedCue.has(key)) return;
-    if (c.kind === 'moment' || c.kind === 'convergence' || c.kind === 'final') {
-      firedCue.add(key);
-      showCaption(c.title + ' — ' + c.desc.split('. ')[0] + '.');
+    const card = CARDS[idx];
+    if (card && (card.kind === 'moment' || card.kind === 'convergence' || card.kind === 'final')) {
+      if (t >= card.t && t - card.t < CAP_DUR) {
+        const text = card.title + ' — ' + card.desc.split('. ')[0] + '.';
+        const cardCap = { t: card.t, text };
+        if (!active || cardCap.t > active.t) active = cardCap;
+      }
+    }
+    if (active) {
+      if (active.text !== lastCaptionText) {
+        captionEl.innerHTML = active.text;
+        lastCaptionText = active.text;
+      }
+      captionEl.classList.add('on');
+    } else {
+      if (lastCaptionText) { captionEl.classList.remove('on'); lastCaptionText = ''; }
     }
   }
 
-  function reconcileBackwards(t) {
-    // re-fire-able items: captions, dit names, card captions
-    [...firedCue].forEach(key => {
-      if (key.startsWith('cap-')) {
-        const i = +key.slice(4);
-        if (CAPTIONS[i] && CAPTIONS[i].t > t + 0.1) firedCue.delete(key);
-      } else if (key.startsWith('cardcap-')) {
-        const i = +key.slice(8);
-        if (CARDS[i] && CARDS[i].t > t + 0.1) firedCue.delete(key);
+  function renderDitnames(t) {
+    let active = null;
+    for (let i = 0; i < CAPTIONS.length; i++) {
+      const c = CAPTIONS[i];
+      if (c.kind !== 'ditname') continue;
+      const dur = c.dur || DIT_DUR;
+      if (c.t <= t && t < c.t + dur) active = c;
+    }
+    if (active) {
+      if (active.text !== lastDitText) {
+        ditEl.textContent = active.text;
+        lastDitText = active.text;
       }
-      // migrations don’t un-draw — they accumulate as the prompt requires
-    });
+      ditEl.classList.add('on');
+    } else {
+      if (lastDitText) { ditEl.classList.remove('on'); lastDitText = ''; }
+    }
   }
 
   /* =====================================================================
-     MAIN TICK
+     MAIN TICK — render(t) is idempotent.
+     Visual state at any moment is purely a function of audio.currentTime.
+     A throttled tab, a long pause, or a scrub backward all reconcile on
+     the very next render call. We also force a render whenever the tab
+     becomes visible again (Page Visibility API) so the catch-up is
+     immediate, not deferred to the next rAF tick.
      ===================================================================== */
-  function tick() {
-    const t = audio.currentTime || 0;
+  function render(t) {
     timeLabel.textContent = fmtTime(t) + ' / 26:25';
     const pct = audio.duration ? (t / audio.duration) * 100 : 0;
     scrubFill.style.width = pct + '%';
     scrubKnob.style.left = pct + '%';
-
     updateActRange(t);
-    updateEras(t);
+    updateHistoryStrip(t);
     updateCards(t);
     updateMapFocus(t);
-    fireMigrations(t);
-    fireCaptions(t);
-    fireCardCaption(t);
-
+    renderMigrations(t);
+    renderCaptions(t);
+    renderDitnames(t);
+  }
+  function tick() {
+    render(audio.currentTime || 0);
     requestAnimationFrame(tick);
   }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) render(audio.currentTime || 0);
+  });
+  audio.addEventListener('seeked', () => render(audio.currentTime || 0));
 
   /* =====================================================================
      CONTROLS
@@ -540,7 +616,6 @@
       const r = scrubBar.getBoundingClientRect();
       const k = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
       audio.currentTime = k * audio.duration;
-      reconcileBackwards(audio.currentTime);
     });
     let scrubbing = false;
     const start = () => { scrubbing = true; };
@@ -552,7 +627,6 @@
       const r = scrubBar.getBoundingClientRect();
       const k = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
       audio.currentTime = k * audio.duration;
-      reconcileBackwards(audio.currentTime);
     });
     window.addEventListener('keydown', e => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -565,11 +639,10 @@
       }
       if (e.code === 'ArrowLeft') {
         audio.currentTime = Math.max(0, audio.currentTime - 5);
-        reconcileBackwards(audio.currentTime);
       }
     });
     window.addEventListener('resize', () => {
-      layoutEras();
+      layoutHistoryStrip();
       lastCardIdx = -1;
       updateCards(audio.currentTime || 0);
       if (map) map.invalidateSize();
@@ -587,7 +660,7 @@
 
   buildLegend();
   buildActsNav();
-  buildEras();
+  buildHistoryStrip();
   buildCards();
   buildMapLegend();
   initMap();
@@ -596,7 +669,7 @@
   // initial frame
   updateActRange(0);
   updateCards(0);
-  layoutEras();
+  layoutHistoryStrip();
   // give Leaflet a tick to lay out
   setTimeout(() => map && map.invalidateSize(), 200);
 
