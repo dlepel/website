@@ -123,8 +123,19 @@
      Lane assignment is greedy: a 2-tier system (tier-1 / tier-2) plus
      simple overlap packing within each tier.
      ===================================================================== */
-  const hsNodes = [];     // { ev, node, x, w, lane }
+  /* HISTORY STRIP — smart label placement
+     For each event:
+       - measure pixel width (markers = 0, bands = end-start mapped)
+       - WIDE ≥ 100px: full label inside band
+       - MED  60–99px: short label inside band
+       - NARROW < 60px: mini label OUTSIDE on a tail lane, leader line back
+     Lanes:
+       0,1,2 (inside): three tiers, top→bottom, greedy-packed
+       -1   (outside top):  callout labels for narrow events
+   */
+  const hsNodes = [];     // { ev, node, leader?, callout?, isBand, lane, outside }
   let hsStageW = 0;
+  const HS_W_FULL = 100, HS_W_MED = 60;
   function yearToHSx(year) {
     return ((year - HS_YEAR_MIN) / (HS_YEAR_MAX - HS_YEAR_MIN)) * hsStageW;
   }
@@ -133,37 +144,27 @@
     hsAxis.innerHTML  = '';
     // sort by start
     const evs = HISTORY_EVENTS.slice().sort((a, b) => a.start - b.start);
-    // greedy lane packing per tier
-    const laneEnds = [[],[]];   // tier1 lanes, tier2 lanes -> end-year of last event
     evs.forEach(ev => {
-      const tier = ev.tier === 1 ? 0 : 1;
-      const end = (ev.end != null) ? ev.end : ev.start + 1;
-      const lanes = laneEnds[tier];
-      let lane = -1;
-      for (let i = 0; i < lanes.length; i++) {
-        if (lanes[i] + 2 <= ev.start) { lane = i; break; }
-      }
-      if (lane === -1) { lane = lanes.length; lanes.push(0); }
-      lanes[lane] = end;
-      // base lane offset: tier-1 at lanes 0..1; tier-2 below
-      const laneIdx = tier === 0 ? lane : (lane + 2);
-
-      const node = document.createElement('div');
       const isBand = ev.end != null;
+      const node = document.createElement('div');
       node.className = isBand ? 'hs-band' : 'hs-marker';
       if (ev.tier === 1) node.classList.add('tier-1');
-      node.style.setProperty('--lane', laneIdx);
-      node.dataset.label = ev.short || ev.label;
-      if (isBand) node.textContent = ev.short || ev.label;
-      else        node.setAttribute('data-label', ev.short || ev.label);
-      node.title = ev.label + (ev.end != null ? ` (${ev.start}\u2013${ev.end})` : ` (${ev.start})`);
+      node.dataset.evid = ev.label;
+      // attach hover tooltip
+      const tip = document.createElement('div');
+      tip.className = 'hs-tip';
+      tip.innerHTML =
+        `<div class="tip-title">${ev.label}</div>` +
+        `<div class="tip-date">${isBand ? ev.start + '\u2013' + ev.end : ev.start}</div>` +
+        (ev.note ? `<div class="tip-note">${ev.note}</div>` : '');
+      node.appendChild(tip);
       hsLanes.appendChild(node);
-      hsNodes.push({ ev, node, isBand });
+      hsNodes.push({ ev, node, isBand, tip });
     });
   }
   function layoutHistoryStrip() {
     hsStageW = hsLanes.clientWidth || 1;
-    // ticks every 50 yr; labels every 50; minor ticks every 10
+    // ticks
     hsAxis.innerHTML = '';
     for (let y = 1600; y <= 2030; y += 10) {
       const tick = document.createElement('div');
@@ -178,14 +179,98 @@
         hsAxis.appendChild(lab);
       }
     }
-    hsNodes.forEach(({ ev, node, isBand }) => {
-      const x = yearToHSx(ev.start);
-      if (isBand) {
-        const x2 = yearToHSx(ev.end);
-        node.style.setProperty('--x', x + 'px');
-        node.style.setProperty('--w', Math.max(8, x2 - x) + 'px');
+    // measure widths, decide labels + lanes
+    const items = hsNodes.map(h => {
+      const x  = yearToHSx(h.ev.start);
+      const x2 = h.isBand ? yearToHSx(h.ev.end) : x;
+      const w  = h.isBand ? Math.max(6, x2 - x) : 0;
+      // label decision
+      let labelText, mode;
+      if (h.isBand) {
+        if (w >= HS_W_FULL) { labelText = h.ev.short || h.ev.label; mode = 'inside-full'; }
+        else if (w >= 28)   { labelText = h.ev.mini || h.ev.short || h.ev.label; mode = 'inside-med'; }
+        else { labelText = h.ev.mini || h.ev.short || h.ev.label; mode = h.ev.tier === 1 ? 'callout' : 'hover-only'; }
       } else {
-        node.style.setProperty('--x', x + 'px');
+        labelText = h.ev.mini || h.ev.short || h.ev.label;
+        mode = h.ev.tier === 1 ? 'callout' : 'hover-only';
+      }
+      return { h, x, x2, w, labelText, mode };
+    });
+    // Inside-band greedy lane packing (inside lanes 0..2)
+    const insideLanes = [];  // each: lane -> rightmost x used
+    const calloutLanes = []; // outside lanes (above strip)
+    items.forEach(it => {
+      const { h, x, x2, w, labelText, mode } = it;
+      h.node.dataset.mode = mode;
+      h.node.classList.toggle('callout-mode', mode === 'callout');
+      // clear previous leader/callout children
+      const oldLead = h.node.querySelector('.hs-leader');
+      if (oldLead) oldLead.remove();
+      const oldCall = h.node.querySelector('.hs-callout');
+      if (oldCall) oldCall.remove();
+      const oldInside = h.node.querySelector('.hs-inside-label');
+      if (oldInside) oldInside.remove();
+
+      if (h.isBand) {
+        h.node.style.setProperty('--x', x + 'px');
+        h.node.style.setProperty('--w', w + 'px');
+      } else {
+        h.node.style.setProperty('--x', x + 'px');
+        h.node.style.setProperty('--w', '3px');
+      }
+
+        if (mode === 'inside-full' || mode === 'inside-med') {
+        // inside lane packing — find first lane whose last-used x + 4px gap is < this.x
+        let lane = -1;
+        for (let i = 0; i < insideLanes.length; i++) {
+          if (insideLanes[i] + 4 <= x) { lane = i; break; }
+        }
+        if (lane === -1 && insideLanes.length < 3) { lane = insideLanes.length; insideLanes.push(0); }
+        if (lane === -1) lane = 0; // fallback overlap
+        insideLanes[lane] = x2;
+        h.node.style.setProperty('--lane', lane);
+        const span = document.createElement('span');
+        span.className = 'hs-inside-label';
+        span.textContent = labelText;
+        h.node.appendChild(span);
+      } else if (mode === 'callout') {
+        // callout: anchor band/marker at a baseline lane (lane 1 default), label above
+        // Choose a callout lane with horizontal packing on the strip's top "antenna" rows
+        // Estimate label width — rough: 6.5px per char + 10 padding, min 60
+        const approxLabelW = Math.max(48, labelText.length * 6.4 + 14);
+        const labelLeft = Math.max(0, x + w / 2 - approxLabelW / 2);
+        const labelRight = labelLeft + approxLabelW;
+        let lane = -1;
+        for (let i = 0; i < calloutLanes.length; i++) {
+          if (calloutLanes[i] + 4 <= labelLeft) { lane = i; break; }
+        }
+        if (lane === -1) { lane = calloutLanes.length; calloutLanes.push(0); }
+        calloutLanes[lane] = labelRight;
+
+        // anchor lane inside the strip — bands sit on inside lane 0 if free, else 1
+        // simplest: put narrow bands/markers on lane 1 (middle) so leaders go up
+        h.node.style.setProperty('--lane', 1);
+
+        const callout = document.createElement('div');
+        callout.className = 'hs-callout';
+        callout.style.setProperty('--ax', (x + w / 2) + 'px');
+        callout.style.setProperty('--cx', (labelLeft + approxLabelW / 2) + 'px');
+        callout.style.setProperty('--clane', lane);
+        callout.style.setProperty('--clw', approxLabelW + 'px');
+        callout.innerHTML = `
+          <svg class="hs-leader" preserveAspectRatio="none"></svg>
+          <span class="hs-callout-label">${labelText}</span>`;
+        // append to lane container, not node, so leader line spans absolute coords
+        hsLanes.appendChild(callout);
+        h.callout = callout;
+        // draw leader path
+        const svg = callout.querySelector('.hs-leader');
+        // svg covers from anchor to label box; we use viewBox 0..100, simple line
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.innerHTML = `<path d="M 50 100 L 50 60 L ${50 + ((labelLeft + approxLabelW/2) - (x + w/2)) * 0} 0" stroke="rgba(212,160,74,0.6)" stroke-width="1" fill="none"/>`;
+      } else {
+        // hover-only: no callout label, just anchor on lane 1
+        h.node.style.setProperty('--lane', 1);
       }
     });
   }
