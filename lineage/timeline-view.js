@@ -291,7 +291,7 @@
   function updateHistoryStrip(t) {
     const year = timeToYear(t);
     // playhead position
-    hsPlayhead.style.left = (16 + yearToHSx(year)) + 'px';
+    hsPlayhead.style.transform = 'translateX(' + (16 + yearToHSx(year)) + 'px)';
     // band/marker states — fully derived
     hsNodes.forEach(({ ev, node, isBand }) => {
       const inside = year >= ev.start - 0.5 && (isBand ? year <= ev.end + 0.5 : year <= ev.start + 0.5);
@@ -589,7 +589,11 @@
     activeFocusT = focus.t;
     const p = PLACES[focus.place];
     if (!p || !map) return;
-    map.flyTo([p.lat, p.lon], focus.zoom, { duration: 2.4, easeLinearity: 0.4 });
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      map.setView([p.lat, p.lon], focus.zoom);
+    } else {
+      map.flyTo([p.lat, p.lon], focus.zoom, { duration: 2.4, easeLinearity: 0.4 });
+    }
     setActivePlace(focus.place);
     mtCoord.textContent = `${p.name} · ${focus.desc}`;
   }
@@ -654,6 +658,87 @@
   }
 
   /* =====================================================================
+     TRANSCRIPT — narration text from the .srt; synced highlight + clickable.
+     Derived purely from audio.currentTime, so it cannot desync.
+     ===================================================================== */
+  const transcriptPanel = $('transcript-panel');
+  const transcriptBody  = $('transcript-body');
+  const transcriptBtn   = $('transcript-btn');
+  const transcriptClose = $('transcript-close');
+  let transcriptCues = [];
+  let transcriptOpen = false;
+  let lastTranscriptIdx = -1;
+
+  function parseSRT(text) {
+    const cues = [];
+    text.replace(/\r/g, '').split(/\n\n+/).forEach(block => {
+      const lines = block.split('\n').filter(l => l.trim() !== '');
+      if (lines.length < 2) return;
+      const m = lines[1].match(/(\d\d):(\d\d):(\d\d)[,.](\d\d\d)\s*-->/);
+      if (!m) return;
+      const start = (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]) + (+m[4]) / 1000;
+      cues.push({ start: start, text: lines.slice(2).join(' ').trim() });
+    });
+    return cues;
+  }
+
+  function buildTranscript() {
+    fetch('uploads/lineage-transcript.srt')
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(txt => {
+        transcriptCues = parseSRT(txt);
+        transcriptBody.innerHTML = '';
+        transcriptCues.forEach((c, i) => {
+          const b = document.createElement('button');
+          b.className = 'transcript-line';
+          b.dataset.i = i;
+          b.innerHTML = '<span class="tl-time">' + fmtTime(c.start) + '</span>' + c.text;
+          b.addEventListener('click', () => {
+            audio.currentTime = c.start + 0.05;
+            if (audio.paused) audio.play();
+          });
+          transcriptBody.appendChild(b);
+        });
+      })
+      .catch(() => {
+        transcriptBody.innerHTML =
+          '<p style="font-family:var(--sans);font-size:12px;color:var(--paper-faint)">Transcript unavailable.</p>';
+      });
+  }
+
+  function renderTranscript(t) {
+    if (!transcriptCues.length) return;
+    let idx = -1;
+    for (let i = 0; i < transcriptCues.length; i++) {
+      if (t >= transcriptCues[i].start) idx = i; else break;
+    }
+    if (idx === lastTranscriptIdx) return;
+    lastTranscriptIdx = idx;
+    const lines = transcriptBody.children;
+    for (let i = 0; i < lines.length; i++) {
+      lines[i].classList.toggle('active', i === idx);
+    }
+    if (transcriptOpen && idx >= 0 && lines[idx]) {
+      lines[idx].scrollIntoView({
+        block: 'center',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      });
+    }
+  }
+
+  function toggleTranscript(open) {
+    transcriptOpen = (open === undefined) ? !transcriptOpen : !!open;
+    transcriptPanel.classList.toggle('open', transcriptOpen);
+    transcriptPanel.setAttribute('aria-hidden', String(!transcriptOpen));
+    transcriptBtn.setAttribute('aria-pressed', String(transcriptOpen));
+    transcriptBtn.setAttribute('aria-label', transcriptOpen ? 'Hide transcript' : 'Show transcript');
+    if (transcriptOpen) {
+      lastTranscriptIdx = -1;
+      renderTranscript(audio.currentTime || 0);
+    }
+  }
+
+  /* =====================================================================
      MAIN TICK — render(t) is idempotent.
      Visual state at any moment is purely a function of audio.currentTime.
      A throttled tab, a long pause, or a scrub backward all reconcile on
@@ -661,11 +746,21 @@
      becomes visible again (Page Visibility API) so the catch-up is
      immediate, not deferred to the next rAF tick.
      ===================================================================== */
+  let scrubBarW = 0;
+  let lastTimeText = '';
   function render(t) {
-    timeLabel.textContent = fmtTime(t) + ' / 26:25';
-    const pct = audio.duration ? (t / audio.duration) * 100 : 0;
-    scrubFill.style.width = pct + '%';
-    scrubKnob.style.left = pct + '%';
+    const tt = fmtTime(t) + ' / 26:25';
+    if (tt !== lastTimeText) {
+      lastTimeText = tt;
+      timeLabel.textContent = tt;
+      const pctI = audio.duration ? Math.round((t / audio.duration) * 100) : 0;
+      scrubBar.setAttribute('aria-valuenow', pctI);
+      scrubBar.setAttribute('aria-valuetext', fmtTime(t) + ' of 26:25');
+    }
+    // scrubber + playhead use transform (compositor-only) instead of width/left
+    const frac = audio.duration ? (t / audio.duration) : 0;
+    scrubFill.style.transform = 'scaleX(' + frac + ')';
+    scrubKnob.style.transform = 'translateX(' + (frac * scrubBarW) + 'px)';
     updateActRange(t);
     updateHistoryStrip(t);
     updateCards(t);
@@ -673,10 +768,17 @@
     renderMigrations(t);
     renderCaptions(t);
     renderDitnames(t);
+    renderTranscript(t);
   }
+  let rafId = null;
   function tick() {
     render(audio.currentTime || 0);
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
+  }
+  function startLoop() { if (rafId === null) rafId = requestAnimationFrame(tick); }
+  function stopLoop() {
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+    render(audio.currentTime || 0);   // settle on a final, correct frame
   }
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) render(audio.currentTime || 0);
@@ -690,11 +792,20 @@
     playBtn.addEventListener('click', () => {
       if (audio.paused) audio.play(); else audio.pause();
     });
-    audio.addEventListener('play',  () => playBtn.classList.add('playing'));
-    audio.addEventListener('pause', () => playBtn.classList.remove('playing'));
+    audio.addEventListener('play',  () => {
+      playBtn.classList.add('playing');
+      playBtn.setAttribute('aria-pressed', 'true');
+      startLoop();
+    });
+    audio.addEventListener('pause', () => {
+      playBtn.classList.remove('playing');
+      playBtn.setAttribute('aria-pressed', 'false');
+      stopLoop();
+    });
     muteBtn.addEventListener('click', () => {
       audio.muted = !audio.muted;
       muteBtn.classList.toggle('muted', audio.muted);
+      muteBtn.setAttribute('aria-pressed', String(audio.muted));
     });
     scrubBar.addEventListener('click', e => {
       if (!audio.duration) return;
@@ -725,13 +836,25 @@
       if (e.code === 'ArrowLeft') {
         audio.currentTime = Math.max(0, audio.currentTime - 5);
       }
+      if (e.code === 'Home') {
+        e.preventDefault();
+        audio.currentTime = 0;
+      }
+      if (e.code === 'End') {
+        e.preventDefault();
+        audio.currentTime = Math.max(0, (audio.duration || 1585) - 1);
+      }
     });
     window.addEventListener('resize', () => {
       layoutHistoryStrip();
       lastCardIdx = -1;
+      scrubBarW = scrubBar.clientWidth;
       updateCards(audio.currentTime || 0);
       if (map) map.invalidateSize();
     });
+    scrubBarW = scrubBar.clientWidth;
+    transcriptBtn.addEventListener('click', () => toggleTranscript());
+    transcriptClose.addEventListener('click', () => toggleTranscript(false));
   }
 
   /* =====================================================================
@@ -748,6 +871,7 @@
   buildHistoryStrip();
   buildCards();
   buildMapLegend();
+  buildTranscript();
   initMap();
   wireControls();
 
@@ -758,5 +882,6 @@
   // give Leaflet a tick to lay out
   setTimeout(() => map && map.invalidateSize(), 200);
 
-  tick();
+  // render one static frame; the rAF loop starts on play and stops on pause
+  render(audio.currentTime || 0);
 })();
