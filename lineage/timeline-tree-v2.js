@@ -41,7 +41,7 @@
   /* =====================================================================
      1. CONFIG  — every magic number lives here
      ===================================================================== */
-  var CANVAS = { w: 1780, h: 2080 };
+  var CANVAS = { w: 2000, h: 2080 };
 
   var LAYOUT = {
     /* year -> y mapping for the year-driven (ancestral) zone */
@@ -49,7 +49,7 @@
     yTop:     80,  yBot:    1180,
 
     /* horizontal column x positions (merging pairs are adjacent) */
-    colX: { C: 260, D: 660, B: 1090, A: 1480 },
+    colX: { E: 110, C: 510, D: 910, B: 1310, A: 1710 },
 
     /* fixed rows for the trunk zone */
     rowUnion: 1240, rowChild: 1320, rowFinal: 1380, rowDesc: 1440,
@@ -87,7 +87,7 @@
     rulerDur:   12,     /* s — ruler draws over this many seconds */
 
     /* camera */
-    zoomBody:   1.25,   /* scale during the body of the piece — wider view */
+    zoomBody:   1.45,   /* scale during the body of the piece — tighter for readability with wider canvas */
     zoomEnd:    1.00,   /* scale at the held closing frame */
     endStart:   1069,    /* s — closing pull-back begins */
     endDone:    1134,    /* s — whole tree framed; held from here */
