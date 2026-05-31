@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=31">
+  <link rel="stylesheet" href="lineage-v2.css?v=32">
 </head>
 <body>
 
@@ -23,6 +23,7 @@
 
   <header class="topbar">
     <div class="brand">Lineage · <em>Four ancestral lines, four countries, 422 years</em></div>
+    <div class="act-title" id="act-title-top">Opening</div>
     <nav class="legend" aria-label="Lineage legend">
       <span class="swatch" style="--c: var(--c-betourne);">Bétourné</span>
       <span class="swatch" style="--c: var(--c-heppell);">Heppell · Lepel</span>
@@ -94,7 +95,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=31"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=32"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -102,9 +103,9 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=31"></script>
-<script src="timeline-tree-v2.js?v=31"></script>
-<script src="timeline-captions-v2.js?v=31"></script>
+<script src="timeline-data-v2.js?v=32"></script>
+<script src="timeline-tree-v2.js?v=32"></script>
+<script src="timeline-captions-v2.js?v=32"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -114,6 +115,7 @@
   var stage   = document.getElementById('stage');
   var caption = document.getElementById('caption');
   var actEl   = document.getElementById('act-readout');
+  var actTitleTopEl = document.getElementById('act-title-top');
   var metaEl  = document.getElementById('meta');
   var scrub   = document.getElementById('scrub');
   var scrubFill = document.getElementById('scrub-fill');
@@ -252,13 +254,14 @@
 
   function updateAct(t) {
     var a = 'Opening';
-    if (t >= 230) a = 'Act One · European Origins';
-    if (t >= 510) a = 'Act Two · The Crossings';
-    if (t >= 615) a = 'Act Three · Revolution and Migration';
-    if (t >= 730) a = 'Act Four · The Napierville Convergence';
-    if (t >= 840) a = 'Act Five · Convergence in the Berkshires';
-    if (t >= 870) a = 'Closing';
+    if (t >= 150)  a = 'Act One · European Origins · 1604-1685';
+    if (t >= 585)  a = 'Act Two · The Crossings · 1665-1763';
+    if (t >= 1110) a = 'Act Three · Revolution, Migration & the Lauzon Lepages · 1763-1865';
+    if (t >= 1530) a = 'Act Four · Convergence at Lévis & Napierville · 1865-1900';
+    if (t >= 2095) a = 'Act Five · Convergence in the Berkshires · 1900-2026';
+    if (t >= 2575) a = 'Closing · Bill C-3';
     actEl.textContent = a;
+    if (actTitleTopEl) actTitleTopEl.textContent = a;
   }
 
   function fmtTime(s) {

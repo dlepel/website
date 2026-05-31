@@ -736,3 +736,19 @@ button {
 @media (max-width: 900px) {
   .map-inset { width: 320px; height: 240px; bottom: 96px; right: 14px; }
 }
+
+/* ========================= 12. Act title (topbar) ============================ */
+.act-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--paper-soft);
+  letter-spacing: 0.03em;
+  padding: 0 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.5s ease;
+}

@@ -41,7 +41,7 @@
   /* =====================================================================
      1. CONFIG  — every magic number lives here
      ===================================================================== */
-  var CANVAS = { w: 2000, h: 2080 };
+  var CANVAS = { w: 3200, h: 2080 };
 
   var LAYOUT = {
     /* year -> y mapping for the year-driven (ancestral) zone */
@@ -49,7 +49,7 @@
     yTop:     80,  yBot:    1180,
 
     /* horizontal column x positions (merging pairs are adjacent) */
-    colX: { E: 110, C: 510, D: 910, B: 1310, A: 1710 },
+    colX: { E: 200, C: 900, D: 1600, B: 2300, A: 3000 },
 
     /* fixed rows for the trunk zone */
     rowUnion: 1240, rowChild: 1320, rowFinal: 1380, rowDesc: 1440,
@@ -337,7 +337,7 @@
   function buildFrame() {
     /* a thin double-rule cartouche around the tree zone */
     var g = el('g', { 'class': 'tree-frame' });
-    var m = 32, top = m, bot = LAYOUT.yBot + 240;  /* leave room under trunk */
+    var m = 24, top = m, bot = LAYOUT.yBot + 240;  /* leave room under trunk */
     g.appendChild(el('rect', { x: m, y: top,
       width: CANVAS.w - 2*m, height: bot - top,
       fill: 'none', 'class': 'tree-frame-outer' }));
