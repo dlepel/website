@@ -145,6 +145,9 @@
       name: 'Charles Bétourné',
       sub: 'bap. 1604 Picardy · d. 1660 Rouen',
       parents: ['C14'] },
+    { id: 'SP-C13', line: 'C', gen: 13, year: 1634, t: 241.44, kind: 'spouse',
+      name: 'Marguerite Bétourné',
+      sub: 'm. 30 May 1634 · probably his cousin', spouseOf: 'C13' },
     { id: 'C12', line: 'C', gen: 12, year: 1635, t: 622.32, kind: 'person',
       name: 'Adrien Bétourné dit Laviolette',
       sub: 'bap. 1635 Picardy · Carignan-Salières 1665',
@@ -241,9 +244,12 @@
       name: 'Catherine Huard',
       sub: 'm. 1805 Lauzon', spouseOf: 'E10' },
     { id: 'E-COUTURE', line: 'E', gen: 10, year: 1808, t: 1302.62, kind: 'founder',
-      name: 'Joseph Couture & Marie Josèphe Blais',
-      sub: 'm. 1808 St-Henri-de-Lauzon · Maria\'s g-g-grandparents (Couture side)',
+      name: 'Joseph Couture',
+      sub: 'm. 1808 St-Henri-de-Lauzon · Maria\'s g-g-grandfather (Couture side)',
       parents: [] },
+    { id: 'SP-E-COUTURE', line: 'E', gen: 10, year: 1808, t: 1302.62, kind: 'spouse',
+      name: 'Marie Josèphe Blais',
+      sub: 'St-Henri-de-Lauzon', spouseOf: 'E-COUTURE' },
     { id: 'E9', line: 'E', gen: 9, year: 1812, t: 1293.88, kind: 'person',
       name: 'Joseph Lepage Sr.',
       sub: 'scieur de long · Lauzon · m. 17 Feb 1846 (illiterate)',
@@ -528,17 +534,14 @@
      camera-walk anchor list. Re-lock .t to the final audio later.
      ===================================================================== */
   var BEATS = [
-    /* Opening */
     { t: 0.00,    narration: 'Every living person is the survivor of an unbroken line.', focus: null },
     { t: 32.18,   narration: 'Now and then, a few of those branches can still be followed.', focus: null },
     { t: 54.52,   narration: 'Four lines of descent, across four countries and more than four centuries.', focus: 'RULER' },
     { t: 65.56,   narration: 'It begins in 1604, in a village in the north of France.', focus: 'RULER' },
     { t: 93.16,   narration: 'And then, four separate families become one.', focus: 'GEN1-D' },
-
-    /* Act One — European Origins, 1604 to 1685 */
     { t: 168.60,   narration: 'Jehan Bétourné carried his newborn son to the parish church to be baptised.', focus: 'C14' },
     { t: 175.88,   narration: 'The child was named Charles Bétourné.',                                       focus: 'C13' },
-    { t: 439.66,   narration: 'Married Marguerite. Died at Rouen in 1660.',                                  focus: 'C13' },
+    { t: 241.44,   narration: 'Married Marguerite. Died at Rouen in 1660.',                                  focus: 'SP-C13' },
     { t: 308.56,  narration: 'In Clermont-Ferrand, a Catholic family named Mangot worshipped at Saint-Pierre.', focus: 'B12' },
     { t: 314.94,  narration: 'The deepest of them is Mathieu Mangot.',                                      focus: 'B12' },
     { t: 326.90,  narration: 'They were carpenters. The family stayed for four documented generations.',    focus: 'B11' },
@@ -549,45 +552,35 @@
     { t: 494.32,  narration: 'In Saintonge, Pierre Barbeau and Madeleine Babin were raising a family.',    focus: 'A11' },
     { t: 509.56,  narration: 'In 1666 they had a son named Jean.',                                          focus: 'A10' },
     { t: 525.30,  narration: 'These four European families would all eventually send descendants to one mill town.', focus: null },
-
-    /* Act Two — The Crossings, 1665 to 1763 */
     { t: 601.88,  narration: 'The Carignan-Salières Regiment disembarked at Quebec City.',                  focus: 'W1665' },
     { t: 619.90,  narration: 'Among the soldiers was Adrien Bétourné.',                                     focus: 'C12' },
     { t: 646.04,  narration: 'Campaigns against the Mohawk. Disbanded 1668. Married Marie Deshaies 1669.', focus: 'C12' },
     { t: 730.36,  narration: 'Twenty years later, a second soldier crossed.',                               focus: 'RULER' },
-    { t: 752.92,  narration: 'Louis XIV revoked the Edict of Nantes.',                                      focus: 'W1685-edit' },
     { t: 744.72,  narration: 'Troupes de la marine sailed with the marquis de Denonville.',                 focus: 'W1685-denon' },
+    { t: 752.92,  narration: 'Louis XIV revoked the Edict of Nantes.',                                      focus: 'W1685-edit' },
     { t: 780.34,  narration: 'He was Jean Barbeau, the merchant’s son. Nickname: Boisdoré.',           focus: 'A10' },
     { t: 823.92,  narration: 'Married Marie Françoise de Noyon, 18 November 1686, Boucherville.',           focus: 'A10' },
     { t: 851.48,  narration: 'Through their son Gabriel, baptised 1694; Gabriel’s son Jean-Baptiste, 1725.', focus: 'A9' },
-    { t: 1027.68,  narration: 'Pierre de la Voye dit Le Picard had crossed in 1656.',                        focus: 'SP-LAVOIE-PICARD' },
     { t: 935.62,  narration: 'In Auvergne, the Mangot carpenters became Mongeau dit Clermont.',             focus: 'B8' },
     { t: 999.42,  narration: 'The Heppells crossed. John Jacob Jean Heppell born 1750, New Jersey.',       focus: 'D7' },
     { t: 1015.18,  narration: 'Joseph Barbeau dit Boisdoré baptised at Saint-Constant in 1757.',             focus: 'A7' },
-    { t: 1080.48,  narration: 'Six years old when the Treaty of Paris handed New France to Britain.',        focus: 'W1763' },
-
-    /* Act Three — Revolution and Migration, 1763 to 1865 */
-    { t: 1143.72,  narration: 'In 1775 the American Revolution broke out.',                                  focus: 'W1775' },
     { t: 1024.82,  narration: 'John Jacob Heppell married Agnès Lavoie 1790, Rimouski.',                    focus: 'SP-AGNES' },
+    { t: 1027.68,  narration: 'Pierre de la Voye dit Le Picard had crossed in 1656.',                        focus: 'SP-LAVOIE-PICARD' },
+    { t: 1080.48,  narration: 'Six years old when the Treaty of Paris handed New France to Britain.',        focus: 'W1763' },
+    { t: 1143.72,  narration: 'In 1775 the American Revolution broke out.',                                  focus: 'W1775' },
     { t: 1224.62,  narration: 'The surname slid from Heppell to Epelle to Hepel.',                           focus: 'D7' },
     { t: 1427.40,  narration: 'François Régis Barbeau born at Saint-Constant in 1804. M. Catherine Forgues 1828.', focus: 'A6' },
     { t: 1488.00,  narration: 'By the early 1800s the old nicknames were fading.',                           focus: 'A7' },
-
-    /* Act Four — Napierville Convergence, 1865 to 1900 */
-    { t: 1792.72,  narration: 'At Saint-Édouard de Napierville, three lines were converging.',               focus: 'C5' },
     { t: 1769.58,  narration: 'Magloire Barbeau married Marie Blais, 1865.',                                 focus: 'A5' },
     { t: 1788.52,  narration: 'Joseph Wilfred Barbeau baptised 1870. The documentary anchor for Bill C-3.',  focus: 'A4' },
+    { t: 1792.72,  narration: 'At Saint-Édouard de Napierville, three lines were converging.',               focus: 'C5' },
     { t: 1841.14,  narration: 'Évariste Mongeau dit Clermont married Élise Boulerisse, 1878.',               focus: 'B5' },
     { t: 1929.14,  narration: 'The mills called. Roughly 900,000 French-Canadians left Quebec.',             focus: 'W1840-1930' },
-
-    /* Act Five — Convergence in the Berkshires, 1900 to 2026 */
     { t: 2104.34,  narration: 'All four lines were converging on the Berkshire Hills.',                      focus: null },
-    { t: 2267.22,  narration: 'Ernest Barbeau and Regina Clermont married 1931.',                            focus: 'UN-AB' },
     { t: 2216.22,  narration: 'Rita Betourney born 1914. Alcide Lepel born 1911. They married.',             focus: 'UN-CD' },
+    { t: 2267.22,  narration: 'Ernest Barbeau and Regina Clermont married 1931.',                            focus: 'UN-AB' },
     { t: 2494.00,  narration: 'Ronald Joseph Lepel married Lorraine Irene Barbeau. The four lines became one.', focus: 'UN-FINAL' },
     { t: 2521.22,  narration: 'Daniel and Renee grew up in North Adams. Daniel moved to Albany.',            focus: 'GEN1-D' },
-
-    /* Closing */
     { t: 2580.30,  narration: 'Bill C-3 took effect, 15 December 2025.',                                     focus: 'W2025' },
     { t: 2603.40,  narration: 'The research reached back four hundred and twenty-two years.',                focus: 'OVERVIEW' },
     { t: 2634.80,  narration: 'Traced the Barbeau line back to a merchant’s house in Pons.',            focus: 'A11', highlight: 'A' },
