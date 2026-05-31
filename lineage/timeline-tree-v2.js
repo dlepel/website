@@ -68,7 +68,7 @@
     minGap: 86,
 
     /* time ruler zone (anchored, no camera transform) */
-    rulerXPad: 120,                /* left/right padding from canvas edge */
+    rulerXPad: 50,                /* left/right padding from canvas edge */
     rulerY:    2010,               /* main rule line */
     rulerTickH:    8,
     rulerMajorTickH: 14,
@@ -87,7 +87,7 @@
     rulerDur:   12,     /* s — ruler draws over this many seconds */
 
     /* camera */
-    zoomBody:   1.45,   /* scale during the body of the piece — tighter for readability with wider canvas */
+    zoomBody:   1.70,   /* scale during the body of the piece — tighter for readability with wider canvas */
     zoomEnd:    1.00,   /* scale at the held closing frame */
     endStart:   1069,    /* s — closing pull-back begins */
     endDone:    1134,    /* s — whole tree framed; held from here */
@@ -96,7 +96,7 @@
     gen1DimOpacity: 0.22,
 
     /* map-inset surface window: hold until tStart + tHold, then slide out */
-    mapSlideDur: 0.42
+    mapSlideDur: 1.2
   };
 
   /* =====================================================================
@@ -274,7 +274,7 @@
       var firstByYear = col2.slice().sort(function (a, b) { return a.year - b.year; })[0];
       var firstByT    = col2.slice().sort(function (a, b) { return a.t - b.t; })[0];
       ln.x = LAYOUT.colX[ln.id];
-      ln.y = firstByYear ? firstByYear.y - LAYOUT.headerDY : LAYOUT.yTop - LAYOUT.headerDY;
+      ln.y = LAYOUT.yTop - LAYOUT.headerDY;
       ln.firstT = firstByT ? firstByT.t : 0;
     }
 

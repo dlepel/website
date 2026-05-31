@@ -312,3 +312,6 @@ window.SENT = [
   { t: 2828.64, text: "Rita also had a brother, J. George Betourney, who married Lucille Collings in 1940; their son George Norman Betourney remains in North Adams to this day." },
   { t: 2842.68, text: "The four lines became one in 1962, but the families that married and lived around them were never countable on four fingers." },
 ];
+
+/* Alias for the page script which expects LINEAGE_SENTENCES. */
+window.LINEAGE_SENTENCES = window.SENT;
