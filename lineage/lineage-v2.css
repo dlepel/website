@@ -487,9 +487,10 @@ button {
   background: var(--bg-2);
 }
 
-/* Sepia tile filter */
+/* CartoDB Voyager tile filter — keep color and borders visible, sit
+   comfortably against the dark UI without going pure sepia. */
 .map-inset .leaflet-tile-pane {
-  filter: saturate(1.15) contrast(1.05) brightness(0.95);
+  filter: saturate(0.88) contrast(1.04) brightness(0.94);
 }
 
 .map-inset-label {
@@ -707,8 +708,8 @@ button {
 }
 
 .map-inset .leaflet-tile-pane {
-  /* Reduced sepia, higher brightness, sharp contrast for max readability */
-  filter: sepia(0.25) saturate(0.90) brightness(1.00) contrast(1.15) hue-rotate(-3deg);
+  /* Voyager already has soft borders and labels — light touch only */
+  filter: saturate(0.90) contrast(1.08) brightness(0.97);
 }
 
 .map-inset-label {
@@ -747,8 +748,232 @@ button {
   color: var(--paper-soft);
   letter-spacing: 0.03em;
   padding: 0 24px;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: opacity 0.5s ease;
+}
+
+/* ========================= 13. Left Sidebar (v=38) ==========================
+   Fixed left column showing a vertical year axis, world-event dots, and a
+   playhead chevron that tracks the audio. Lives outside the SVG so it
+   stays put while the canvas zooms and pans. Restrained color strategy:
+   tinted neutral background, gold for the playhead, line colors only on
+   the small line-stripe column. */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 50px;            /* sits below the topbar */
+  bottom: 70px;         /* sits above the transport */
+  width: 220px;
+  z-index: 80;
+  background: linear-gradient(180deg,
+    oklch(17% 0.012 65) 0%,
+    oklch(15% 0.012 65) 100%);
+  border-right: 1px solid rgba(243, 231, 204, 0.08);
+  font-family: var(--sans);
+  color: var(--paper-soft);
+  overflow: hidden;
+  padding: 18px 14px 22px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 14px;
+}
+
+.year-axis {
+  position: relative;
+  flex: 1;
+  margin-left: 38px;    /* leave room for year labels on the right of ticks */
+  border-left: 1px solid rgba(243, 231, 204, 0.10);
+}
+
+.year-tick {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  pointer-events: none;
+}
+
+.year-tick-minor {
+  width: 6px;
+  background: rgba(243, 231, 204, 0.18);
+}
+
+.year-tick-major {
+  width: 12px;
+  background: rgba(243, 231, 204, 0.45);
+}
+
+.year-tick-major .year-label {
+  position: absolute;
+  left: 18px;
+  top: -7px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--paper-soft);
+  white-space: nowrap;
+}
+
+/* World event dots — a narrow column to the LEFT of the year axis */
+.world-dots {
+  position: absolute;
+  left: 18px;
+  top: 32px;            /* clears the eyebrow */
+  bottom: 22px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.world-dot {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-gold-soft);
+  opacity: 0.55;
+  box-shadow: 0 0 0 2px oklch(15% 0.012 65);
+  transition: opacity var(--dur-fast) var(--easing-out),
+              transform var(--dur-fast) var(--easing-out);
+}
+
+.world-dot:hover {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+/* Playhead chevron — slides smoothly via JS (top: %). The chevron points
+   right, label sits beside it. */
+.playhead {
+  position: absolute;
+  left: 50px;
+  top: 0;
+  height: 0;
+  width: calc(100% - 60px);
+  pointer-events: none;
+  transition: top 240ms cubic-bezier(0.16, 1, 0.30, 1);
+  z-index: 5;
+}
+
+.playhead::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: calc(100% - 24px);
+  height: 1px;
+  background: linear-gradient(90deg,
+    var(--c-gold) 0%,
+    rgba(212, 160, 74, 0.35) 70%,
+    transparent 100%);
+  transform: translateY(-50%);
+}
+
+.playhead-arrow {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--c-gold);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 0 6px rgba(212, 160, 74, 0.55));
+}
+
+.playhead-label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(15, 12, 8, 0.85);
+  color: var(--c-gold);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid rgba(212, 160, 74, 0.35);
+}
+
+/* Push the stage right so it doesn't sit underneath the sidebar */
+.stage {
+  padding-left: 240px;
+}
+
+/* Map-inset also shifts so it doesn't sit over the sidebar's right edge */
+.map-inset { left: auto; }  /* keep existing right-anchored position */
+
+@media (max-width: 1100px) {
+  .sidebar { width: 180px; }
+  .stage { padding-left: 200px; }
+  .year-tick-major .year-label { font-size: 9.5px; }
+}
+
+@media (max-width: 800px) {
+  /* On narrow viewports collapse the sidebar to a thin year strip */
+  .sidebar { width: 56px; padding: 14px 6px 18px 6px; }
+  .sidebar-eyebrow { display: none; }
+  .year-axis { margin-left: 14px; }
+  .year-tick-major .year-label { display: none; }
+  .world-dots { left: 4px; }
+  .playhead { left: 18px; width: calc(100% - 22px); }
+  .playhead-label { font-size: 9.5px; padding: 1px 4px; }
+  .stage { padding-left: 68px; }
+}
+
+/* ========================= 14. Map dot breathing (E4) ====================== */
+@keyframes dot-breathe {
+  0%, 100% { opacity: 1.0;  transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(1.45); }
+}
+
+.leaflet-overlay-pane svg .breathing-dot {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: dot-breathe 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaflet-overlay-pane svg .breathing-dot { animation: none; }
+}
+
+/* ========================= 15. Focused-node ring (E3) ====================== */
+/* Subtle gold ring around the node the current beat is focused on. The pulse
+   itself is JS-driven; this is the static affordance underneath. */
+.tree-node.is-focused .node-card,
+.tree-node.is-focused rect:first-of-type {
+  stroke-width: 2.2px;
+  filter: drop-shadow(0 0 8px rgba(212, 160, 74, 0.32));
+}
+
+/* ========================= 16. Per-act background tint (E7) ================
+   Very low-chroma OKLCH shifts. Each Act gets a hue that nudges the bg-0
+   colour by a degree or two — enough to feel a chapter change, not enough
+   to be loud. Transitions over 3.6s so the shift is barely perceptible. */
+body[data-act="opening"]  { --bg-0: oklch(15.0% 0.012 65); }
+body[data-act="act-one"]  { --bg-0: oklch(15.5% 0.014 78); }
+body[data-act="act-two"]  { --bg-0: oklch(15.5% 0.014 50); }
+body[data-act="act-three"]{ --bg-0: oklch(15.0% 0.013 38); }
+body[data-act="act-four"] { --bg-0: oklch(15.0% 0.014 92); }
+body[data-act="act-five"] { --bg-0: oklch(15.5% 0.014 120); }
+body[data-act="closing"]  { --bg-0: oklch(16.0% 0.014 80); }
+
+html, body {
+  transition: background 3.6s ease;
+}
+.stage {
+  transition: background 3.6s ease;
 }

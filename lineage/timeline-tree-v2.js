@@ -53,8 +53,8 @@
 
     /* fixed rows for the trunk zone */
     rowUnion: 1240, rowChild: 1320, rowFinal: 1380, rowDesc: 1440,
-    rowSpouseOffsetX: 118,   /* spouse sits this far right of spouseOf */
-    rowSpouseOffsetY: 70,    /* and this far below */
+    rowSpouseOffsetX: 240,   /* spouse sits this far right of spouseOf */
+    rowSpouseOffsetY: 0,    /* and this far below */
 
     /* node geometry */
     nodeW: 252, nodeH: 60,
@@ -80,17 +80,23 @@
 
   var MOTION = {
     appearDur: 0.48,    /* s — node fade + scale in */
-    drawDur:   0.85,    /* s — edge draws via stroke-dashoffset */
-    pulseDur:  0.90,    /* s — soft arrival pulse */
-    worldDur:  0.60,    /* s — world annotation reveal */
+    drawDur:   0.95,    /* s — edge draws via stroke-dashoffset */
+    pulseDur:  1.20,    /* s — soft arrival pulse, slightly longer for visibility */
+    worldDur:  0.85,    /* s — world annotation reveal (longer for ribbon entry) */
     rulerStart: 45,     /* s — ruler begins drawing */
     rulerDur:   12,     /* s — ruler draws over this many seconds */
 
     /* camera */
     zoomBody:   1.70,   /* scale during the body of the piece — tighter for readability with wider canvas */
     zoomEnd:    1.00,   /* scale at the held closing frame */
-    endStart:   1069,    /* s — closing pull-back begins */
-    endDone:    1134,    /* s — whole tree framed; held from here */
+    endStart:   2820,   /* s — closing pull-back begins (47:32 audio) */
+    endDone:    2848,   /* s — whole tree framed; held from here */
+
+    /* camera drift between beats — slow, idempotent, breathes the canvas */
+    driftAmpX:  18,     /* px — horizontal sway amplitude */
+    driftAmpY:  8,      /* px — vertical sway amplitude */
+    driftPerX:  17.0,   /* s — horizontal cycle period */
+    driftPerY:  11.0,   /* s — vertical cycle period (intentionally coprime) */
 
     /* GEN1: dimmed at opening, lit at the end */
     gen1DimOpacity: 0.22,
@@ -156,7 +162,10 @@
   function lerp(a, b, k) { return a + (b - a) * k; }
   function easeOutCubic(u) { return 1 - Math.pow(1 - u, 3); }
   function easeOutQuart(u) { return 1 - Math.pow(1 - u, 4); }
+  function easeOutExpo(u)  { return u >= 1 ? 1 : 1 - Math.pow(2, -10 * u); }
   function easeInOut(u)   { return u < 0.5 ? 4*u*u*u : 1 - Math.pow(-2*u + 2, 3) / 2; }
+  /* Smooth sine — used for continuous camera drift between beats */
+  function softSin(t, period) { return Math.sin(2 * Math.PI * t / period); }
 
   function yearToY(year) {
     var k = clamp01((year - LAYOUT.yearTop) / (LAYOUT.yearBot - LAYOUT.yearTop));
@@ -177,8 +186,14 @@
       if (p.kind === 'union') {
         if (p.id === 'UN-AB' || p.id === 'UN-CD') p.y = LAYOUT.rowUnion;
         else if (p.id === 'UN-FINAL')             p.y = LAYOUT.rowFinal;
-      } else if (p.id === 'GEN1-D' || p.id === 'GEN1-R') {
+      } else if (p.id === 'GEN1-D' || p.id === 'GEN1-R' ||
+                 p.id === 'GEN1-JP' || p.id === 'GEN1-CH') {
         p.y = LAYOUT.rowDesc;
+      } else if (p.id === 'D2-PAUL' || p.id === 'D2-ROGER') {
+        /* Ronald's brothers share the rowChild line; placed left of D2.
+           Roger sits furthest left, Paul between Roger and Ronald. */
+        p.y = LAYOUT.rowChild;
+        p.x = (p.id === 'D2-ROGER') ? 820 : 1100;
       } else if (p.id === 'D2' || p.id === 'A2') {
         /* children of the first two unions */
         p.y = LAYOUT.rowChild;
@@ -233,6 +248,21 @@
     BY_ID['UN-FINAL'].x = midX('D2', 'A2');
     BY_ID['GEN1-D'].x = BY_ID['UN-FINAL'].x - 116;
     BY_ID['GEN1-R'].x = BY_ID['UN-FINAL'].x + 116;
+    /* Cousin descendants (Paul & Judy's children) — sit at rowDesc, offset
+       from the Paul ⚭ Judy union midpoint. */
+    if (BY_ID['UN-PAUL-JUDY'] && BY_ID['GEN1-JP'] && BY_ID['GEN1-CH']) {
+      /* UN-PAUL-JUDY.x will be set by the generic union pass below using
+         midpoint of D2-PAUL and SP-D2-PAUL, but those may not be placed
+         in time. Force it explicitly here based on D2-PAUL position. */
+      var paul = BY_ID['D2-PAUL'];
+      var judy = BY_ID['SP-D2-PAUL'];
+      if (paul && judy && typeof paul.x === 'number' && typeof judy.x === 'number') {
+        BY_ID['UN-PAUL-JUDY'].x = (paul.x + judy.x) / 2;
+        BY_ID['UN-PAUL-JUDY'].y = LAYOUT.rowFinal;
+        BY_ID['GEN1-JP'].x = BY_ID['UN-PAUL-JUDY'].x - 116;
+        BY_ID['GEN1-CH'].x = BY_ID['UN-PAUL-JUDY'].x + 116;
+      }
+    }
 
     /* Generic union positioning: any union not handled above gets x/y from
        its parents' midpoint (used for UN-LEPAGE-NOEL, UN-BIT-LEPAGE, and any
@@ -595,8 +625,26 @@
 
   function focusXY(focusId, t) {
     if (!focusId) return { x: CANVAS.w / 2, y: LAYOUT.yBot * 0.55 };
-    if (focusId === 'RULER')    return { x: CANVAS.w / 2, y: LAYOUT.rulerY - 100 };
+    /* RULER focus now lands on tree mid-height — never the bottom of canvas.
+       The previous y=rulerY-100 sent the camera into dead space below
+       the lowest tree row. */
+    if (focusId === 'RULER')    return { x: CANVAS.w / 2,
+                                         y: LAYOUT.yTop + (LAYOUT.yBot - LAYOUT.yTop) * 0.45 };
     if (focusId === 'OVERVIEW') return { x: CANVAS.w / 2, y: CANVAS.h / 2 };
+    /* DESCENDANTS: frame all GEN1 cousins (Daniel, Renée, Jon Paul, Christine)
+       in the centre. Computes a real centroid + tighter zoom is applied by
+       caller via the cameraAt branch. */
+    if (focusId === 'DESCENDANTS') {
+      var sx = 0, sy = 0, n = 0;
+      for (var di = 0; di < PEOPLE.length; di++) {
+        var dp = PEOPLE[di];
+        if (dp.kind === 'descendant' && typeof dp.x === 'number') {
+          sx += dp.x; sy += dp.y; n++;
+        }
+      }
+      if (n > 0) return { x: sx / n, y: sy / n };
+      return { x: CANVAS.w / 2, y: LAYOUT.rowDesc || (LAYOUT.yBot * 0.9) };
+    }
     var p = BY_ID[focusId];
     if (p) return { x: p.x, y: p.y };
     /* World-event ids: redirect to the paired person if known, otherwise hold
@@ -653,10 +701,28 @@
       frac = clamp01((t - transStart) / TRANSITION);
     }
     var ke2 = easeInOut(frac);
+    var baseFx = lerp(ap.x, bp.x, ke2);
+    var baseFy = lerp(ap.y, bp.y, ke2);
+    /* Continuous slow drift — sine sway on two coprime periods so the canvas
+       never sits perfectly still during a hold. Tapers off during a beat
+       transition so it doesn't fight the directed move. */
+    var holdMul = 1 - ke2 * 0.6;
+    var driftX = MOTION.driftAmpX * softSin(t, MOTION.driftPerX) * holdMul;
+    var driftY = MOTION.driftAmpY * softSin(t + 3.7, MOTION.driftPerY) * holdMul;
+    /* Apply a tighter zoom for DESCENDANTS so all four cousins are framed
+       larger than the body default. */
+    var s = MOTION.zoomBody;
+    if (a.focus === 'DESCENDANTS' || b.focus === 'DESCENDANTS') {
+      /* Cousins span ~1300px horizontally — pull the zoom out so all four
+         fit in frame with breathing room. */
+      s = lerp(MOTION.zoomBody, 1.35,
+               (a.focus === 'DESCENDANTS' ? (1 - ke2) : 0) +
+               (b.focus === 'DESCENDANTS' ? ke2 : 0));
+    }
     return {
-      s: MOTION.zoomBody,
-      fx: lerp(ap.x, bp.x, ke2),
-      fy: lerp(ap.y, bp.y, ke2)
+      s: s,
+      fx: baseFx + driftX,
+      fy: baseFy + driftY
     };
   }
 
@@ -686,33 +752,37 @@
       'translate(' + tx.toFixed(2) + ' ' + ty.toFixed(2) +
       ') scale(' + cam.s.toFixed(4) + ')');
 
-    /* ---- ruler reveal ---- */
     var rulerU = clamp01((t - MOTION.rulerStart) / MOTION.rulerDur);
     var rulerO = reducedMotion ? (t >= MOTION.rulerStart ? 1 : 0) : easeOutQuart(rulerU);
     gRuler.style.opacity = rulerO.toFixed(3);
 
-    /* ---- edges ---- */
+    /* ---- edges ---- E2: draws via stroke-dashoffset, easeOutExpo for a
+       more confident "ink flowing" feel; pulse glow rides the final 25% */
     for (var ei = 0; ei < EDGES.length; ei++) {
       var e = EDGES[ei];
       var u = clamp01((t - e.t) / MOTION.drawDur);
-      var drawn = reducedMotion ? (t >= e.t ? 1 : 0) : easeOutCubic(u);
+      var drawn = reducedMotion ? (t >= e.t ? 1 : 0) : easeOutExpo(u);
       e._el.style.strokeDashoffset = ((1 - drawn) * e.len).toFixed(2);
       e._el.style.opacity = (t >= e.t) ? '1' : '0';
+      /* brief glow as the line completes, fades after ~0.5s */
+      var glow = (u > 0.75 && u < 1.2) ? (1 - Math.abs(u - 1) / 0.25) : 0;
+      e._el.style.filter = glow > 0
+        ? 'drop-shadow(0 0 ' + (4 + glow * 6).toFixed(1) + 'px ' + e.color + ')'
+        : '';
     }
 
     /* ---- branch highlight (from current beat) ---- */
     var curBeat = currentBeat(t);
     var hlLine = (curBeat && curBeat.highlight) ? curBeat.highlight : null;
 
-    /* ---- nodes ---- */
+    /* ---- nodes ---- E3: stronger arrival pulse + tiny scale breathing
+       when a node is the current focus */
     for (var ni = 0; ni < PEOPLE.length; ni++) {
       var p = PEOPLE[ni];
       var au = clamp01((t - p.t) / MOTION.appearDur);
       var eased = easeOutCubic(au);
       var scale, op;
       if (p.dimmedUntilLight) {
-        /* GEN1: appear at p.t with appearDur, then live at gen1DimOpacity
-           until p.tLight, then rise to 1 over a 0.6s window */
         var dimO = eased * MOTION.gen1DimOpacity;
         if (t >= p.tLight) {
           var lu = clamp01((t - p.tLight) / 0.6);
@@ -726,28 +796,49 @@
         op = reducedMotion ? (t >= p.t ? 1 : 0) : eased;
         scale = reducedMotion ? 1 : (0.94 + 0.06 * eased);
       }
+
+      /* Focus breathing — only on the currently-focused node, very subtle.
+         Adds a tiny ~1.5% scale pulse so the "alive" node feels alive. */
+      var isFocus = (curBeat && curBeat.focus === p.id);
+      if (isFocus && !reducedMotion && op > 0.5) {
+        scale *= 1 + 0.015 * (0.5 + 0.5 * softSin(t, 3.2));
+      }
+
       p._g.style.opacity = op.toFixed(3);
       p._g.setAttribute('transform',
         'translate(' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) +
         ') scale(' + scale.toFixed(4) + ')');
 
+      /* Halo pulse — stronger now (was 0.65), with extra punch on arrival */
       var pulse = pulseAt(p, t);
-      p._halo.style.opacity = (pulse * 0.65).toFixed(3);
+      var arrivalBoost = (au > 0.6 && au < 1.35)
+        ? (1 - Math.abs(au - 1) / 0.4) : 0;
+      var haloAlpha = clamp01(pulse * 0.95 + arrivalBoost * 0.4);
+      p._halo.style.opacity = haloAlpha.toFixed(3);
 
       var cl = p._g.classList;
       cl.toggle('is-active', p.id === actId && t >= p.t);
       cl.toggle('is-visible', op > 0.02);
       cl.toggle('is-highlighted', hlLine != null && p.line === hlLine && op > 0.02);
+      cl.toggle('is-focused', isFocus && op > 0.5);
     }
 
-    /* ---- world annotations ---- */
+    /* ---- world annotations ---- E5: longer ribbon entry — slides up
+       further (20px instead of 8px) with a brief flash via opacity overshoot */
     for (var wi = 0; wi < WORLDS.length; wi++) {
       var w = WORLDS[wi];
       var wu = clamp01((t - w.t) / MOTION.worldDur);
-      var wo = reducedMotion ? (t >= w.t ? 1 : 0) : easeOutQuart(wu);
-      var ty2 = reducedMotion ? 0 : (1 - wo) * 8;
+      var wo = reducedMotion ? (t >= w.t ? 1 : 0) : easeOutExpo(wu);
+      var ty2 = reducedMotion ? 0 : (1 - wo) * 20;
       w._g.style.opacity = wo.toFixed(3);
       w._g.setAttribute('transform', 'translate(0 ' + ty2.toFixed(2) + ')');
+      /* brief brightness flash on entry */
+      var entryFlash = (wu > 0.4 && wu < 1.1) ? (1 - Math.abs(wu - 0.85) / 0.45) : 0;
+      if (entryFlash > 0 && !reducedMotion) {
+        w._g.style.filter = 'brightness(' + (1 + entryFlash * 0.35).toFixed(2) + ')';
+      } else {
+        w._g.style.filter = '';
+      }
     }
 
     /* ---- headers ---- */
@@ -777,7 +868,9 @@
     activeId: activeId,
     currentBeat: currentBeat,
     mapInsetState: mapInsetState,
+    focusXY: focusXY,
     CANVAS: CANVAS,
+    LAYOUT: LAYOUT,
     /* exposed for tests / debugging */
     _people: PEOPLE,
     _edges: EDGES,
