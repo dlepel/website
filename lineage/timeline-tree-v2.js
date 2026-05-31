@@ -89,8 +89,8 @@
     /* camera */
     zoomBody:   1.70,   /* scale during the body of the piece — tighter for readability with wider canvas */
     zoomEnd:    1.00,   /* scale at the held closing frame */
-    endStart:   2820,   /* s — closing pull-back begins (47:32 audio) */
-    endDone:    2848,   /* s — whole tree framed; held from here */
+    endStart:   2810.4,   /* s — closing pull-back begins (47:32 audio) */
+    endDone:    2844.1,   /* s — whole tree framed; held from here */
 
     /* camera drift between beats — slow, idempotent, breathes the canvas */
     driftAmpX:  18,     /* px — horizontal sway amplitude */
