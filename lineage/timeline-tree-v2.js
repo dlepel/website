@@ -234,6 +234,25 @@
     BY_ID['GEN1-D'].x = BY_ID['UN-FINAL'].x - 116;
     BY_ID['GEN1-R'].x = BY_ID['UN-FINAL'].x + 116;
 
+    /* Generic union positioning: any union not handled above gets x/y from
+       its parents' midpoint (used for UN-LEPAGE-NOEL, UN-BIT-LEPAGE, and any
+       future merge nodes). */
+    for (var ui = 0; ui < PEOPLE.length; ui++) {
+      var up = PEOPLE[ui];
+      if (up.kind !== 'union') continue;
+      if (typeof up.x === 'number' && !isNaN(up.x) &&
+          typeof up.y === 'number' && !isNaN(up.y)) continue;
+      if (up.parents && up.parents.length >= 2) {
+        var upa = BY_ID[up.parents[0]], upb = BY_ID[up.parents[1]];
+        if (upa && upb &&
+            typeof upa.x === 'number' && typeof upb.x === 'number' &&
+            typeof upa.y === 'number' && typeof upb.y === 'number') {
+          up.x = (upa.x + upb.x) / 2;
+          up.y = Math.max(upa.y, upb.y) + 60;
+        }
+      }
+    }
+
     /* ---- edge geometry: vertical-biased cubic Bézier ---- */
     for (var ei = 0; ei < EDGES.length; ei++) {
       var e = EDGES[ei];
