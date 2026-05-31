@@ -103,6 +103,9 @@
       name: 'Gilbert Mangot (carpenter)',
       sub: 'b. 1677 Clermont-Ferrand',
       parents: ['B11'] },
+    { id: 'SP-B10', line: 'B', gen: 10, year: 1677, t: 357.00, kind: 'spouse',
+      name: 'Anne Faure',
+      sub: 'm. Gilbert Mangot · Clermont-Ferrand', spouseOf: 'B10' },
     { id: 'B9',  line: 'B', gen: 9,  year: 1736, t: 366.12, kind: 'person',
       name: 'Gabriel Mangault',
       sub: 'bap. 23 Mar 1736 Saint-Pierre',
@@ -198,8 +201,11 @@
       sub: 'Baumholder, Rhineland', spouseOf: 'D9' },
     { id: 'D8',  line: 'D', gen: 8, year: 1707, t: 456.40, kind: 'person',
       name: 'Johann Nicolaus Heppell',
-      sub: 'christened 22 Jul 1707 Baumholder',
+      sub: 'christened 22 Jul 1707 Baumholder · surgeon',
       parents: ['D9'] },
+    { id: 'SP-D8', line: 'D', gen: 8, year: 1710, t: 466.82, kind: 'spouse',
+      name: 'Maria Barbara Reissen',
+      sub: 'm. Johann Nicolaus · 26 Jan 1734 near Homburg', spouseOf: 'D8' },
     { id: 'D7',  line: 'D', gen: 7, year: 1750, t: 1000.24, kind: 'person',
       name: 'John Jacob Jean Heppell',
       sub: 'b. 1750 Salem County, NJ · to Rimouski 1790',
@@ -317,8 +323,14 @@
       parents: [], standalone: true },
     { id: 'SP-AGNES', line: 'D', gen: 7, year: 1769, t: 1178.50, kind: 'spouse',
       name: 'Agnès Lavoie',
-      sub: 'm. D7 · 1790 Rimouski',
+      sub: 'm. D7 · 1790 Rimouski · 1st wife',
       parents: ['SP-LAVOIE-PICARD'], spouseOf: 'D7' },
+    /* Victoire Bouillon — John Jacob's 2nd wife (1798).
+       Per narration: the direct Heppell line ran through Victoire, not Agnès. */
+    { id: 'SP-D7-VICTOIRE', line: 'D', gen: 7, year: 1775, t: 1199.26, kind: 'spouse',
+      name: 'Victoire Bouillon',
+      sub: 'm. D7 · 1798 Rimouski · 2nd wife · the line passed through her',
+      spouseOf: 'D7', secondSpouse: true },
     { id: 'SP-BLAIS', line: 'A', gen: 5, year: 1840, t: 1772.10, kind: 'spouse',
       name: 'Marie Blais',
       sub: 'm. A5 · 1865 Napierville',
@@ -604,12 +616,22 @@
     { t: 1080.48,  narration: 'Six years old when the Treaty of Paris handed New France to Britain.',        focus: 'W1763' },
     { t: 1143.72,  narration: 'In 1775 the American Revolution broke out.',                                  focus: 'W1775' },
     { t: 1224.62,  narration: 'The surname slid from Heppell to Epelle to Hepel.',                           focus: 'D7' },
+    /* Lepage line — was previously narrated without camera focus, so the
+       column never appeared on screen. */
+    { t: 1247.66,  narration: 'In Lauzon, on the south shore of the Saint Lawrence, the Lepage line begins.', focus: 'E11' },
+    { t: 1260.08,  narration: 'Michel Lepage married Catherine Huard at Lauzon, 1805.',                       focus: 'E10' },
+    { t: 1292.80,  narration: 'Joseph Lepage the pit sawyer married Josephte Couture, 1846.',                 focus: 'E9' },
+    { t: 1335.62,  narration: 'Joseph Lepage Jr., charpentier — their son.',                                  focus: 'E8' },
     { t: 1427.40,  narration: 'François Régis Barbeau born at Saint-Constant in 1804. M. Catherine Forgues 1828.', focus: 'A6' },
     { t: 1488.00,  narration: 'By the early 1800s the old nicknames were fading.',                           focus: 'A7' },
+    { t: 1562.80,  narration: 'In Saint-Michel de Bellechasse, Laurent Noel and Marguerite Duquet.',          focus: 'F-NOEL' },
+    { t: 1588.20,  narration: 'Virginie Noel, baptised 1855, orphan at fifteen.',                             focus: 'F-VIRGINIE' },
+    { t: 1635.16,  narration: 'Joseph Lepage Jr. married Virginie Noel, 1873, at Notre-Dame-de-la-Victoire.', focus: 'UN-LEPAGE-NOEL' },
     { t: 1769.58,  narration: 'Magloire Barbeau married Marie Blais, 1865.',                                 focus: 'A5' },
     { t: 1788.52,  narration: 'Joseph Wilfred Barbeau baptised 1870. The documentary anchor for Bill C-3.',  focus: 'A4' },
     { t: 1792.72,  narration: 'At Saint-Édouard de Napierville, three lines were converging.',               focus: 'C5' },
     { t: 1929.14,  narration: 'The mills called. Roughly 900,000 French-Canadians left Quebec.',             focus: 'W1840-1930' },
+    { t: 2072.78,  narration: 'Marie Helene Cleophee Lepage, b. 1883 — Daniel\'s paternal great-grandmother.', focus: 'E7-MARIA' },
     { t: 2104.34,  narration: 'All four lines were converging on the Berkshire Hills.',                      focus: null },
     { t: 2216.22,  narration: 'Rita Betourney born 1914. Alcide Lepel born 1911. They married.',             focus: 'UN-CD' },
     { t: 2267.22,  narration: 'Ernest Barbeau and Regina Clermont married 1931.',                            focus: 'UN-AB' },
@@ -618,16 +640,14 @@
     { t: 2566.82,  narration: 'Jon Lepel lives in the same state.',                                           focus: 'GEN1-JP' },
     { t: 2580.30,  narration: 'Bill C-3 took effect, 15 December 2025.',                                     focus: 'W2025' },
     { t: 2603.40,  narration: 'The research reached back four hundred and twenty-two years.',                focus: 'OVERVIEW' },
-    { t: 2634.80,  narration: 'Traced the Barbeau line back to a merchant’s house in Pons.',            focus: 'A11', highlight: 'A' },
+    { t: 2634.80,  narration: 'Traced the Barbeau line back to a merchant house in Pons.',                  focus: 'A11', highlight: 'A' },
     { t: 2776.18,  narration: 'This is who they came from. This is how they got here.',                      focus: 'OVERVIEW' },
     { t: 2787.86,  narration: 'Ronald had two brothers: Paul and Roger.',                                     focus: 'DESCENDANTS' },
     { t: 2801.22,  narration: 'Aunt Judy is still living, retired in Florida.',                              focus: 'DESCENDANTS' }
   ];
 
-  /* =====================================================================
-     CONFIG — surfaces the time-axis range so the engine and ruler share
-     identical year-to-x math. World annotations and the ruler align.
-     ===================================================================== */
+  /* CONFIG: surfaces the time-axis range so the engine and ruler share
+     identical year-to-x math. */
   var TIME = { yearMin: 1600, yearMax: 2030 };
 
   window.LINEAGE_DATA = {

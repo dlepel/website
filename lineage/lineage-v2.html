@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=38">
+  <link rel="stylesheet" href="lineage-v2.css?v=42">
 </head>
 <body>
 
@@ -107,7 +107,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=38"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=42"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -115,9 +115,9 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=38"></script>
-<script src="timeline-tree-v2.js?v=38"></script>
-<script src="timeline-captions-v2.js?v=38"></script>
+<script src="timeline-data-v2.js?v=42"></script>
+<script src="timeline-tree-v2.js?v=42"></script>
+<script src="timeline-captions-v2.js?v=42"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -364,7 +364,30 @@
     }
     return null;
   }
+  /* Pull the most recent 4-digit year mentioned in the current caption.
+     Caption text trumps beat-focus year, because narration year and the
+     focused person's birth year often disagree (e.g. "War of the Spanish
+     Succession, 1701-1714" while focus is on Gabriel born 1736). */
+  function yearFromCaption(t) {
+    if (!window.LINEAGE_SENTENCES) return null;
+    var list = window.LINEAGE_SENTENCES;
+    var s = null;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].t <= t + 0.04) s = list[i]; else break;
+    }
+    if (!s || !s.text) return null;
+    /* Take the LAST year mentioned in the sentence (most often the year
+       the speaker is currently anchoring). Restrict to plausible range. */
+    var matches = s.text.match(/\b(1[5-9]\d{2}|20[0-2]\d)\b/g);
+    if (!matches || !matches.length) return null;
+    var yr = parseInt(matches[matches.length - 1], 10);
+    if (yr < 1500 || yr > 2030) return null;
+    return yr;
+  }
   function yearAt(t) {
+    /* Try caption text first — most accurate */
+    var capYear = yearFromCaption(t);
+    if (capYear !== null) return capYear;
     if (!window.LINEAGE_DATA || !window.LINEAGE_DATA.BEATS) return 1604;
     var BB = window.LINEAGE_DATA.BEATS;
     var iA = 0;
@@ -470,7 +493,6 @@
   audio.addEventListener('loadedmetadata', forceFrame);
   audio.addEventListener('ended', function () { setIcon(false); });
 
-  /* ===== Intro card fade controller ===== */
   var introCard = document.getElementById('intro-card');
   var INTRO = { fadeInDur: 3.0, hold: 80.0, fadeOutDur: 8.0 };
   function updateIntro(t) {
@@ -500,7 +522,6 @@
     updateSidebar(t);
   }
 
-  /* Initial paint */
   forceFrame();
 
   setTimeout(function () { map.invalidateSize(); }, 80);

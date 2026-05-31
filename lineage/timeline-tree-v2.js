@@ -214,17 +214,11 @@
       }
     }
 
-    /* ---- spouses: place beside their owner ---- */
-    for (var si = 0; si < PEOPLE.length; si++) {
-      var sp = PEOPLE[si];
-      if (sp.kind !== 'spouse' || !sp.spouseOf) continue;
-      var ow = BY_ID[sp.spouseOf];
-      if (!ow) continue;
-      sp.x = ow.x + LAYOUT.rowSpouseOffsetX;
-      sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
-    }
-
-    /* ---- relax: minimum vertical gap within each line column ---- */
+    /* ---- relax: minimum vertical gap within each line column ----
+       MUST run BEFORE spouse placement so spouses follow their owner
+       to the relaxed y position. Previously this ran AFTER spouses, which
+       left spouses stuck at the owner's PRE-relax y (e.g. Marguerite
+       Bétourné appearing at François's row instead of Charles's row). */
     for (var li = 0; li < LINES.length; li++) {
       var col = PEOPLE
         .filter(function (q) { return q.line === LINES[li].id && q.kind !== 'spouse'; })
@@ -233,6 +227,23 @@
         if (col[ci].y - col[ci - 1].y < LAYOUT.minGap) {
           col[ci].y = col[ci - 1].y + LAYOUT.minGap;
         }
+      }
+    }
+
+    /* ---- spouses: place beside their owner (after relax). Supports
+       a second spouse (e.g. Victoire Bouillon, John Jacob's 2nd wife):
+       first spouse sits on the RIGHT, second sits on the LEFT. */
+    for (var si = 0; si < PEOPLE.length; si++) {
+      var sp = PEOPLE[si];
+      if (sp.kind !== 'spouse' || !sp.spouseOf) continue;
+      var ow = BY_ID[sp.spouseOf];
+      if (!ow) continue;
+      if (sp.secondSpouse) {
+        sp.x = ow.x - LAYOUT.rowSpouseOffsetX;
+        sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
+      } else {
+        sp.x = ow.x + LAYOUT.rowSpouseOffsetX;
+        sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
       }
     }
 
