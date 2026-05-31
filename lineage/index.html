@@ -1,148 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>The Lepel Family — Four Lines, Four Hundred Years</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<link rel="stylesheet" href="timeline.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%231a160f%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-family=%22Georgia,serif%22 font-size=%2220%22 fill=%22%23d4a04a%22%3E%E2%9A%AD%3C/text%3E%3C/svg%3E">
+  <title>Lineage · The Lepel Family · daniellepel.com</title>
+
+  <!-- Leaflet from CDN (for the map inset). Loaded eagerly because the
+       inset is created on boot but kept off-stage until a migration beat. -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+  <link rel="stylesheet" href="lineage-v2.css?v=27">
 </head>
 <body>
-<div class="app" id="stage">
 
-  <!-- ======================= TOP BAR ======================= -->
+<div class="app">
+
   <header class="topbar">
-    <div class="brand">
-      <div class="title">The Lepel Family</div>
-      <div class="subtitle">Four lines · Four countries · Four hundred and twenty-two years</div>
-    </div>
-    <div class="legend" id="legend"></div>
-    <div class="act-range">
-      <div class="ar-meta">
-        <span class="ar-num" id="ar-num">I</span>
-        <span class="ar-title" id="ar-title">Origins</span>
-      </div>
-      <div class="ar-years">
-        <span id="ar-from">1604</span><span class="ar-dash">—</span><span id="ar-to">1665</span>
-      </div>
-    </div>
+    <div class="brand">Lineage · <em>Four ancestral lines, four countries, 422 years</em></div>
+    <nav class="legend" aria-label="Lineage legend">
+      <span class="swatch" style="--c: var(--c-betourne);">Bétourné</span>
+      <span class="swatch" style="--c: var(--c-heppell);">Heppell · Lepel</span>
+      <span class="swatch" style="--c: var(--c-mongeau);">Mongeau · Clermont</span>
+      <span class="swatch" style="--c: var(--c-barbeau);">Barbeau</span>
+      <span class="swatch" style="--c: var(--c-gold);">World events</span>
+    </nav>
   </header>
 
-  <!-- ======================= ACTS NAV ======================= -->
-  <nav class="acts-nav" id="acts-nav"></nav>
+  <main class="stage" id="stage" aria-label="Family tree animation">
 
-  <!-- ======================= MAIN ATLAS ======================= -->
-  <main class="atlas">
+    <!-- SVG canvas is appended here by the tree engine -->
 
-    <!-- LEFT — scrolling cards rail -->
-    <section class="left-col">
-      <div class="rail-window">
-        <div class="rail-focus-marker">
-          <span class="rfm-glyph">▸</span>
-        </div>
-        <div class="card-rail" id="card-rail"></div>
-        <div class="rail-fade rail-fade-top"></div>
-        <div class="rail-fade rail-fade-bot"></div>
-      </div>
-      <aside class="transcript-panel" id="transcript-panel" aria-hidden="true" aria-label="Narration transcript">
-        <div class="tp-head">
-          <span class="tp-title">Transcript</span>
-          <button class="tp-close" id="transcript-close" aria-label="Close transcript">&times;</button>
-        </div>
-        <div class="tp-body" id="transcript-body"></div>
-      </aside>
-    </section>
+    <div class="intro-card" id="intro-card" aria-hidden="true">
+      <div class="intro-eyebrow">A FAMILY DOCUMENTARY</div>
+      <h1 class="intro-title">Lineage</h1>
+      <p class="intro-subtitle">The Lepel Family <span class="intro-bullet">·</span> 1604 to 2026</p>
+      <p class="intro-tagline">Four ancestral lines <span class="intro-bullet">·</span> Four countries <span class="intro-bullet">·</span> 422 years</p>
+      <div class="intro-rule"></div>
+    </div>
 
-    <!-- RIGHT — persistent atlas map -->
-    <section class="right-col">
-      <div class="map-shell">
-        <div id="map"></div>
-        <div class="map-titlebar">
-          <div class="mt-label">Family Atlas</div>
-          <div class="mt-coord" id="mt-coord">—</div>
-        </div>
-      </div>
-      <div class="map-legend">
-        <div class="ml-header">Migrations</div>
-        <div class="ml-list" id="ml-list"></div>
-      </div>
-    </section>
+    <div class="caption" id="caption" aria-live="polite" role="status"></div>
+
+    <aside class="map-inset" id="map-inset" aria-hidden="true">
+      <span class="map-inset-label">Family Atlas</span>
+      <div id="map" style="width:100%;height:100%"></div>
+      <span class="map-inset-caption" id="map-caption"></span>
+    </aside>
 
   </main>
 
-  <!-- ======================= TRACK 5 — WORLD & NEW WORLD EVENTS ======================= -->
-  <section class="history-strip" id="history-strip">
-    <div class="hs-label">
-      <span class="hs-title">World &amp; New World Events</span>
-      <span class="hs-sub">Track 5 · context</span>
-    </div>
-    <div class="hs-stage">
-      <div class="hs-lanes" id="hs-lanes"></div>
-      <div class="hs-axis" id="hs-axis"></div>
-      <div class="hs-playhead" id="hs-playhead"></div>
-    </div>
-  </section>
-
-  <!-- ======================= CAPTION + DIT TICKER ======================= -->
-  <div id="caption"></div>
-  <div id="ditname-display"></div>
-
-  <!-- ======================= FOOTER ======================= -->
-  <footer class="footer">
-    <button class="icon-btn" id="play-btn" aria-label="Play" aria-pressed="false">
-      <svg class="play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>
-      <svg class="pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+  <footer class="transport">
+    <button id="btn-play" class="play-btn" aria-label="Play or pause">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path id="ico-play" d="M4 3 L13 8 L4 13 Z"/>
+      </svg>
     </button>
-    <div class="scrubber-wrap">
-      <div class="scrub-bar" id="scrub-bar" role="slider" tabindex="0"
-           aria-label="Seek through the narration"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-           aria-valuetext="0:00 of 26:25">
-        <div class="scrub-fill" id="scrub-fill"></div>
-        <div class="scrub-knob" id="scrub-knob"></div>
-      </div>
-      <div class="scrub-meta">
-        <span id="time-label">0:00 / 26:25</span>
-        <span class="meta-sep">·</span>
-        <span id="card-index">01 / 36</span>
-      </div>
+    <button id="btn-back-60" aria-label="Skip back 1 minute" title="−1 minute">
+      <svg width="14" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M4 4 L4 12 M4 8 L12 4 L12 12 Z"/>
+        <text x="14" y="11" font-size="7" font-family="sans-serif" fill="currentColor" stroke="none">60</text>
+      </svg>
+    </button>
+    <button id="btn-back" aria-label="Skip back 10 seconds" title="−10 seconds">
+      <svg width="14" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M4 4 L4 12 M4 8 L12 4 L12 12 Z"/>
+        <text x="14" y="11" font-size="7" font-family="sans-serif" fill="currentColor" stroke="none">10</text>
+      </svg>
+    </button>
+    <button id="btn-fwd" aria-label="Skip forward 10 seconds" title="+10 seconds">
+      <svg width="14" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <text x="0" y="11" font-size="7" font-family="sans-serif" fill="currentColor" stroke="none">10</text>
+        <path d="M22 4 L22 12 M22 8 L14 4 L14 12 Z"/>
+      </svg>
+    </button>
+    <button id="btn-fwd-60" aria-label="Skip forward 1 minute" title="+1 minute">
+      <svg width="14" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <text x="0" y="11" font-size="7" font-family="sans-serif" fill="currentColor" stroke="none">60</text>
+        <path d="M22 4 L22 12 M22 8 L14 4 L14 12 Z"/>
+      </svg>
+    </button>
+    <div class="scrub" id="scrub" role="slider" aria-label="Scrub through narration" tabindex="0">
+      <div class="scrub-fill" id="scrub-fill"></div>
     </div>
-    <button class="icon-btn" id="mute-btn" aria-label="Mute" aria-pressed="false">
-      <svg class="sound-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
-      <svg class="muted-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.94 8.94 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73L16.25 18a7.04 7.04 0 0 1-2.25.77v2.06c1.38-.21 2.65-.71 3.77-1.43L19.73 21 21 19.73 4.27 3z"/></svg>
-    </button>
-    <button class="icon-btn" id="transcript-btn" aria-label="Show transcript" aria-pressed="false">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v2H4zm0 4h16v2H4zm0 4h10v2H4zm0 4h13v2H4z"/></svg>
-    </button>
+    <div class="act-readout" id="act-readout">Opening</div>
+    <div class="meta" id="meta">0:00 / 47:51</div>
   </footer>
 
 </div>
 
-<audio id="audio" preload="metadata" src="lineage.mp3"></audio>
+<!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
+<audio id="lineage-audio" preload="auto" src="audio/audio.mp3?v=27"></audio>
 
-<!-- ======================= SPLASH ======================= -->
-<div id="splash">
-  <div class="splash-inner">
-    <div class="splash-orn">· · ·</div>
-    <div class="splash-title">The Lepel Family</div>
-    <div class="splash-sub">Four lines · Four countries · 422 years</div>
-    <div class="splash-years">1604 — 2026</div>
-    <div class="splash-desc">
-      A two-column documentary atlas. On the left, the family's story arrives in chronological cards in sync with the narration. On the right, a persistent map of the world records every migration as it happens — and remembers them all. Approximately 26 minutes with audio.
-    </div>
-    <button id="begin-btn">Begin</button>
-    <div class="splash-runtime">audio narration · ~26 min · best with sound</div>
-  </div>
-</div>
-
+<!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="timeline-data.js"></script>
-<script src="timeline-view.js"></script>
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+<!-- Data + engine -->
+<script src="timeline-data-v2.js?v=27"></script>
+<script src="timeline-tree-v2.js?v=27"></script>
+<script src="timeline-captions-v2.js?v=27"></script>
+
+<!-- Page script: wires audio, render loop, captions, transport, map inset -->
+<script>
+(function () {
+  'use strict';
+
+  var stage   = document.getElementById('stage');
+  var caption = document.getElementById('caption');
+  var actEl   = document.getElementById('act-readout');
+  var metaEl  = document.getElementById('meta');
+  var scrub   = document.getElementById('scrub');
+  var scrubFill = document.getElementById('scrub-fill');
+  var btnPlay = document.getElementById('btn-play');
+  var btnBack = document.getElementById('btn-back');
+  var btnFwd  = document.getElementById('btn-fwd');
+  var audio   = document.getElementById('lineage-audio');
+  var mapHost = document.getElementById('map-inset');
+  var mapCap  = document.getElementById('map-caption');
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ===== Build the tree ===== */
+  window.LINEAGE_TREE.build(stage, {
+    reducedMotion: reduced,
+    mapHost: mapHost
+  });
+
+  /* ===== Leaflet map setup ===== */
+  var map = L.map('map', {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false,
+    touchZoom: false
+  }).setView([47, -60], 3);
+
+  L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+    maxZoom: 12, minZoom: 2
+  }).addTo(map);
+
+  /* Migration line + endpoint marker, replaced on each surface */
+  var activeLine = null, activeFrom = null, activeTo = null;
+  var lineColors = {
+    A: getComputedStyle(document.documentElement).getPropertyValue('--c-barbeau').trim() || '#6fa973',
+    B: getComputedStyle(document.documentElement).getPropertyValue('--c-mongeau').trim() || '#9b6ca0',
+    C: getComputedStyle(document.documentElement).getPropertyValue('--c-betourne').trim() || '#d89346',
+    D: getComputedStyle(document.documentElement).getPropertyValue('--c-heppell').trim() || '#5d8dc0',
+    TRUNK: '#d4a04a'
+  };
+
+  function clearMapOverlay() {
+    if (activeLine) { map.removeLayer(activeLine); activeLine = null; }
+    if (activeFrom) { map.removeLayer(activeFrom); activeFrom = null; }
+    if (activeTo)   { map.removeLayer(activeTo);   activeTo   = null; }
+  }
+
+  function drawMigration(m) {
+    clearMapOverlay();
+    var color = lineColors[m.line] || lineColors.TRUNK;
+    if (m.isLocation || !m.to) {
+      /* Single-point pin — origin marker only, no arrow */
+      activeFrom = L.circleMarker(m.from, {
+        radius: 11, color: '#1a160f', fillColor: color,
+        fillOpacity: 1, weight: 3
+      }).addTo(map);
+      map.flyTo(m.from, 5, { duration: 0.8, easeLinearity: 0.2 });
+    } else {
+      var dashStyle = m.candidate ? '8, 6' : null;
+      activeLine = L.polyline([m.from, m.to], {
+        color: color, weight: 4, opacity: 0.95,
+        dashArray: dashStyle, lineCap: 'round', lineJoin: 'round'
+      }).addTo(map);
+      activeFrom = L.circleMarker(m.from, {
+        radius: 7, color: '#1a160f', fillColor: color, fillOpacity: 1, weight: 2
+      }).addTo(map);
+      activeTo = L.circleMarker(m.to, {
+        radius: 9, color: '#1a160f', fillColor: '#d4a04a',
+        fillOpacity: 1, weight: 2.5
+      }).addTo(map);
+      // Halo on destination for emphasis
+      activeTo.bringToFront();
+      var bounds = L.latLngBounds([m.from, m.to]).pad(0.5);
+      map.flyToBounds(bounds, { duration: 0.9, easeLinearity: 0.2 });
+    }
+    mapCap.textContent = m.label;
+  }
+
+  var lastMigrationId = '';
+  function syncMap(t) {
+    var s = window.LINEAGE_TREE.mapInsetState(t);
+    var id = s.migration ? s.migration.id : '';
+    if (id !== lastMigrationId) {
+      lastMigrationId = id;
+      if (s.migration) drawMigration(s.migration);
+      /* keep the overlay on screen during slide-out so it doesn't pop;
+         clearMapOverlay() will fire on the next migration */
+    }
+  }
+
+  /* ===== Caption: sentence-level from LINEAGE_SENTENCES =====
+     Re-reads window.LINEAGE_SENTENCES on EVERY frame so a late-loading
+     captions script can still take effect. Falls back to beats only when
+     LINEAGE_SENTENCES is truly absent. */
+  var lastSentT = -1;
+  var lastBeatT = -1;
+  var captionPathLogged = false;
+  function currentSentence(t, list) {
+    if (!list || !list.length) return null;
+    var found = list[0];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].t <= t + 0.04) found = list[i]; else break;
+    }
+    return found;
+  }
+  function updateCaption(t) {
+    var SENT = window.LINEAGE_SENTENCES;
+    if (SENT && SENT.length) {
+      if (!captionPathLogged) {
+        console.log('[lineage] captions using sentence track, ' + SENT.length + ' sentences');
+        captionPathLogged = true;
+      }
+      var s = currentSentence(t, SENT);
+      if (s && s.t !== lastSentT) {
+        lastSentT = s.t;
+        caption.textContent = s.text;
+        caption.classList.add('is-visible');
+      }
+    } else {
+      if (!captionPathLogged) {
+        console.warn('[lineage] LINEAGE_SENTENCES missing, falling back to sparse beat track');
+        captionPathLogged = true;
+      }
+      var beat = window.LINEAGE_TREE.currentBeat(t);
+      if (beat.t !== lastBeatT) {
+        lastBeatT = beat.t;
+        caption.textContent = beat.narration;
+        caption.classList.add('is-visible');
+      }
+    }
+  }
+
+  function updateAct(t) {
+    var a = 'Opening';
+    if (t >= 230) a = 'Act One · European Origins';
+    if (t >= 510) a = 'Act Two · The Crossings';
+    if (t >= 615) a = 'Act Three · Revolution and Migration';
+    if (t >= 730) a = 'Act Four · The Napierville Convergence';
+    if (t >= 840) a = 'Act Five · Convergence in the Berkshires';
+    if (t >= 870) a = 'Closing';
+    actEl.textContent = a;
+  }
+
+  function fmtTime(s) {
+    if (!isFinite(s)) s = 0;
+    var m = Math.floor(s / 60);
+    var ss = Math.floor(s % 60);
+    return m + ':' + (ss < 10 ? '0' : '') + ss;
+  }
+
+  function updateMeta(t) {
+    var dur = audio.duration || 1020;     /* placeholder until audio loads */
+    metaEl.textContent = fmtTime(t) + ' / ' + fmtTime(dur);
+    var frac = Math.max(0, Math.min(1, t / dur));
+    scrubFill.style.width = (frac * 100).toFixed(2) + '%';
+    scrub.setAttribute('aria-valuenow', (frac * 100).toFixed(0));
+  }
+
+  /* ===== Render loop ===== */
+  var running = false;
+  function tick() {
+    if (!running) return;
+    var t = audio.currentTime;
+    window.LINEAGE_TREE.render(t);
+    updateCaption(t);
+    updateAct(t);
+    updateMeta(t);
+    updateIntro(t);
+    syncMap(t);
+    requestAnimationFrame(tick);
+  }
+
+  function setIcon(playing) {
+    var ico = document.getElementById('ico-play');
+    if (!ico) return;
+    ico.setAttribute('d', playing
+      ? 'M4 3 H7 V13 H4 Z M9 3 H12 V13 H9 Z'
+      : 'M4 3 L13 8 L4 13 Z');
+  }
+
+  btnPlay.addEventListener('click', function () {
+    if (audio.paused) { audio.play().catch(function(){}); }
+    else              { audio.pause(); }
+  });
+  btnBack.addEventListener('click', function () {
+    audio.currentTime = Math.max(0, audio.currentTime - 10);
+    forceFrame();
+  });
+  btnFwd.addEventListener('click', function () {
+    audio.currentTime = Math.min((audio.duration || 1020), audio.currentTime + 10);
+    forceFrame();
+  });
+  var btnBack60 = document.getElementById('btn-back-60');
+  var btnFwd60  = document.getElementById('btn-fwd-60');
+  if (btnBack60) btnBack60.addEventListener('click', function () {
+    audio.currentTime = Math.max(0, audio.currentTime - 60);
+    forceFrame();
+  });
+  if (btnFwd60) btnFwd60.addEventListener('click', function () {
+    audio.currentTime = Math.min((audio.duration || 1020), audio.currentTime + 60);
+    forceFrame();
+  });
+  scrub.addEventListener('click', function (e) {
+    var rect = scrub.getBoundingClientRect();
+    var frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.currentTime = frac * (audio.duration || 1020);
+    forceFrame();
+  });
+  scrub.addEventListener('keydown', function (e) {
+    var step = (audio.duration || 1020) / 100;
+    if (e.key === 'ArrowLeft')  { audio.currentTime = Math.max(0, audio.currentTime - step); forceFrame(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { audio.currentTime = Math.min((audio.duration || 1020), audio.currentTime + step); forceFrame(); e.preventDefault(); }
+  });
+  /* Spacebar plays/pauses while audio focused */
+  document.addEventListener('keydown', function (e) {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.key === ' ') {
+      e.preventDefault();
+      btnPlay.click();
+    }
+  });
+
+  audio.addEventListener('play',  function () { running = true; setIcon(true); requestAnimationFrame(tick); });
+  audio.addEventListener('pause', function () { running = false; setIcon(false); forceFrame(); });
+  audio.addEventListener('seeked', forceFrame);
+  audio.addEventListener('loadedmetadata', forceFrame);
+  audio.addEventListener('ended', function () { setIcon(false); });
+
+  /* ===== Intro card fade controller ===== */
+  var introCard = document.getElementById('intro-card');
+  var INTRO = { fadeInDur: 3.0, hold: 80.0, fadeOutDur: 8.0 };
+  function updateIntro(t) {
+    if (!introCard) return;
+    // Phase 1: fade in 0..3s
+    // Phase 2: hold 3..(3+hold)s
+    // Phase 3: fade out
+    var op;
+    if (t < INTRO.fadeInDur) {
+      op = t / INTRO.fadeInDur;
+    } else if (t < INTRO.fadeInDur + INTRO.hold) {
+      op = 1;
+    } else if (t < INTRO.fadeInDur + INTRO.hold + INTRO.fadeOutDur) {
+      op = 1 - (t - INTRO.fadeInDur - INTRO.hold) / INTRO.fadeOutDur;
+    } else {
+      op = 0;
+    }
+    introCard.style.opacity = Math.max(0, Math.min(1, op)).toFixed(3);
+    introCard.style.pointerEvents = (op > 0.5) ? 'auto' : 'none';
+  }
+
+  function forceFrame() {
+    var t = audio.currentTime;
+    window.LINEAGE_TREE.render(t);
+    updateCaption(t);
+    updateAct(t);
+    updateMeta(t);
+    updateIntro(t);
+    syncMap(t);
+  }
+
+  /* Initial paint */
+  forceFrame();
+
+  /* Ensure Leaflet recalcs after first surface (one-time; cheap) */
+  setTimeout(function () { map.invalidateSize(); }, 80);
+  window.addEventListener('resize', function () { map.invalidateSize(); });
+
+  /* Expose for debugging */
+  window.lineage = { audio: audio, tree: window.LINEAGE_TREE, map: map };
+})();
+</script>
+
 </body>
 </html>

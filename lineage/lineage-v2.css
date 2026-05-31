@@ -1,0 +1,742 @@
+/* =====================================================================
+   Lineage V2  ·  Stylesheet
+   --------------------------------------------------------------------
+   Dark vintage idiom. Full-palette color strategy (four named lineage
+   roles plus gold). Per-frame motion lives in JS; CSS transitions are
+   reserved for discrete state changes (active node, map-inset slide).
+   ===================================================================== */
+
+/* =========================== 1. Tokens ============================== */
+:root {
+  /* Dark grounds — warm tint, never #000 */
+  --bg-0:  oklch(15% 0.012 65);
+  --bg-1:  oklch(19% 0.014 65);
+  --bg-2:  oklch(24% 0.016 65);
+  --bg-3:  oklch(30% 0.018 65);
+
+  /* Paper tints — never #fff */
+  --paper:      oklch(92% 0.024 80);
+  --paper-soft: oklch(78% 0.020 78);
+  --faint:      oklch(58% 0.018 75);
+
+  /* Lineage roles (full palette) */
+  --c-barbeau:  oklch(64% 0.105 145);
+  --c-mongeau:  oklch(55% 0.090 320);
+  --c-betourne: oklch(70% 0.130  65);
+  --c-heppell:  oklch(63% 0.085 240);
+
+  /* Gold accent — convergence, anchor, ruler accent, world events */
+  --c-gold:      oklch(74% 0.130 80);
+  --c-gold-soft: oklch(64% 0.080 80);
+
+  /* Geometry */
+  --pad:      24px;
+  --pad-tight: 14px;
+  --pad-loose: 36px;
+  --radius:    4px;
+  --radius-lg: 10px;
+
+  /* Type */
+  --serif: 'Georgia', 'Iowan Old Style', 'Cambria', serif;
+  --sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --mono:  'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* Motion (only CSS transitions live here; per-frame JS doesn't read these) */
+  --easing-out: cubic-bezier(0.16, 1, 0.30, 1);
+  --easing-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 240ms;
+  --dur-med:  420ms;
+  --dur-slow: 700ms;
+}
+
+/* ========================== 2. Reset / base ========================= */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-0);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+a {
+  color: var(--c-gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(212, 160, 74, 0.35);
+  transition: border-color var(--dur-fast) var(--easing-out);
+}
+
+a:hover, a:focus-visible {
+  border-bottom-color: var(--c-gold);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+/* ========================== 3. Page shell =========================== */
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+  width: 100vw;
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--pad-tight) var(--pad);
+  border-bottom: 1px solid rgba(243, 231, 204, 0.08);
+  background: rgba(34, 29, 20, 0.92);
+}
+
+.topbar .brand {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+}
+
+.topbar .brand em { font-style: italic; color: var(--c-gold-soft); }
+
+.topbar .legend {
+  display: flex;
+  gap: 18px;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--paper-soft);
+}
+
+.topbar .legend .swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar .legend .swatch::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--c, var(--paper-soft));
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+
+/* ============================ 4. Tree ============================== */
+.tree-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tree-ground {
+  fill: #1a160f;          /* hex fallback for browsers that drop oklch() in SVG fill */
+  fill: #1a160f;
+  fill: var(--bg-0);
+}
+
+.tree-frame-outer,
+.tree-frame-inner {
+  stroke: rgba(170, 133, 74, 0.28);
+  stroke-width: 1;
+}
+
+.tree-flourish {
+  stroke: rgba(170, 133, 74, 0.55);
+  stroke-width: 1;
+}
+
+/* Line headers */
+.tree-header {
+  pointer-events: none;
+}
+
+.tree-header-rule {
+  stroke: #c6b694;
+ stroke: var(--lc, var(--paper-soft));
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.tree-header-name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 500;
+  fill: #f3e7cc;
+  fill: var(--paper);
+  letter-spacing: 0.01em;
+}
+
+.tree-header-origin {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  fill: #c6b694;
+  fill: var(--paper-soft);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Edges — drawn via stroke-dashoffset from JS each frame.
+   NEVER put a transition on stroke-dashoffset; it would freeze. */
+.tree-edge {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.tree-edge-candidate {
+  stroke-dasharray: 6 5;   /* dashed style for candidate links */
+  stroke-width: 1.25;
+  opacity: 0;
+  /* NOTE: JS overrides stroke-dasharray with the path length to drive
+     the draw animation. The dashed effect is achieved by the
+     candidate-edge styling carrying lighter color via the opacity rule
+     below in .tree-edge-candidate */
+}
+
+/* lighter color for candidate edges, since the dash pattern is taken
+   over by the draw animation */
+.tree-edge-candidate {
+  filter: opacity(0.55);
+}
+
+/* Nodes */
+.tree-node { pointer-events: none; }
+
+.tree-node-halo {
+  fill: #d4a04a;
+ fill: var(--lc, var(--c-gold));
+  filter: blur(8px);
+  opacity: 0;        /* JS drives the pulse */
+}
+
+.tree-node-card {
+  fill: #2c251a;
+  fill: var(--bg-2);
+  stroke: #c6b694;
+ stroke: var(--lc, var(--paper-soft));
+  stroke-width: 1;
+  filter: url(#t-shadow);
+  /* Discrete state change only: when active, lift to bg-3 */
+  transition: fill var(--dur-fast) var(--easing-out);
+}
+
+.tree-node.is-active .tree-node-card {
+  fill: #3a3122;
+  fill: var(--bg-3);
+  stroke: #d4a04a;
+  stroke: var(--c-gold);
+  stroke-width: 1.5;
+}
+
+.tree-node-dot {
+  fill: #f3e7cc;
+ fill: var(--lc, var(--paper));
+}
+
+.tree-node-name {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 500;
+  fill: #f3e7cc;
+  fill: var(--paper);
+  letter-spacing: 0.005em;
+}
+
+.tree-node-sub {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  fill: #c6b694;
+  fill: var(--paper-soft);
+  letter-spacing: 0.02em;
+}
+
+.tree-node-star {
+  font-family: var(--sans);
+  font-size: 14px;
+  fill: #d4a04a;
+  fill: var(--c-gold);
+  font-weight: 700;
+}
+
+.tree-node-secondary {
+  fill: #aa854a;
+  fill: var(--c-gold-soft);
+}
+
+/* Candidate person (dashed border) */
+.tree-node.is-candidate .tree-node-card {
+  stroke-dasharray: 4 4;
+  stroke: color-mix(in oklch, var(--lc) 60%, transparent);
+}
+
+.tree-node.is-candidate .tree-node-name,
+.tree-node.is-candidate .tree-node-sub {
+  fill: #c6b694;
+  fill: var(--paper-soft);
+  font-style: italic;
+}
+
+/* Anchor halo accent */
+.tree-node.is-anchor .tree-node-halo {
+  fill: #d4a04a;
+  fill: var(--c-gold);
+}
+
+/* Union nodes */
+.tree-union-ring {
+  fill: #2c251a;
+  fill: var(--bg-2);
+  stroke: #d4a04a;
+  stroke: var(--c-gold);
+  stroke-width: 1.5;
+}
+
+.tree-union-glyph {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 400;
+  fill: #d4a04a;
+  fill: var(--c-gold);
+}
+
+.tree-node[data-id='UN-FINAL'] .tree-union-ring {
+  stroke-width: 2;
+}
+
+.tree-node[data-id='UN-FINAL'] .tree-union-glyph {
+  font-size: 30px;
+  fill: #d4a04a;
+  fill: var(--c-gold);
+}
+
+.tree-union-label {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  fill: #c6b694;
+  fill: var(--paper-soft);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Spouses — smaller, lighter */
+.tree-node-spouse .tree-node-card {
+  fill: color-mix(in oklch, var(--bg-2) 88%, transparent);
+  stroke-opacity: 0.6;
+}
+
+.tree-node-spouse .tree-node-name { font-size: 11.5px; font-style: italic; }
+.tree-node-spouse .tree-node-sub  { font-size: 9.5px; }
+
+/* GEN1 special — dimmed until lit, then full */
+.tree-node.is-gen1 .tree-node-card { stroke: var(--c-gold); }
+.tree-node.is-gen1 .tree-node-name { fill: var(--paper); }
+
+/* Branch highlight — the closing Barbeau-line emphasis (beat at t=930) */
+.tree-node.is-highlighted .tree-node-card {
+  stroke: #d4a04a;
+  stroke: var(--c-gold);
+  stroke-width: 1.75;
+}
+.tree-node.is-highlighted .tree-node-halo {
+  opacity: 0.45;
+  fill: #d4a04a;
+  fill: var(--c-gold);
+}
+
+/* ============================ 5. Ruler ============================= */
+.tree-ruler { opacity: 0; }    /* JS reveals over rulerStart..rulerDur */
+
+.tree-ruler-line {
+  stroke: rgba(170, 133, 74, 0.60);
+  stroke-width: 1.25;
+}
+
+.tree-ruler-tick {
+  stroke: rgba(198, 182, 148, 0.35);
+  stroke-width: 1;
+}
+
+.tree-ruler-tick.is-major {
+  stroke: #aa854a;
+  stroke: var(--c-gold-soft);
+  stroke-width: 1.25;
+}
+
+.tree-ruler-year {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: #c6b694;
+  fill: var(--paper-soft);
+  letter-spacing: 0.08em;
+}
+
+/* World annotations — appear once, hold. JS drives opacity+translate. */
+.tree-world {
+  opacity: 0;
+}
+
+.tree-world-guide {
+  stroke: rgba(170, 133, 74, 0.55);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.tree-world-dot {
+  fill: #d4a04a;
+  fill: var(--c-gold);
+}
+
+.tree-world-label {
+  font-family: var(--serif);
+  font-size: 11.5px;
+  font-style: italic;
+  fill: #f3e7cc;
+  fill: var(--paper);
+}
+
+.tree-world-band {
+  fill: #aa854a;
+  fill: var(--c-gold-soft);
+  opacity: 0.55;
+}
+
+/* ========================= 6. Caption layer ======================== */
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
+  max-width: 68ch;
+  padding: 14px 22px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--paper);
+  background: rgba(34, 29, 20, 0.70);
+  border: 1px solid rgba(170, 133, 74, 0.18);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(4px);   /* purposeful, not decorative */
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  /* Discrete state change: appear/fade between beats */
+  transition: opacity var(--dur-med) var(--easing-out),
+              transform var(--dur-med) var(--easing-out);
+  opacity: 0;
+}
+
+.caption.is-visible {
+  opacity: 1;
+}
+
+/* ========================= 7. Map inset ============================ */
+.map-inset {
+  position: absolute;
+  right: 24px;
+  bottom: 84px;
+  width: 380px;
+  height: 300px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-1);
+  border: 1px solid rgba(170, 133, 74, 0.24);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.65);
+  /* Hidden by default — slides in from the right when surfaced */
+  transform: translate3d(120%, 0, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--dur-med) var(--easing-out),
+    opacity   var(--dur-med) var(--easing-out);
+}
+
+.map-inset.is-visible {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.map-inset .leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-2);
+}
+
+/* Sepia tile filter */
+.map-inset .leaflet-tile-pane {
+  filter: sepia(0.7) saturate(0.85) brightness(0.65) contrast(1.05) hue-rotate(-8deg);
+}
+
+.map-inset-label {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  z-index: 500;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.map-inset-caption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  z-index: 500;
+  font-family: var(--serif);
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--paper);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+/* ========================= 8. Transport ============================ */
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: var(--pad-tight) var(--pad);
+  border-top: 1px solid rgba(243, 231, 204, 0.08);
+  background: rgba(34, 29, 20, 0.92);
+}
+
+.transport button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  color: var(--paper);
+  border: 1px solid rgba(243, 231, 204, 0.14);
+  transition:
+    background var(--dur-fast) var(--easing-out),
+    border-color var(--dur-fast) var(--easing-out);
+}
+
+.transport button:hover,
+.transport button:focus-visible {
+  background: var(--bg-3);
+  border-color: var(--c-gold);
+  outline: none;
+}
+
+.transport .play-btn { width: 44px; height: 44px; }
+
+.transport .scrub {
+  flex: 1;
+  height: 4px;
+  background: rgba(243, 231, 204, 0.08);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+}
+
+.transport .scrub-fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: var(--c-gold);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.transport .meta {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--paper-soft);
+  font-variant-numeric: tabular-nums;
+  min-width: 110px;
+  text-align: right;
+}
+
+.transport .act-readout {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--paper);
+  min-width: 220px;
+}
+
+/* Focus rings (a11y) */
+:focus-visible {
+  outline: 2px solid var(--c-gold);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ====================== 9. Reduced motion ========================== */
+@media (prefers-reduced-motion: reduce) {
+  .map-inset {
+    transition: opacity var(--dur-fast) linear;
+    transform: translate3d(0, 0, 0);  /* don't slide; cut in/out */
+  }
+  .caption {
+    transition: opacity var(--dur-fast) linear;
+  }
+  .tree-node-card,
+  .transport button {
+    transition: none;
+  }
+}
+
+/* ====================== 10. Responsive ============================ */
+@media (max-width: 900px) {
+  .topbar .legend { display: none; }
+  .map-inset { width: 280px; height: 220px; bottom: 96px; right: 14px; }
+  .caption { font-size: 15px; max-width: calc(100vw - 32px); }
+  .transport .act-readout { display: none; }
+}
+
+
+/* =========== 11. Intro card (opening title overlay) ============== */
+.intro-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 22, 15, 0)   0%,
+    rgba(26, 22, 15, 0.4) 30%,
+    rgba(26, 22, 15, 0.4) 70%,
+    rgba(26, 22, 15, 0)  100%
+  );
+}
+
+.intro-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  color: #aa854a;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+
+.intro-title {
+  font-family: var(--serif);
+  font-size: clamp(64px, 9vw, 124px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #f3e7cc;
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.intro-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 400;
+  color: #f3e7cc;
+  margin: 18px 0 0 0;
+  letter-spacing: 0.02em;
+}
+
+.intro-rule {
+  width: 80px;
+  height: 1px;
+  background: #d4a04a;
+  margin: 28px 0 24px 0;
+  opacity: 0.7;
+}
+
+.intro-tagline {
+  font-family: var(--sans);
+  font-size: clamp(12px, 1.1vw, 14px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c6b694;
+  margin: 0;
+}
+
+.intro-bullet {
+  color: #d4a04a;
+  margin: 0 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-card { transition: opacity 0.3s linear; }
+}
+
+/* =========== 12. Map inset upgrades (bigger + more readable) ====== */
+.map-inset {
+  width: 480px;
+  height: 360px;
+  bottom: 92px;
+}
+
+.map-inset .leaflet-tile-pane {
+  /* Reduced sepia, higher brightness, sharp contrast for max readability */
+  filter: sepia(0.25) saturate(0.90) brightness(1.00) contrast(1.15) hue-rotate(-3deg);
+}
+
+.map-inset-label {
+  font-size: 11.5px;
+  letter-spacing: 0.10em;
+  background: rgba(26, 22, 15, 0.62);
+  padding: 4px 8px;
+  border-radius: 3px;
+  color: #f3e7cc;
+}
+
+.map-inset-caption {
+  font-size: 13px;
+  background: rgba(26, 22, 15, 0.78);
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-shadow: none;
+}
+
+/* Larger leaflet markers for readability */
+.map-inset .leaflet-interactive {
+  stroke-width: 2.5px !important;
+}
+
+@media (max-width: 900px) {
+  .map-inset { width: 320px; height: 240px; bottom: 96px; right: 14px; }
+}
