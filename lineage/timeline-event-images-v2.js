@@ -1,10 +1,30 @@
-/* =====================================================================
-   Lineage V2 — EVENT-IMAGE MANIFEST
-   world-event id -> public-domain image + credit. Files in assets/events/.
-   Sourced from Wikimedia Commons (public domain). Absent id = no inset.
-   ===================================================================== */
+/* Lineage V2 — EVENT-IMAGE MANIFEST (public-domain, Wikimedia Commons).
+   id -> {file,label,credit}. Absent id = no inset. Auto-generated. */
 window.LINEAGE_EVENT_IMAGES = {
-  'W1648': { file: 'assets/events/W1648.jpg',
-             label: 'Peace of Westphalia, 1648',
-             credit: 'Entry of envoy Adriaen Pauw into Munster, 1646 · Wikimedia Commons (public domain)' }
+  'W1562': { file: 'assets/events/W1562.jpg', label: 'French Wars of Religion, 1562-1598', credit: 'Wikimedia Commons (public domain)' },
+  'W1598': { file: 'assets/events/W1598.jpg', label: 'Edict of Nantes, 1598', credit: 'Wikimedia Commons (public domain)' },
+  'W1608': { file: 'assets/events/W1608.jpg', label: 'Quebec founded by Champlain, 1608', credit: 'Wikimedia Commons (public domain)' },
+  'W1610': { file: 'assets/events/W1610.jpg', label: 'Henri IV assassinated, 1610', credit: 'Wikimedia Commons (public domain)' },
+  'W1618': { file: 'assets/events/W1618.jpg', label: 'Thirty Years\' War, 1618-1648', credit: 'Wikimedia Commons (public domain)' },
+  'W1642': { file: 'assets/events/W1642.jpg', label: 'Montreal founded, 1642', credit: 'Wikimedia Commons (public domain)' },
+  'W1648': { file: 'assets/events/W1648.jpg', label: 'Peace of Westphalia, 1648', credit: 'Entry of envoy Adriaen Pauw into Munster, 1646 · Wikimedia Commons (public domain)' },
+  'W1661': { file: 'assets/events/W1661.jpg', label: 'Louis XIV begins personal rule, 1661', credit: 'Wikimedia Commons (public domain)' },
+  'W1665': { file: 'assets/events/W1665.jpg', label: 'Carignan-Salieres Regiment arrives, 1665', credit: 'Wikimedia Commons (public domain)' },
+  'W1685-edit': { file: 'assets/events/W1685-edit.jpg', label: 'Revocation of the Edict of Nantes, 1685', credit: 'Wikimedia Commons (public domain)' },
+  'W1701': { file: 'assets/events/W1701.jpg', label: 'Great Peace of Montreal, 1701', credit: 'Wikimedia Commons (public domain)' },
+  'W1709': { file: 'assets/events/W1709.jpg', label: 'Le Grand Hiver, the Great Frost of 1709', credit: 'Wikimedia Commons (public domain)' },
+  'W1713': { file: 'assets/events/W1713.jpg', label: 'Treaty of Utrecht, 1713', credit: 'Wikimedia Commons (public domain)' },
+  'W1755': { file: 'assets/events/W1755.jpg', label: 'Expulsion of the Acadians, 1755', credit: 'Wikimedia Commons (public domain)' },
+  'W1759': { file: 'assets/events/W1759.jpg', label: 'Battle of the Plains of Abraham, 1759', credit: 'Wikimedia Commons (public domain)' },
+  'W1763': { file: 'assets/events/W1763.jpg', label: 'Treaty of Paris, New France ceded, 1763', credit: 'Wikimedia Commons (public domain)' },
+  'W1774': { file: 'assets/events/W1774.jpg', label: 'Quebec Act, 1774', credit: 'Wikimedia Commons (public domain)' },
+  'W1775': { file: 'assets/events/W1775.jpg', label: 'American Revolution, 1775-1783', credit: 'Wikimedia Commons (public domain)' },
+  'W1789': { file: 'assets/events/W1789.jpg', label: 'French Revolution, 1789', credit: 'Wikimedia Commons (public domain)' },
+  'W1803': { file: 'assets/events/W1803.jpg', label: 'Napoleonic Wars, 1803-1815', credit: 'Wikimedia Commons (public domain)' },
+  'W1837': { file: 'assets/events/W1837.jpg', label: 'Lower Canada Rebellion, 1837-1838', credit: 'Wikimedia Commons (public domain)' },
+  'W1867': { file: 'assets/events/W1867.jpg', label: 'Canadian Confederation, 1867', credit: 'Wikimedia Commons (public domain)' },
+  'W1870': { file: 'assets/events/W1870.jpg', label: 'Franco-Prussian War, German Empire founded, 1871', credit: 'Wikimedia Commons (public domain)' },
+  'W1914': { file: 'assets/events/W1914.jpg', label: 'World War I, 1914-1918', credit: 'Wikimedia Commons (public domain)' },
+  'W1929': { file: 'assets/events/W1929.jpg', label: 'The Great Depression, 1929-1939', credit: 'Wikimedia Commons (public domain)' },
+  'W1939': { file: 'assets/events/W1939.jpg', label: 'World War II, 1939-1945', credit: 'Wikimedia Commons (public domain)' },
 };
