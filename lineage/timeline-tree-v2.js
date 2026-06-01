@@ -93,8 +93,8 @@
     endDone:    2844.1,   /* s — whole tree framed; held from here */
 
     /* camera drift between beats — slow, idempotent, breathes the canvas */
-    driftAmpX:  18,     /* px — horizontal sway amplitude */
-    driftAmpY:  8,      /* px — vertical sway amplitude */
+    driftAmpX:  0,     /* px — horizontal sway amplitude */
+    driftAmpY:  0,      /* px — vertical sway amplitude */
     driftPerX:  17.0,   /* s — horizontal cycle period */
     driftPerY:  11.0,   /* s — vertical cycle period (intentionally coprime) */
 

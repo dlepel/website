@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=52">
+  <link rel="stylesheet" href="lineage-v2.css?v=53">
 </head>
 <body>
 
@@ -113,7 +113,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=52"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=53"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -121,10 +121,10 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=52"></script>
-<script src="timeline-tree-v2.js?v=52"></script>
-<script src="timeline-captions-v2.js?v=52"></script>
-<script src="timeline-event-images-v2.js?v=52"></script>
+<script src="timeline-data-v2.js?v=53"></script>
+<script src="timeline-tree-v2.js?v=53"></script>
+<script src="timeline-captions-v2.js?v=53"></script>
+<script src="timeline-event-images-v2.js?v=53"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -539,6 +539,42 @@
   audio.addEventListener('seeked', forceFrame);
   audio.addEventListener('loadedmetadata', forceFrame);
   audio.addEventListener('ended', function () { setIcon(false); });
+
+  /* ----- Robust autoplay -----
+     Browsers block audio autoplay (with sound) until a user gesture. Try to
+     play on load; if the browser blocks it, show a subtle prompt and start on
+     the first interaction anywhere (click, key, or tap). */
+  var apHint = document.createElement('div');
+  apHint.id = 'autoplay-hint';
+  apHint.textContent = '▶  Click anywhere to begin';
+  apHint.style.cssText = 'position:fixed;left:50%;bottom:104px;transform:translateX(-50%);' +
+    'z-index:60;padding:10px 22px;border:1px solid rgba(212,160,74,.55);border-radius:999px;' +
+    'background:rgba(18,15,10,.86);color:#f3e7cc;font-family:Georgia,serif;font-size:14px;' +
+    "letter-spacing:.04em;box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;" +
+    'transition:opacity .5s ease;pointer-events:none;';
+  document.body.appendChild(apHint);
+  function apShow(v) { apHint.style.opacity = v ? '1' : '0'; }
+  function startOnGesture() {
+    audio.play().then(function () {
+      ['pointerdown','keydown','touchstart'].forEach(function (ev) {
+        document.removeEventListener(ev, startOnGesture, true);
+      });
+      apShow(false);
+    }).catch(function () {});
+  }
+  function tryAutoplay() {
+    var p = audio.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(function () {
+        apShow(true);
+        ['pointerdown','keydown','touchstart'].forEach(function (ev) {
+          document.addEventListener(ev, startOnGesture, true);
+        });
+      });
+    }
+  }
+  if (audio.readyState >= 2) tryAutoplay();
+  else audio.addEventListener('canplay', tryAutoplay, { once: true });
 
   var introCard = document.getElementById('intro-card');
   var INTRO = { fadeInDur: 1.6, hold: 80.0, fadeOutDur: 8.0 };
