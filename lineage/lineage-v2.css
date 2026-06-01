@@ -363,8 +363,8 @@ button {
   stroke-opacity: 0.6;
 }
 
-.tree-node-spouse .tree-node-name { font-size: 11.5px; font-style: italic; }
-.tree-node-spouse .tree-node-sub  { font-size: 9.5px; }
+.tree-node-spouse .tree-node-name { font-size: 13px; font-style: italic; }
+.tree-node-spouse .tree-node-sub  { font-size: 10.5px; }
 
 /* GEN1 special — dimmed until lit, then full */
 .tree-node.is-gen1 .tree-node-card { stroke: var(--c-gold); }
@@ -439,6 +439,85 @@ button {
   fill: #aa854a;
   fill: var(--c-gold-soft);
   opacity: 0.55;
+}
+
+/* World-event SPROUT hero — big + readable on the left axis, then JS glides it
+   down and shrinks it onto its ruler dot. Year/plate fade out as it settles. */
+.tree-world-hero { opacity: 0; }
+.tree-world-hero-plate {
+  fill: rgba(18, 15, 10, 0.84);
+  stroke: #d4a04a;
+  stroke: var(--c-gold);
+  stroke-width: 1.5;
+  filter: url(#t-shadow);
+}
+.tree-world-hero-year {
+  font-family: var(--serif);
+  font-size: 96px;
+  font-weight: 600;
+  fill: #d4a04a;
+  fill: var(--c-gold);
+  letter-spacing: 0.01em;
+}
+.tree-world-hero-label {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-style: italic;
+  fill: #f3e7cc;
+  fill: var(--paper);
+}
+
+/* World-event IMAGE inset — public-domain artwork shown while an event is
+   narrated. Top-right so it never collides with the bottom-right map. */
+.event-inset {
+  position: absolute;
+  right: 24px;
+  top: 92px;
+  width: 340px;
+  height: 264px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-1);
+  border: 1px solid rgba(170, 133, 74, 0.28);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.1s ease-in-out;
+  z-index: 30;
+}
+.event-inset.is-visible { opacity: 1; }
+.event-inset img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.16) saturate(0.94) brightness(0.95) contrast(1.02);
+}
+.event-inset-label {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  z-index: 5;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.85);
+}
+.event-inset-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  padding: 14px 12px 7px;
+  font-family: var(--serif);
+  font-size: 10.5px;
+  font-style: italic;
+  color: var(--paper-soft);
+  background: linear-gradient(to top, rgba(0,0,0,0.74), transparent);
 }
 
 /* ========================= 6. Caption layer ========================
@@ -670,12 +749,14 @@ button {
 .intro-title {
   font-family: var(--serif);
   font-size: clamp(64px, 9vw, 124px);
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.04em;
-  color: #f3e7cc;
+  color: #fbf3df;
   margin: 0;
   line-height: 1;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85),
+               0 0 34px rgba(212, 160, 74, 0.45),
+               0 0 80px rgba(212, 160, 74, 0.22);
 }
 
 .intro-subtitle {
@@ -929,56 +1010,4 @@ button {
 
 @media (max-width: 800px) {
   /* On narrow viewports collapse the sidebar to a thin year strip */
-  .app { grid-template-columns: 56px 1fr; }
-  .sidebar { padding: 14px 6px 18px 6px; }
-  .sidebar-eyebrow { display: none; }
-  .year-axis { margin-left: 14px; }
-  .year-tick-major .year-label { display: none; }
-  .world-dots { left: 4px; }
-  .playhead { left: 18px; width: calc(100% - 22px); }
-  .playhead-label { font-size: 9.5px; padding: 1px 4px; }
-}
-
-/* ========================= 14. Map dot breathing (E4) ====================== */
-@keyframes dot-breathe {
-  0%, 100% { opacity: 1.0;  transform: scale(1); }
-  50%      { opacity: 0.55; transform: scale(1.45); }
-}
-
-.leaflet-overlay-pane svg .breathing-dot {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: dot-breathe 2.4s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .leaflet-overlay-pane svg .breathing-dot { animation: none; }
-}
-
-/* ========================= 15. Focused-node ring (E3) ====================== */
-/* Subtle gold ring around the node the current beat is focused on. The pulse
-   itself is JS-driven; this is the static affordance underneath. */
-.tree-node.is-focused .node-card,
-.tree-node.is-focused rect:first-of-type {
-  stroke-width: 2.2px;
-  filter: drop-shadow(0 0 8px rgba(212, 160, 74, 0.32));
-}
-
-/* ========================= 16. Per-act background tint (E7) ================
-   Very low-chroma OKLCH shifts. Each Act gets a hue that nudges the bg-0
-   colour by a degree or two — enough to feel a chapter change, not enough
-   to be loud. Transitions over 3.6s so the shift is barely perceptible. */
-body[data-act="opening"]  { --bg-0: oklch(15.0% 0.012 65); }
-body[data-act="act-one"]  { --bg-0: oklch(15.5% 0.014 78); }
-body[data-act="act-two"]  { --bg-0: oklch(15.5% 0.014 50); }
-body[data-act="act-three"]{ --bg-0: oklch(15.0% 0.013 38); }
-body[data-act="act-four"] { --bg-0: oklch(15.0% 0.014 92); }
-body[data-act="act-five"] { --bg-0: oklch(15.5% 0.014 120); }
-body[data-act="closing"]  { --bg-0: oklch(16.0% 0.014 80); }
-
-html, body {
-  transition: background 3.6s ease;
-}
-.stage {
-  transition: background 3.6s ease;
-}
+  .app { grid-

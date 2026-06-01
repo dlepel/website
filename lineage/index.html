@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=44">
+  <link rel="stylesheet" href="lineage-v2.css?v=51">
 </head>
 <body>
 
@@ -65,6 +65,12 @@
       <span class="map-inset-caption" id="map-caption"></span>
     </aside>
 
+    <aside class="event-inset" id="event-inset" aria-hidden="true">
+      <span class="event-inset-label">From the record</span>
+      <img id="event-img" alt="" />
+      <span class="event-inset-caption" id="event-caption"></span>
+    </aside>
+
   </main>
 
   <footer class="transport">
@@ -107,7 +113,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=44"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=51"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -115,9 +121,10 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=44"></script>
-<script src="timeline-tree-v2.js?v=44"></script>
-<script src="timeline-captions-v2.js?v=44"></script>
+<script src="timeline-data-v2.js?v=51"></script>
+<script src="timeline-tree-v2.js?v=51"></script>
+<script src="timeline-captions-v2.js?v=51"></script>
+<script src="timeline-event-images-v2.js?v=51"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -222,6 +229,45 @@
       if (s.migration) drawMigration(s.migration);
       /* keep the overlay on screen during slide-out so it doesn't pop;
          clearMapOverlay() will fire on the next migration */
+    }
+  }
+
+  /* ===== World-event IMAGE inset — public-domain artwork while narrated ===== */
+  var eventHost = document.getElementById('event-inset');
+  var eventImg  = document.getElementById('event-img');
+  var eventCap  = document.getElementById('event-caption');
+  var EV_IMG    = window.LINEAGE_EVENT_IMAGES || {};
+  var EV_WORLDS = (window.LINEAGE_DATA && window.LINEAGE_DATA.WORLDS) || [];
+  (function preloadEventImages() {
+    for (var id in EV_IMG) {
+      if (EV_IMG.hasOwnProperty(id) && EV_IMG[id] && EV_IMG[id].file) {
+        var im = new Image(); im.src = EV_IMG[id].file;
+      }
+    }
+  })();
+  var EV_LEAD = 0.3, EV_TAIL = 10.0, lastEventImgId = '';
+  function syncEventImage(t) {
+    if (!eventHost) return;
+    var pick = null;
+    for (var i = 0; i < EV_WORLDS.length; i++) {
+      var w = EV_WORLDS[i];
+      if (!EV_IMG[w.id]) continue;
+      if (t >= w.t - EV_LEAD && t <= w.t + EV_TAIL) {
+        if (!pick || w.t > pick.t) pick = w;
+      }
+    }
+    var pid = pick ? pick.id : '';
+    if (pid === lastEventImgId) return;
+    lastEventImgId = pid;
+    if (pick) {
+      var meta = EV_IMG[pick.id];
+      if (eventImg) { eventImg.src = meta.file; eventImg.alt = meta.label || pick.label || ''; }
+      if (eventCap) eventCap.textContent = meta.credit || '';
+      eventHost.classList.add('is-visible');
+      eventHost.setAttribute('aria-hidden', 'false');
+    } else {
+      eventHost.classList.remove('is-visible');
+      eventHost.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -434,6 +480,7 @@
     updateMeta(t);
     updateIntro(t);
     syncMap(t);
+    syncEventImage(t);
     updateSidebar(t);
     requestAnimationFrame(tick);
   }
@@ -494,7 +541,7 @@
   audio.addEventListener('ended', function () { setIcon(false); });
 
   var introCard = document.getElementById('intro-card');
-  var INTRO = { fadeInDur: 3.0, hold: 80.0, fadeOutDur: 8.0 };
+  var INTRO = { fadeInDur: 1.6, hold: 80.0, fadeOutDur: 8.0 };
   function updateIntro(t) {
     if (!introCard) return;
     var op;
@@ -519,6 +566,7 @@
     updateMeta(t);
     updateIntro(t);
     syncMap(t);
+    syncEventImage(t);
     updateSidebar(t);
   }
 

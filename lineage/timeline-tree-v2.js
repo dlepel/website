@@ -53,12 +53,12 @@
 
     /* fixed rows for the trunk zone */
     rowUnion: 1240, rowChild: 1320, rowFinal: 1380, rowDesc: 1440,
-    rowSpouseOffsetX: 240,   /* spouse sits this far right of spouseOf */
+    rowSpouseOffsetX: 272,   /* spouse offset (equal-size cards) */
     rowSpouseOffsetY: 0,    /* and this far below */
 
     /* node geometry */
     nodeW: 252, nodeH: 60,
-    spouseW: 198, spouseH: 50,
+    spouseW: 252, spouseH: 60,
     unionR: 32,
 
     /* line header above each column's earliest node */
@@ -102,7 +102,16 @@
     gen1DimOpacity: 0.22,
 
     /* map-inset surface window: hold until tStart + tHold, then slide out */
-    mapSlideDur: 1.2
+    mapSlideDur: 1.2,
+
+    /* world-event SPROUT: each event blooms big on the left vertical axis at
+       its year's height, holds readably, then glides down + shrinks to land on
+       its dot on the bottom ruler. All pure functions of t (scrub-safe). */
+    heroIn:        0.55,
+    heroHold:      2.40,
+    heroSettle:    1.55,
+    heroRestScale: 0.221,
+    heroX:         96
   };
 
   /* =====================================================================
@@ -238,13 +247,11 @@
       if (sp.kind !== 'spouse' || !sp.spouseOf) continue;
       var ow = BY_ID[sp.spouseOf];
       if (!ow) continue;
-      if (sp.secondSpouse) {
-        sp.x = ow.x - LAYOUT.rowSpouseOffsetX;
-        sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
-      } else {
-        sp.x = ow.x + LAYOUT.rowSpouseOffsetX;
-        sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
-      }
+      /* second spouse, and the rightmost column (A), seat inboard (left) so
+         equal-size cards stay within the frame. */
+      var onLeft = sp.secondSpouse || ow.line === 'A';
+      sp.x = onLeft ? (ow.x - LAYOUT.rowSpouseOffsetX) : (ow.x + LAYOUT.rowSpouseOffsetX);
+      sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
     }
 
     /* ---- trunk x: midpoints (parent-first) ---- */
@@ -340,6 +347,31 @@
       w._row = row;
       w._labelY = LAYOUT.worldLabelY - row * LAYOUT.worldLabelStep;
     }
+
+    /* world-event HERO lane assignment (sprout layer): keep simultaneous
+       heroes in separate vertical lanes. Deterministic = scrub-safe. */
+    var heroSpan = MOTION.heroIn + MOTION.heroHold + MOTION.heroSettle;
+    var placedHeroes = [];
+    var heroByT = WORLDS_SORTED.slice().sort(function (a, b) { return a.t - b.t; });
+    var laneOffsets = [0, 300, -300, 600, -600, 900, -900];
+    for (var hwi = 0; hwi < heroByT.length; hwi++) {
+      var hw = heroByT[hwi];
+      var base = yearToY(hw.year);
+      if (base < 250) base = 250; if (base > 1010) base = 1010;
+      var ht0 = hw.t, ht1 = hw.t + heroSpan, chosen = base;
+      for (var oi = 0; oi < laneOffsets.length; oi++) {
+        var cy = base + laneOffsets[oi];
+        if (cy < 210 || cy > 1060) continue;
+        var clash = false;
+        for (var pj = 0; pj < placedHeroes.length; pj++) {
+          var ph = placedHeroes[pj];
+          if (ht0 < ph.t1 && ph.t0 < ht1 && Math.abs(cy - ph.y) < 280) { clash = true; break; }
+        }
+        if (!clash) { chosen = cy; break; }
+      }
+      hw._heroY = chosen;
+      placedHeroes.push({ y: chosen, t0: ht0, t1: ht1 });
+    }
   }
 
   /* =====================================================================
@@ -352,6 +384,25 @@
     var node = document.createElementNS(SVG_NS, tag);
     if (attrs) for (var k in attrs) if (attrs.hasOwnProperty(k)) node.setAttribute(k, attrs[k]);
     return node;
+  }
+
+  function tspanAt(text, x, y) {
+    var ts = el('tspan', { x: x, y: y });
+    ts.textContent = text;
+    return ts;
+  }
+
+  function wrapLabel(str, maxChars) {
+    if (str.length <= maxChars) return [str];
+    var words = str.split(' '), lines = [], cur = '';
+    for (var i = 0; i < words.length; i++) {
+      var test = cur ? cur + ' ' + words[i] : words[i];
+      if (test.length > maxChars && cur) { lines.push(cur); cur = words[i]; }
+      else cur = test;
+    }
+    if (cur) lines.push(cur);
+    if (lines.length <= 2) return lines;
+    return [lines[0], lines.slice(1).join(' ')];
   }
 
   function buildDefs() {
@@ -467,10 +518,20 @@
         'text-anchor': 'middle' });
       nm.textContent = p.name;
       g.appendChild(nm);
-      var sb = el('text', { 'class': 'tree-node-sub', x: 0, y: 13,
-        'text-anchor': 'middle' });
-      sb.textContent = p.sub;
-      g.appendChild(sb);
+      /* sub line — wrap to 2 lines when too long for the 252px card */
+      var subLines = wrapLabel(p.sub || '', 40);
+      if (subLines.length <= 1) {
+        var sb = el('text', { 'class': 'tree-node-sub', x: 0, y: 13,
+          'text-anchor': 'middle' });
+        sb.textContent = subLines[0] || '';
+        g.appendChild(sb);
+      } else {
+        var sb = el('text', { 'class': 'tree-node-sub', x: 0, y: 7,
+          'text-anchor': 'middle' });
+        sb.appendChild(tspanAt(subLines[0], 0, 7));
+        sb.appendChild(tspanAt(subLines[1], 0, 19));
+        g.appendChild(sb);
+      }
       if (p.anchor) {
         var star = el('text', { 'class': 'tree-node-star',
           x: w/2 - 13, y: -h/2 + 17, 'text-anchor': 'middle' });
@@ -523,11 +584,8 @@
       /* dot at the rule */
       gw.appendChild(el('circle', { 'class': 'tree-world-dot',
         cx: w.x, cy: LAYOUT.rulerY, r: 3 }));
-      /* label */
-      var t = el('text', { 'class': 'tree-world-label',
-        x: w.x + 6, y: w._labelY, 'text-anchor': 'start' });
-      t.textContent = w.label;
-      gw.appendChild(t);
+      /* the label now lives in the HERO sprout layer (below), which settles
+         into this slot at (w.x, w._labelY) — so no static label here. */
       /* band? draw a hairline rectangle */
       if (w.band) {
         var bx1 = yearToX(w.band.from);
@@ -539,6 +597,35 @@
       gWorlds.appendChild(gw);
     }
     g.appendChild(gWorlds);
+
+    /* world-event HERO sprout layer — big + readable on the left axis, then
+       glides down + shrinks onto its ruler dot. Anchored (no camera). */
+    var gHeroes = el('g', { 'class': 'tree-world-heroes' });
+    for (var hi2 = 0; hi2 < WORLDS_SORTED.length; hi2++) {
+      var hw2 = WORLDS_SORTED[hi2];
+      var gh = el('g', { 'class': 'tree-world-hero', 'data-id': hw2.id });
+      var lines = wrapLabel(hw2.label, 26);
+      var two = lines.length > 1;
+      var longest = lines[0].length;
+      if (two && lines[1].length > longest) longest = lines[1].length;
+      var plateW = Math.max(300, longest * 26 + 76);
+      var plateTop = -134, plateBot = two ? 92 : 34;
+      var plate = el('rect', { 'class': 'tree-world-hero-plate',
+        x: -32, y: plateTop, width: plateW, height: plateBot - plateTop, rx: 10 });
+      gh.appendChild(plate);
+      var yr = el('text', { 'class': 'tree-world-hero-year',
+        x: 0, y: -48, 'text-anchor': 'start' });
+      yr.textContent = String(hw2.year);
+      gh.appendChild(yr);
+      var lab = el('text', { 'class': 'tree-world-hero-label',
+        x: 0, y: 0, 'text-anchor': 'start' });
+      lab.appendChild(tspanAt(lines[0], 0, 0));
+      if (two) lab.appendChild(tspanAt(lines[1], 0, 54));
+      gh.appendChild(lab);
+      hw2._hero = gh; hw2._heroPlate = plate; hw2._heroYear = yr; hw2._heroLabel = lab;
+      gHeroes.appendChild(gh);
+    }
+    g.appendChild(gHeroes);
 
     return g;
   }
@@ -834,22 +921,29 @@
       cl.toggle('is-focused', isFocus && op > 0.5);
     }
 
-    /* ---- world annotations ---- E5: longer ribbon entry — slides up
-       further (20px instead of 8px) with a brief flash via opacity overshoot */
+    /* ---- world events: SPROUT hero (big, left axis) -> glide down + shrink
+       to land on its bottom-ruler dot. Dot/guide/band appear only once landed. */
     for (var wi = 0; wi < WORLDS.length; wi++) {
       var w = WORLDS[wi];
-      var wu = clamp01((t - w.t) / MOTION.worldDur);
-      var wo = reducedMotion ? (t >= w.t ? 1 : 0) : easeOutExpo(wu);
-      var ty2 = reducedMotion ? 0 : (1 - wo) * 20;
-      w._g.style.opacity = wo.toFixed(3);
-      w._g.setAttribute('transform', 'translate(0 ' + ty2.toFixed(2) + ')');
-      /* brief brightness flash on entry */
-      var entryFlash = (wu > 0.4 && wu < 1.1) ? (1 - Math.abs(wu - 0.85) / 0.45) : 0;
-      if (entryFlash > 0 && !reducedMotion) {
-        w._g.style.filter = 'brightness(' + (1 + entryFlash * 0.35).toFixed(2) + ')';
-      } else {
-        w._g.style.filter = '';
-      }
+      if (!w._hero) continue;
+      var tIn     = w.t;
+      var tSettle = w.t + MOTION.heroIn + MOTION.heroHold;
+      var appear  = clamp01((t - tIn) / MOTION.heroIn);
+      var heroOp  = reducedMotion ? (t >= tIn ? 1 : 0) : easeOutExpo(appear);
+      var sRaw    = reducedMotion ? (t >= tSettle ? 1 : 0)
+                                  : clamp01((t - tSettle) / MOTION.heroSettle);
+      var s = sRaw * sRaw * (3 - 2 * sRaw);
+      if (t < tIn) { heroOp = 0; s = 0; }
+      var heroY = (typeof w._heroY === 'number') ? w._heroY : 300;
+      var tx = lerp(MOTION.heroX, w.x,       s);
+      var ty = lerp(heroY,        w._labelY, s);
+      var k  = lerp(1,            MOTION.heroRestScale, s);
+      w._hero.style.opacity = heroOp.toFixed(3);
+      w._hero.setAttribute('transform',
+        'translate(' + tx.toFixed(1) + ' ' + ty.toFixed(1) + ') scale(' + k.toFixed(4) + ')');
+      if (w._heroYear)  w._heroYear.style.opacity  = (1 - s).toFixed(3);
+      if (w._heroPlate) w._heroPlate.style.opacity = ((1 - s) * 0.92).toFixed(3);
+      w._g.style.opacity = (heroOp * s).toFixed(3);
     }
 
     /* ---- headers ---- */
