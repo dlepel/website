@@ -41,7 +41,7 @@
   /* =====================================================================
      1. CONFIG  — every magic number lives here
      ===================================================================== */
-  var CANVAS = { w: 3200, h: 2080 };
+  var CANVAS = { w: 3480, h: 2080 };
 
   var LAYOUT = {
     /* year -> y mapping for the year-driven (ancestral) zone */
@@ -249,7 +249,7 @@
       if (!ow) continue;
       /* second spouse, and the rightmost column (A), seat inboard (left) so
          equal-size cards stay within the frame. */
-      var onLeft = sp.secondSpouse || ow.line === 'A';
+      var onLeft = sp.secondSpouse;
       sp.x = onLeft ? (ow.x - LAYOUT.rowSpouseOffsetX) : (ow.x + LAYOUT.rowSpouseOffsetX);
       sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
     }
