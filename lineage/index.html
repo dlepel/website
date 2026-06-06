@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=54">
+  <link rel="stylesheet" href="lineage-v2.css?v=66">
 </head>
 <body>
 
@@ -29,7 +29,8 @@
       <span class="swatch" style="--c: var(--c-heppell);">Heppell · Lepel</span>
       <span class="swatch" style="--c: var(--c-mongeau);">Mongeau · Clermont</span>
       <span class="swatch" style="--c: var(--c-barbeau);">Barbeau</span>
-      <span class="swatch" style="--c: var(--c-gold);">World events</span>
+      <span class="swatch" style="--c: var(--c-lepage, #b89967);">Lepage · Noël</span>
+      <span class="swatch" style="--c: var(--c-world);">World events</span>
     </nav>
   </header>
 
@@ -41,7 +42,7 @@
     <div class="world-dots" id="world-dots"></div>
     <div class="playhead" id="playhead">
       <span class="playhead-arrow"></span>
-      <span class="playhead-label" id="playhead-label">1604</span>
+      <span class="playhead-label" id="playhead-label">2026</span>
     </div>
   </aside>
 
@@ -113,7 +114,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=54"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=66"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -121,10 +122,10 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=54"></script>
-<script src="timeline-tree-v2.js?v=54"></script>
-<script src="timeline-captions-v2.js?v=54"></script>
-<script src="timeline-event-images-v2.js?v=54"></script>
+<script src="timeline-data-v2.js?v=66"></script>
+<script src="timeline-tree-v2.js?v=66"></script>
+<script src="timeline-captions-v2.js?v=66"></script>
+<script src="timeline-event-images-v2.js?v=66"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -172,7 +173,7 @@
   }).addTo(map);
 
   /* Migration line + endpoint marker, replaced on each surface */
-  var activeLine = null, activeFrom = null, activeTo = null;
+  var activeLine = null, activeFrom = null, activeTo = null, activeConverge = [];
   var lineColors = {
     A: getComputedStyle(document.documentElement).getPropertyValue('--c-barbeau').trim() || '#6fa973',
     B: getComputedStyle(document.documentElement).getPropertyValue('--c-mongeau').trim() || '#9b6ca0',
@@ -185,11 +186,63 @@
     if (activeLine) { map.removeLayer(activeLine); activeLine = null; }
     if (activeFrom) { map.removeLayer(activeFrom); activeFrom = null; }
     if (activeTo)   { map.removeLayer(activeTo);   activeTo   = null; }
+    if (activeConverge.length) { activeConverge.forEach(function(l){ map.removeLayer(l); }); activeConverge = []; }
+  }
+
+  function animateDraw(layer){
+    try{
+      var path=(layer.getElement&&layer.getElement())||layer._path;
+      if(!path||!path.getTotalLength) return;
+      var len0=path.getTotalLength()||1;
+      path.style.transition='none'; path.style.strokeDasharray=len0+' '+len0; path.style.strokeDashoffset=len0;
+      setTimeout(function(){ try{
+        var len=path.getTotalLength()||len0;
+        path.style.transition='none'; path.style.strokeDasharray=len+' '+len; path.style.strokeDashoffset=len;
+        path.getBoundingClientRect();
+        path.style.transition='stroke-dashoffset 1.25s ease-in-out'; path.style.strokeDashoffset='0';
+      }catch(e){} }, 1050);
+    }catch(e){}
   }
 
   function drawMigration(m) {
     clearMapOverlay();
     var color = lineColors[m.line] || lineColors.TRUNK;
+    if (m.converge) {
+      /* Multi-origin convergence — one coloured arrow per family to one dest */
+      var dest = m.to;
+      m.converge.forEach(function (c) {
+        var col = lineColors[c.line] || lineColors.TRUNK;
+        var cl = L.polyline([c.pt, dest], {
+          color: col, weight: 3, opacity: 0.92, lineCap: 'round', lineJoin: 'round'
+        }).addTo(map);
+        activeConverge.push(cl); animateDraw(cl);
+        activeConverge.push(L.circleMarker(c.pt, {
+          radius: 6, color: '#1a160f', fillColor: col, fillOpacity: 1, weight: 2
+        }).addTo(map));
+      });
+      activeTo = L.circleMarker(dest, {
+        radius: 10, color: '#1a160f', fillColor: '#d4a04a', fillOpacity: 1,
+        weight: 2.5, className: 'breathing-dot'
+      }).addTo(map);
+      var pts = m.converge.map(function (c) { return c.pt; }).concat([dest]);
+      map.flyToBounds(L.latLngBounds(pts).pad(0.3), { duration: 1.0, easeLinearity: 0.2 });
+      mapCap.textContent = m.label;
+      return;
+    }
+    if (m.points) {
+      /* Multiple highlighted places (e.g. the two parts of Quebec) */
+      m.points.forEach(function (p) {
+        var pcol = lineColors[p.line] || lineColors.TRUNK;
+        activeConverge.push(L.circleMarker(p.pt, {
+          radius: 9, color: '#1a160f', fillColor: pcol, fillOpacity: 1,
+          weight: 2.5, className: 'breathing-dot'
+        }).addTo(map));
+      });
+      map.flyToBounds(L.latLngBounds(m.points.map(function (p) { return p.pt; })).pad(0.4),
+        { duration: 1.0, easeLinearity: 0.2 });
+      mapCap.textContent = m.label;
+      return;
+    }
     if (m.isLocation || !m.to) {
       /* Single-point pin — origin marker only, no arrow */
       activeFrom = L.circleMarker(m.from, {
@@ -197,13 +250,14 @@
         fillOpacity: 1, weight: 3,
         className: 'breathing-dot'
       }).addTo(map);
-      map.flyTo(m.from, 5, { duration: 0.8, easeLinearity: 0.2 });
+      map.flyTo(m.from, m.zoom || 5, { duration: 0.8, easeLinearity: 0.2 });
     } else {
       var dashStyle = m.candidate ? '8, 6' : null;
       activeLine = L.polyline([m.from, m.to], {
         color: color, weight: 4, opacity: 0.95,
         dashArray: dashStyle, lineCap: 'round', lineJoin: 'round'
       }).addTo(map);
+      animateDraw(activeLine);
       activeFrom = L.circleMarker(m.from, {
         radius: 7, color: '#1a160f', fillColor: color, fillOpacity: 1, weight: 2
       }).addTo(map);
@@ -262,7 +316,7 @@
     if (pick) {
       var meta = EV_IMG[pick.id];
       if (eventImg) { eventImg.src = meta.file; eventImg.alt = meta.label || pick.label || ''; }
-      if (eventCap) eventCap.textContent = meta.credit || '';
+      if (eventCap) eventCap.textContent = meta.desc || meta.credit || '';
       eventHost.classList.add('is-visible');
       eventHost.setAttribute('aria-hidden', 'false');
     } else {
@@ -315,12 +369,12 @@
 
   function updateAct(t) {
     var a = 'Opening',  slug = 'opening';
-    if (t >= 110)  { a = 'Act One · European Origins · 1604-1685';                          slug = 'act-one';   }
-    if (t >= 560)  { a = 'Act Two · The Crossings · 1665-1763';                              slug = 'act-two';   }
-    if (t >= 1110) { a = 'Act Three · Revolution, Migration & the Lauzon Lepages · 1763-1865'; slug = 'act-three'; }
-    if (t >= 1525) { a = 'Act Four · Convergence at Lévis & Napierville · 1865-1900';        slug = 'act-four';  }
-    if (t >= 2090) { a = 'Act Five · Convergence in the Berkshires · 1900-2026';             slug = 'act-five';  }
-    if (t >= 2570) { a = 'Closing · Bill C-3';                                                slug = 'closing';   }
+    if (t >= 118)  { a = 'Act One · European Origins · 1604-1685';                          slug = 'act-one';   }
+    if (t >= 600)  { a = 'Act Two · The Crossings · 1665-1763';                              slug = 'act-two';   }
+    if (t >= 1197) { a = 'Act Three · Revolution, Migration & the Lauzon Lepages · 1763-1865'; slug = 'act-three'; }
+    if (t >= 1635) { a = 'Act Four · Convergence at Lévis & Napierville · 1865-1900';        slug = 'act-four';  }
+    if (t >= 2205) { a = 'Act Five · Convergence in the Berkshires · 1900-2026';             slug = 'act-five';  }
+    if (t >= 2700) { a = 'Closing · Bill C-3';                                                slug = 'closing';   }
     actEl.textContent = a;
     if (actTitleTopEl) actTitleTopEl.textContent = a;
     /* E7: per-act background tint (tied to body[data-act] CSS) */
@@ -431,6 +485,9 @@
     return yr;
   }
   function yearAt(t) {
+    /* Opening: hold at present day (2026) until the narration first names a
+       year ("It begins in 1604" at ~1:03), then sweep back into the past. */
+    if (t < 68) return 2026;
     /* Try caption text first — most accurate */
     var capYear = yearFromCaption(t);
     if (capYear !== null) return capYear;

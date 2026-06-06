@@ -41,7 +41,7 @@
   /* =====================================================================
      1. CONFIG  — every magic number lives here
      ===================================================================== */
-  var CANVAS = { w: 3480, h: 2080 };
+  var CANVAS = { w: 3480, h: 2330 };
 
   var LAYOUT = {
     /* year -> y mapping for the year-driven (ancestral) zone */
@@ -69,12 +69,12 @@
 
     /* time ruler zone (anchored, no camera transform) */
     rulerXPad: 50,                /* left/right padding from canvas edge */
-    rulerY:    2010,               /* main rule line */
+    rulerY:    2260,               /* main rule line */
     rulerTickH:    8,
     rulerMajorTickH: 14,
     rulerTickEvery: 25,
     rulerMajorEvery: 100,
-    worldLabelY: 1975,             /* baseline of nearest world annotation labels */
+    worldLabelY: 2225,             /* baseline of nearest world annotation labels */
     worldLabelStep: 23             /* vertical stacking step — generous */
   };
 
@@ -247,11 +247,10 @@
       if (sp.kind !== 'spouse' || !sp.spouseOf) continue;
       var ow = BY_ID[sp.spouseOf];
       if (!ow) continue;
-      /* second spouse, and the rightmost column (A), seat inboard (left) so
-         equal-size cards stay within the frame. */
-      var onLeft = sp.secondSpouse;
-      sp.x = onLeft ? (ow.x - LAYOUT.rowSpouseOffsetX) : (ow.x + LAYOUT.rowSpouseOffsetX);
-      sp.y = ow.y + LAYOUT.rowSpouseOffsetY * 0.25;
+      /* Spouses ALWAYS sit to the RIGHT of their person; a second spouse
+         stacks one card-height BELOW the first (never thrown left). */
+      sp.x = ow.x + LAYOUT.rowSpouseOffsetX;
+      sp.y = ow.y + (sp.secondSpouse ? (LAYOUT.nodeH + 22) : (LAYOUT.rowSpouseOffsetY * 0.25));
     }
 
     /* ---- trunk x: midpoints (parent-first) ---- */
@@ -429,7 +428,7 @@
   function buildFrame() {
     /* a thin double-rule cartouche around the tree zone */
     var g = el('g', { 'class': 'tree-frame' });
-    var m = 24, top = m, bot = LAYOUT.yBot + 240;  /* leave room under trunk */
+    var m = 24, top = m, bot = LAYOUT.yBot + 330;  /* leave room under trunk + deepest leaves */
     g.appendChild(el('rect', { x: m, y: top,
       width: CANVAS.w - 2*m, height: bot - top,
       fill: 'none', 'class': 'tree-frame-outer' }));
@@ -577,7 +576,7 @@
     for (var i = 0; i < WORLDS_SORTED.length; i++) {
       var w = WORLDS_SORTED[i];
       var gw = el('g', { 'class': 'tree-world', 'data-id': w.id });
-      gw.style.setProperty('--lc', 'var(--c-gold)');
+      gw.style.setProperty('--lc', 'var(--c-world)');
       /* vertical guide from rule up to label baseline */
       gw.appendChild(el('line', { 'class': 'tree-world-guide',
         x1: w.x, y1: LAYOUT.rulerY - 2, x2: w.x, y2: w._labelY + 6 }));

@@ -28,6 +28,9 @@
   /* Gold accent — convergence, anchor, ruler accent, world events */
   --c-gold:      oklch(74% 0.130 80);
   --c-gold-soft: oklch(64% 0.080 80);
+  /* World events — cool silver, deliberately NOT a warm family hue */
+  --c-world:      oklch(83% 0.030 235);
+  --c-world-soft: oklch(68% 0.026 235);
 
   /* Geometry */
   --pad:      24px;
@@ -178,7 +181,7 @@ button {
 }
 
 .tree-flourish {
-  stroke: rgba(170, 133, 74, 0.55);
+  stroke: rgba(155, 168, 190, 0.5);
   stroke-width: 1;
 }
 
@@ -423,8 +426,8 @@ button {
 }
 
 .tree-world-dot {
-  fill: #d4a04a;
-  fill: var(--c-gold);
+  fill: #c6cfda;
+  fill: var(--c-world);
 }
 
 .tree-world-label {
@@ -436,8 +439,8 @@ button {
 }
 
 .tree-world-band {
-  fill: #aa854a;
-  fill: var(--c-gold-soft);
+  fill: #9aa6b4;
+  fill: var(--c-world-soft);
   opacity: 0.55;
 }
 
@@ -446,8 +449,8 @@ button {
 .tree-world-hero { opacity: 0; }
 .tree-world-hero-plate {
   fill: rgba(18, 15, 10, 0.84);
-  stroke: #d4a04a;
-  stroke: var(--c-gold);
+  stroke: #c6cfda;
+  stroke: var(--c-world);
   stroke-width: 1.5;
   filter: url(#t-shadow);
 }
@@ -455,8 +458,8 @@ button {
   font-family: var(--serif);
   font-size: 96px;
   font-weight: 600;
-  fill: #d4a04a;
-  fill: var(--c-gold);
+  fill: #c6cfda;
+  fill: var(--c-world);
   letter-spacing: 0.01em;
 }
 .tree-world-hero-label {
@@ -472,9 +475,12 @@ button {
 .event-inset {
   position: absolute;
   right: 24px;
+  /* Temporary placeholders: fill the right column from under the topbar
+     down to just above the map (map = bottom 92 + height 360 = 452; 468
+     leaves a ~16px gap). Fluid height so the image is never cropped. */
   top: 92px;
-  width: 340px;
-  height: 264px;
+  bottom: 468px;
+  width: 480px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--bg-1);
@@ -489,7 +495,7 @@ button {
 .event-inset img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;   /* show the whole image, never crop */
   display: block;
   filter: sepia(0.16) saturate(0.94) brightness(0.95) contrast(1.02);
 }
@@ -931,7 +937,7 @@ button {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--c-gold-soft);
+  background: var(--c-world);
   opacity: 0.55;
   box-shadow: 0 0 0 2px oklch(15% 0.012 65);
   transition: opacity var(--dur-fast) var(--easing-out),
@@ -1010,4 +1016,56 @@ button {
 
 @media (max-width: 800px) {
   /* On narrow viewports collapse the sidebar to a thin year strip */
-  .app { grid-
+  .app { grid-template-columns: 56px 1fr; }
+  .sidebar { padding: 14px 6px 18px 6px; }
+  .sidebar-eyebrow { display: none; }
+  .year-axis { margin-left: 14px; }
+  .year-tick-major .year-label { display: none; }
+  .world-dots { left: 4px; }
+  .playhead { left: 18px; width: calc(100% - 22px); }
+  .playhead-label { font-size: 9.5px; padding: 1px 4px; }
+}
+
+/* ========================= 14. Map dot breathing (E4) ====================== */
+@keyframes dot-breathe {
+  0%, 100% { opacity: 1.0;  transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(1.45); }
+}
+
+.leaflet-overlay-pane svg .breathing-dot {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: dot-breathe 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaflet-overlay-pane svg .breathing-dot { animation: none; }
+}
+
+/* ========================= 15. Focused-node ring (E3) ====================== */
+/* Subtle gold ring around the node the current beat is focused on. The pulse
+   itself is JS-driven; this is the static affordance underneath. */
+.tree-node.is-focused .node-card,
+.tree-node.is-focused rect:first-of-type {
+  stroke-width: 2.2px;
+  filter: drop-shadow(0 0 8px rgba(212, 160, 74, 0.32));
+}
+
+/* ========================= 16. Per-act background tint (E7) ================
+   Very low-chroma OKLCH shifts. Each Act gets a hue that nudges the bg-0
+   colour by a degree or two — enough to feel a chapter change, not enough
+   to be loud. Transitions over 3.6s so the shift is barely perceptible. */
+body[data-act="opening"]  { --bg-0: oklch(15.0% 0.012 65); }
+body[data-act="act-one"]  { --bg-0: oklch(15.5% 0.014 78); }
+body[data-act="act-two"]  { --bg-0: oklch(15.5% 0.014 50); }
+body[data-act="act-three"]{ --bg-0: oklch(15.0% 0.013 38); }
+body[data-act="act-four"] { --bg-0: oklch(15.0% 0.014 92); }
+body[data-act="act-five"] { --bg-0: oklch(15.5% 0.014 120); }
+body[data-act="closing"]  { --bg-0: oklch(16.0% 0.014 80); }
+
+html, body {
+  transition: background 3.6s ease;
+}
+.stage {
+  transition: background 3.6s ease;
+}
