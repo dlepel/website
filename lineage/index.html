@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=68">
+  <link rel="stylesheet" href="lineage-v2.css?v=69">
 </head>
 <body>
 
@@ -114,7 +114,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=68"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=69"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -122,10 +122,10 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=68"></script>
-<script src="timeline-tree-v2.js?v=68"></script>
-<script src="timeline-captions-v2.js?v=68"></script>
-<script src="timeline-event-images-v2.js?v=68"></script>
+<script src="timeline-data-v2.js?v=69"></script>
+<script src="timeline-tree-v2.js?v=69"></script>
+<script src="timeline-captions-v2.js?v=69"></script>
+<script src="timeline-event-images-v2.js?v=69"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -250,7 +250,7 @@
         fillOpacity: 1, weight: 3,
         className: 'breathing-dot'
       }).addTo(map);
-      map.flyTo(m.from, m.zoom || 5, { duration: 0.8, easeLinearity: 0.2 });
+      map.flyTo(m.from, m.zoom || 6, { duration: 0.8, easeLinearity: 0.2 });
     } else {
       var dashStyle = m.candidate ? '8, 6' : null;
       activeLine = L.polyline([m.from, m.to], {
@@ -487,7 +487,8 @@
   function yearAt(t) {
     /* Opening: hold at present day (2026) until the narration first names a
        year ("It begins in 1604" at ~1:03), then sweep back into the past. */
-    if (t < 68) return 2026;
+    if (t < 77) return 2026;
+    if (t < 129) return 1604;
     /* Try caption text first — most accurate */
     var capYear = yearFromCaption(t);
     if (capYear !== null) return capYear;
