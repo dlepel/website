@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
-  <link rel="stylesheet" href="lineage-v2.css?v=69">
+  <link rel="stylesheet" href="lineage-v2.css?v=73">
 </head>
 <body>
 
@@ -114,7 +114,7 @@
 </div>
 
 <!-- The audio element. Re-render with all corrections, 47:32 runtime. -->
-<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=69"></audio>
+<audio id="lineage-audio" preload="auto" autoplay src="audio/audio.mp3?v=73"></audio>
 
 <!-- Leaflet runtime -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -122,10 +122,10 @@
         crossorigin=""></script>
 
 <!-- Data + engine -->
-<script src="timeline-data-v2.js?v=69"></script>
-<script src="timeline-tree-v2.js?v=69"></script>
-<script src="timeline-captions-v2.js?v=69"></script>
-<script src="timeline-event-images-v2.js?v=69"></script>
+<script src="timeline-data-v2.js?v=73"></script>
+<script src="timeline-tree-v2.js?v=73"></script>
+<script src="timeline-captions-v2.js?v=73"></script>
+<script src="timeline-event-images-v2.js?v=73"></script>
 
 <!-- Page script: wires audio, render loop, captions, transport, map inset -->
 <script>
@@ -250,7 +250,7 @@
         fillOpacity: 1, weight: 3,
         className: 'breathing-dot'
       }).addTo(map);
-      map.flyTo(m.from, m.zoom || 6, { duration: 0.8, easeLinearity: 0.2 });
+      map.flyTo(m.from, m.zoom || 6, { duration: 1.5, easeLinearity: 0.1 });
     } else {
       var dashStyle = m.candidate ? '8, 6' : null;
       activeLine = L.polyline([m.from, m.to], {
@@ -291,7 +291,7 @@
   var eventImg  = document.getElementById('event-img');
   var eventCap  = document.getElementById('event-caption');
   var EV_IMG    = window.LINEAGE_EVENT_IMAGES || {};
-  var EV_WORLDS = (window.LINEAGE_DATA && window.LINEAGE_DATA.WORLDS) || [];
+  var EV_WORLDS = ((window.LINEAGE_DATA && window.LINEAGE_DATA.WORLDS) || []).concat(window.LINEAGE_CHURCHES || []);
   (function preloadEventImages() {
     for (var id in EV_IMG) {
       if (EV_IMG.hasOwnProperty(id) && EV_IMG[id] && EV_IMG[id].file) {

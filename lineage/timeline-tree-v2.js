@@ -954,12 +954,15 @@
         (reducedMotion ? (t >= ln.firstT ? 1 : 0) : hu).toFixed(3);
     }
 
-    /* ---- map inset state ---- */
+    /* ---- map inset state — permanent traveling atlas ---- */
     if (mapHost) {
       var ms = mapInsetState(t);
-      mapHost.classList.toggle('is-visible', ms.visible);
-      mapHost.dataset.migrationId = ms.migration ? ms.migration.id : '';
-      mapHost.dataset.line        = ms.migration ? ms.migration.line : '';
+      mapHost.classList.add('is-visible');           /* always on; the map travels continuously */
+      if (ms.migration) {
+        mapHost.dataset.migrationId = ms.migration.id;
+        mapHost.dataset.line        = ms.migration.line;
+      }
+      /* between named places, retain the last line accent rather than flashing to default */
     }
   }
 
